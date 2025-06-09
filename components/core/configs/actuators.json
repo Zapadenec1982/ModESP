@@ -1,0 +1,79 @@
+{
+  "update_interval_ms": 100,
+  "publish_on_error": true,
+  "actuators": [
+    {
+      "role": "compressor",
+      "type": "RELAY",
+      "command_key": "command.actuator.compressor",
+      "status_key": "state.actuator.compressor",
+      "config": {
+        "hal_id": "RELAY_COMPRESSOR",
+        "min_off_time_s": 180,
+        "min_on_time_s": 60,
+        "inrush_delay_ms": 100,
+        "active_low": false,
+        "default_state": false,
+        "on_label": "RUNNING",
+        "off_label": "STOPPED"
+      }
+    },
+    {
+      "role": "evaporator_fan",
+      "type": "PWM",
+      "command_key": "command.actuator.fan_speed",
+      "status_key": "state.actuator.fan_speed",
+      "config": {
+        "gpio_num": 25,
+        "frequency": 25000,
+        "resolution_bits": 10,
+        "min_duty_percent": 20,
+        "max_duty_percent": 100,
+        "ramp_time_ms": 2000,
+        "gamma": 1.0,
+        "default_duty": 0
+      }
+    },
+    {
+      "role": "defrost_heater",
+      "type": "RELAY",
+      "command_key": "command.actuator.defrost",
+      "status_key": "state.actuator.defrost",
+      "config": {
+        "hal_id": "RELAY_DEFROST",
+        "min_off_time_s": 30,
+        "min_on_time_s": 300,
+        "active_low": false,
+        "default_state": false
+      }
+    },
+    {
+      "role": "chamber_light",
+      "type": "RELAY",
+      "command_key": "command.actuator.light",
+      "status_key": "state.actuator.light",
+      "config": {
+        "hal_id": "RELAY_LIGHTS",
+        "min_off_time_s": 0,
+        "min_on_time_s": 0,
+        "active_low": false,
+        "default_state": false
+      }
+    },
+    {
+      "role": "alarm_buzzer",
+      "type": "PWM",
+      "command_key": "command.actuator.alarm",
+      "status_key": "state.actuator.alarm",
+      "config": {
+        "gpio_num": 26,
+        "frequency": 2000,
+        "resolution_bits": 8,
+        "min_duty_percent": 0,
+        "max_duty_percent": 50,
+        "ramp_time_ms": 0,
+        "default_duty": 0
+      }
+    }
+  ]
+}

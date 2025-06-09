@@ -1,0 +1,32 @@
+{
+    "level": "INFO",
+    "to_serial": true,
+    "to_file": false,
+    "to_network": false,
+    "max_file_size": 1048576,
+    "rotate_count": 3,
+    "buffer_size": 1024,
+    "modules": {
+        "application": "INFO",
+        "config_manager": "INFO",
+        "module_manager": "INFO",
+        "climate_control": "INFO",
+        "sensor_manager": "INFO",
+        "relay_manager": "INFO",
+        "network": "WARN",
+        "wifi": "WARN",
+        "mqtt": "WARN"
+    },
+    "syslog": {
+        "enabled": false,
+        "server": "",
+        "port": 514,
+        "facility": 16
+    },
+    "telemetry": {
+        "enabled": false,
+        "interval": 300,
+        "include_performance": true,
+        "include_errors": true
+    }
+}

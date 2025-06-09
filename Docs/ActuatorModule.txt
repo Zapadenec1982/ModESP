@@ -1,0 +1,96 @@
+﻿ActuatorModule та Фабрика Драйверів - Довідник
+Що це і навіщо
+За аналогією з SensorModule, який керує всіма вхідними даними, створюється єдиний ActuatorModule. Це спеціалізований HAL-модуль, що відповідає за керування усіма виконавчими механізмами (актуаторами) в системі.
+ActuatorModule використовує архітектуру "Фабрики Драйверів", що дозволяє динамічно підключати, відключати та змінювати типи виконавчих механізмів (реле, ШІМ, двигуни), не вносячи жодних змін у код самого ActuatorModule чи модулів бізнес-логіки.
+Основні принципи
+* Уніфікація керування: ActuatorModule є єдиною точкою відповідальності за виконання команд. Модулі бізнес-логіки (напр. ClimateControl) надсилають стандартизовані команди в SharedState, не знаючи, який фізичний пристрій їх буде виконувати.
+* Модульність драйверів: Кожен тип актуатора (реле, ШІМ) реалізується як окремий, самодостатній драйвер, що реєструється у "Фабриці".
+* Розширюваність: Додавання підтримки нового типу актуатора (напр. крокового двигуна) зводиться до створення нового файлу драйвера та його реєстрації.
+* Ізоляція: Бізнес-логіка повністю відділена від апаратури. ClimateControl віддає команду "ввімкнути компресор", а ActuatorModule сам вирішує, що для цього потрібно перемкнути реле "RELAY_1", використовуючи RelayDriver.
+Патерн роботи
+1. Визначення інтерфейсу IActuatorDriver
+Всі драйвери актуаторів мають реалізовувати єдиний інтерфейс.
+// в новому hal_interfaces.h або actuator_interfaces.h
+class IActuatorDriver {
+public:
+   virtual ~IActuatorDriver() = default;
+
+   // Ініціалізувати драйвер з JSON-конфігу
+   virtual esp_err_t init(ESPhal& hal, const nlohmann::json& config) = 0;
+
+   // Виконати команду
+   virtual esp_err_t execute_command(const nlohmann::json& command) = 0;
+
+   // Отримати поточний стан актуатора
+   virtual nlohmann::json get_status() const = 0;
+   
+   // Отримати тип драйвера (напр. "RELAY", "PWM_OUTPUT")
+   virtual std::string get_type() const = 0;
+};
+
+2. Створення Фабрики (ActuatorDriverRegistry)
+Аналогічно до сенсорів, створюється реєстр для драйверів актуаторів, який дозволяє їм самореєструватися.
+3. Перетворення RelayModule на RelayDriver
+Клас RelayModule трансформується в RelayDriver, який реалізує інтерфейс IActuatorDriver.
+Файл relay_driver.cpp:
+#include "relay_driver.h"
+#include "actuator_driver_registry.h" // Новий реєстр
+
+// ... реалізація методів IActuatorDriver ...
+esp_err_t RelayDriver::execute_command(const nlohmann::json& command) {
+   if (command.is_boolean()) {
+       bool state = command.get<bool>();
+       return relay_driver_from_hal->set_state(state);
+   }
+   return ESP_ERR_INVALID_ARG;
+}
+
+// Самореєстрація драйвера
+namespace {
+   bool registered = [](){
+       ActuatorDriverRegistry::instance().register_driver("RELAY", 
+           [](){ return std::make_unique<RelayDriver>(); });
+       return true;
+   }();
+}
+
+4. Створення ActuatorModule
+ActuatorModule працює за тією ж логікою, що й SensorModule, але "у зворотному напрямку".
+* Ініціалізація (init()):
+   * Читає свою конфігурацію (actuators.json).
+   * Для кожного запису в конфігурації створює відповідний драйвер через ActuatorDriverRegistry.
+   * Підписується на command_key кожного актуатора в SharedState.
+* Обробка команд (в callback):
+   * При зміні значення в SharedState (напр. command.actuator.compressor), викликається колбек.
+   * Колбек знаходить потрібний об'єкт драйвера (напр. RelayDriver для компресора).
+   * Викликає метод driver->execute_command(new_value).
+   * Після виконання оновлює ключ статусу (state.actuator.compressor).
+5. Приклад конфігурації actuators.json
+{
+ "actuators": [
+   {
+     "role": "compressor",
+     "type": "RELAY",
+     "command_key": "command.actuator.compressor",
+     "status_key": "state.actuator.compressor",
+     "config": {
+       "hal_id": "RELAY_1",
+       "min_off_time_s": 180
+     }
+   },
+   {
+     "role": "evaporator_fan",
+     "type": "PWM_OUTPUT",
+     "command_key": "command.actuator.fan_speed",
+     "status_key": "state.actuator.fan_speed",
+     "config": {
+       "hal_id": "PWM_CHANNEL_0",
+       "min_duty": 20,
+       "max_duty": 100
+     }
+   }
+ ]
+}
+
+Висновок
+Ваша ідея є абсолютно правильною. Створення ActuatorModule за аналогією з SensorModule робить архітектуру системи симетричною, логічною та надзвичайно гнучкою. Це дозволить вам у майбутньому легко додавати підтримку будь-яких виконавчих механізмів, не зачіпаючи вже написану та протестовану бізнес-логіку.

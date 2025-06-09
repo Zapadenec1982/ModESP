@@ -1,0 +1,32 @@
+{
+  "relays": [
+    {
+      "role": "compressor",
+      "hal_id": "RELAY_COMPRESSOR",
+      "command_key": "command.relay.compressor",
+      "status_key": "state.relay.compressor",
+      "min_off_time_s": 180,
+      "min_on_time_s": 120
+    },
+    {
+      "role": "defrost_heater",
+      "hal_id": "RELAY_DEFROST",
+      "command_key": "command.relay.defrost_heater",
+      "status_key": "state.relay.defrost_heater",
+      "min_off_time_s": 10,
+      "min_on_time_s": 5
+    },
+    {
+      "role": "fan",
+      "hal_id": "RELAY_FAN",
+      "command_key": "command.relay.fan",
+      "status_key": "state.relay.fan"
+    },
+    {
+      "role": "lights",
+      "hal_id": "RELAY_LIGHTS",
+      "command_key": "command.relay.lights",
+      "status_key": "state.relay.lights"
+    }
+  ]
+}

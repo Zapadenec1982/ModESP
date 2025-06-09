@@ -1,0 +1,127 @@
+{
+    "version": 1,
+    "system": {
+        "name": "ModuChill",
+        "type": "refrigerator",
+        "log_level": "INFO"
+    },
+    "climate": {
+        "setpoint": 4.0,
+        "hysteresis": 0.5,
+        "min_temp": -10.0,
+        "max_temp": 10.0,
+        "control_mode": "single_stage"
+    },
+    "compressor": {
+        "min_off_time": 180,
+        "min_on_time": 120,
+        "start_delay": 5,
+        "max_starts_per_hour": 10
+    },
+    "defrost": {
+        "enabled": true,
+        "type": "time_based",
+        "interval": 21600,
+        "max_duration": 1800,
+        "temperature_exit": 10.0,
+        "drip_time": 300
+    },
+    "sensors": {
+        "temperature": {
+            "type": "NTC10K",
+            "offset": 0.0,
+            "filter_samples": 10,
+            "read_interval": 1000
+        },
+        "humidity": {
+            "enabled": false,
+            "type": "none",
+            "offset": 0.0
+        }
+    },
+    "actuators": {
+        "compressor": {
+            "gpio": 4,
+            "active_low": false,
+            "pwm_enabled": false
+        },
+        "evaporator_fan": {
+            "gpio": 5,
+            "active_low": false,
+            "stop_on_defrost": true
+        },
+        "defrost_heater": {
+            "gpio": 6,
+            "active_low": false,
+            "max_power_percent": 100
+        }
+    },
+    "alarms": {
+        "high_temp": {
+            "enabled": true,
+            "threshold": 10.0,
+            "delay": 1800,
+            "auto_reset": true
+        },
+        "low_temp": {
+            "enabled": true,
+            "threshold": -2.0,
+            "delay": 1800,
+            "auto_reset": true
+        },
+        "door_open": {
+            "enabled": false,
+            "delay": 120
+        },
+        "sensor_fault": {
+            "enabled": true,
+            "action": "stop_cooling"
+        }
+    },
+    "network": {
+        "wifi": {
+            "enabled": false,
+            "ssid": "",
+            "password": "",
+            "static_ip": false
+        },
+        "mqtt": {
+            "enabled": false,
+            "broker": "",
+            "port": 1883,
+            "username": "",
+            "password": "",
+            "topic_prefix": "moduchill",
+            "discovery": true
+        },
+        "modbus": {
+            "enabled": false,
+            "address": 1,
+            "baud_rate": 9600,
+            "parity": "none"
+        }
+    },
+    "ui": {
+        "display": {
+            "type": "none",
+            "brightness": 100,
+            "timeout": 0
+        },
+        "buttons": {
+            "enabled": false,
+            "debounce_ms": 50
+        },
+        "web": {
+            "enabled": true,
+            "port": 80,
+            "auth_required": false
+        }
+    },
+    "logging": {
+        "level": "INFO",
+        "to_serial": true,
+        "to_file": false,
+        "max_file_size": 1048576,
+        "rotate_count": 3
+    }
+}

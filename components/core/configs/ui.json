@@ -1,0 +1,45 @@
+{
+    "display": {
+        "type": "none",
+        "width": 128,
+        "height": 64,
+        "brightness": 100,
+        "contrast": 50,
+        "timeout": 0,
+        "screensaver": true,
+        "language": "en"
+    },
+    "buttons": {
+        "enabled": false,
+        "count": 3,
+        "debounce_ms": 50,
+        "long_press_ms": 2000,
+        "repeat_interval": 500
+    },
+    "web": {
+        "enabled": true,
+        "port": 80,
+        "auth_required": false,
+        "username": "admin",
+        "password": "",
+        "session_timeout": 3600,
+        "max_connections": 4
+    },
+    "api": {
+        "enabled": true,
+        "json_rpc": true,
+        "rest": true,
+        "websocket": true,
+        "cors_enabled": true
+    },
+    "indicators": {
+        "status_led": {
+            "gpio": 2,
+            "active_low": false
+        },
+        "alarm_led": {
+            "gpio": 15,
+            "active_low": false
+        }
+    }
+}

@@ -1,0 +1,62 @@
+menu "Actuator Drivers Configuration"
+
+    config ENABLE_RELAY_DRIVER
+        bool "Enable Relay actuator driver"
+        default y
+        help
+            Enable support for relay control with safety features
+            like minimum on/off times and inrush current delays.
+
+    config ENABLE_PWM_DRIVER
+        bool "Enable PWM output driver"
+        default y
+        help
+            Enable support for PWM outputs with features like
+            soft start/stop, duty limits, and gamma correction.
+
+    config ENABLE_STEPPER_DRIVER
+        bool "Enable Stepper motor driver"
+        default n
+        help
+            Enable support for stepper motor control with
+            position tracking and acceleration profiles.
+
+    config ENABLE_SERVO_DRIVER
+        bool "Enable Servo motor driver"
+        default n
+        help
+            Enable support for servo motor control with
+            angle positioning and speed control.
+
+    config ENABLE_H_BRIDGE_DRIVER
+        bool "Enable H-Bridge motor driver"
+        default n
+        help
+            Enable support for bidirectional DC motor control
+            using H-Bridge drivers.
+
+    config ACTUATOR_DRIVER_MAX_INSTANCES
+        int "Maximum number of actuator instances"
+        default 16
+        range 1 64
+        help
+            Maximum number of actuator instances that can be configured.
+            Each actuator instance consumes memory, so adjust based on
+            your application needs.
+
+    config ACTUATOR_DRIVER_DEFAULT_UPDATE_MS
+        int "Default actuator update interval (ms)"
+        default 100
+        range 10 1000
+        help
+            Default interval for updating time-based actuators (ramping, etc).
+            Can be overridden in runtime configuration.
+
+    config ACTUATOR_EMERGENCY_STOP_ENABLED
+        bool "Enable hardware emergency stop"
+        default y
+        help
+            Enable hardware emergency stop functionality that
+            immediately sets all actuators to safe state.
+
+endmenu

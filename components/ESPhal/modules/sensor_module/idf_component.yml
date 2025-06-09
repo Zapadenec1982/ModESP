@@ -1,0 +1,25 @@
+name: sensor_module
+description: "HAL module for sensor data collection with internal sensor drivers"
+version: "1.0.0"
+
+dependencies:
+  nlohmann_json: "^3.11.0"
+  idf: ">=4.4.0"
+
+targets:
+  - esp32
+  - esp32s3
+  - esp32c3
+
+documentation:
+  description: |
+    SensorModule is a HAL module responsible for collecting data from all
+    physical sensors. It contains all sensor drivers internally (DS18B20,
+    NTC, GPIO) and provides standardized sensor data to SharedState.
+    
+    Sensor drivers are internal implementation details of SensorModule,
+    following the principle that SensorModule creates and manages internal
+    sensor objects as specified in the documentation.
+    
+    Modularity is achieved through JSON configuration and compile-time
+    options, not through separate driver components.

@@ -1,0 +1,51 @@
+{
+    "version": 1,
+    "system": {
+        "name": "ModuChill Freezer",
+        "type": "freezer",
+        "log_level": "INFO"
+    },
+    "climate": {
+        "setpoint": -18.0,
+        "hysteresis": 1.0,
+        "min_temp": -30.0,
+        "max_temp": -10.0,
+        "control_mode": "single_stage"
+    },
+    "compressor": {
+        "min_off_time": 300,
+        "min_on_time": 180,
+        "start_delay": 10,
+        "max_starts_per_hour": 8
+    },
+    "defrost": {
+        "enabled": true,
+        "type": "time_based",
+        "interval": 28800,
+        "max_duration": 2400,
+        "temperature_exit": 5.0,
+        "drip_time": 600
+    },
+    "sensors": {
+        "temperature": {
+            "type": "NTC10K",
+            "offset": 0.0,
+            "filter_samples": 20,
+            "read_interval": 1000
+        }
+    },
+    "alarms": {
+        "high_temp": {
+            "enabled": true,
+            "threshold": -10.0,
+            "delay": 3600,
+            "auto_reset": true
+        },
+        "low_temp": {
+            "enabled": true,
+            "threshold": -25.0,
+            "delay": 1800,
+            "auto_reset": true
+        }
+    }
+}

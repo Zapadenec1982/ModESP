@@ -1,0 +1,37 @@
+{
+    "high_temp": {
+        "enabled": true,
+        "threshold": 10.0,
+        "delay": 1800,
+        "auto_reset": true,
+        "action": "visual_audio"
+    },
+    "low_temp": {
+        "enabled": true,
+        "threshold": -2.0,
+        "delay": 1800,
+        "auto_reset": true,
+        "action": "visual_audio"
+    },
+    "door_open": {
+        "enabled": false,
+        "delay": 120,
+        "auto_reset": true,
+        "action": "visual"
+    },
+    "sensor_fault": {
+        "enabled": true,
+        "action": "stop_cooling",
+        "auto_reset": false
+    },
+    "power_failure": {
+        "enabled": true,
+        "action": "log_only",
+        "memory_backup": true
+    },
+    "defrost_failure": {
+        "enabled": true,
+        "max_duration": 3600,
+        "action": "stop_heating"
+    }
+}

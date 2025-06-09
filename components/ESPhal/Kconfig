@@ -1,0 +1,63 @@
+menu "ESPhal Configuration"
+
+    choice ESPHAL_BOARD_TYPE
+        prompt "Board Type"
+        default ESPHAL_BOARD_REV_A_REFRIGERATOR
+        help
+            Select the hardware board type for your ModuChill device.
+            Each board type has different GPIO pin assignments and capabilities.
+
+        config ESPHAL_BOARD_REV_A_REFRIGERATOR
+            bool "Rev A - Refrigerator Controller"
+            help
+                Original refrigerator controller board with basic relay and sensor support.
+                - 4x Relay outputs
+                - 2x OneWire buses
+                - 4x ADC channels
+                - Status LEDs
+
+        config ESPHAL_BOARD_REV_B_RIPENING_CHAMBER
+            bool "Rev B - Ripening Chamber Controller"
+            help
+                Enhanced board for ripening chambers with additional sensors and outputs.
+                - 6x Relay outputs
+                - 3x OneWire buses
+                - 6x ADC channels
+                - Display interface
+                - Extended I/O
+
+        config ESPHAL_BOARD_REV_C_DISPLAY_UNIT
+            bool "Rev C - Display Unit"
+            help
+                Compact display unit for user interface and basic control.
+                - 2x Relay outputs
+                - 1x OneWire bus
+                - 2x ADC channels
+                - TFT display interface
+                - Touch controls
+
+    endchoice
+
+    config ESPHAL_ENABLE_DEBUG_LOGGING
+        bool "Enable HAL Debug Logging"
+        default n
+        help
+            Enable detailed debug logging for HAL operations.
+            This will log all HAL resource requests and initialization steps.
+
+    config ESPHAL_ONEWIRE_POWER_PIN
+        bool "Use dedicated OneWire power pin"
+        default y
+        help
+            Enable parasitic power for OneWire devices using dedicated power pin.
+            Disable this if your OneWire devices have external power supply.
+
+    config ESPHAL_ADC_SAMPLES
+        int "ADC averaging samples"
+        range 1 64
+        default 8
+        help
+            Number of samples to average for ADC readings.
+            Higher values provide more stable readings but slower response.
+
+endmenu

@@ -1,0 +1,44 @@
+{
+    "wifi": {
+        "enabled": false,
+        "ssid": "",
+        "password": "",
+        "static_ip": false,
+        "ip": "",
+        "gateway": "",
+        "subnet": "",
+        "dns": "",
+        "reconnect_interval": 30000,
+        "max_reconnect_attempts": 10
+    },
+    "mqtt": {
+        "enabled": false,
+        "broker": "",
+        "port": 1883,
+        "username": "",
+        "password": "",
+        "client_id": "",
+        "topic_prefix": "moduchill",
+        "discovery": true,
+        "qos": 1,
+        "retain": false,
+        "keepalive": 60
+    },
+    "modbus": {
+        "enabled": false,
+        "mode": "rtu",
+        "address": 1,
+        "baud_rate": 9600,
+        "data_bits": 8,
+        "parity": "none",
+        "stop_bits": 1,
+        "timeout": 1000
+    },
+    "ethernet": {
+        "enabled": false,
+        "static_ip": false,
+        "ip": "",
+        "gateway": "",
+        "subnet": ""
+    }
+}

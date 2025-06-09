@@ -1,0 +1,58 @@
+menu "Sensor Drivers Configuration"
+
+    config ENABLE_DS18B20_DRIVER
+        bool "Enable DS18B20 temperature sensor driver"
+        default y
+        help
+            Enable support for DS18B20 OneWire temperature sensors.
+            This driver supports automatic device discovery, configurable
+            resolution, and temperature offset calibration.
+
+    config ENABLE_NTC_DRIVER
+        bool "Enable NTC thermistor driver"
+        default y
+        help
+            Enable support for NTC thermistors connected to ADC channels.
+            Supports multiple NTC profiles (10K, 100K) and both Beta
+            coefficient and Steinhart-Hart equation calculations.
+
+    config ENABLE_PRESSURE_4_20MA_DRIVER
+        bool "Enable 4-20mA pressure sensor driver"
+        default n
+        help
+            Enable support for industrial 4-20mA pressure sensors.
+            Requires proper signal conditioning circuit.
+
+    config ENABLE_GPIO_INPUT_DRIVER
+        bool "Enable GPIO input sensor driver"
+        default y
+        help
+            Enable support for digital inputs like door switches,
+            alarm contacts, and other binary sensors.
+
+    config ENABLE_MODBUS_SENSOR_DRIVER
+        bool "Enable Modbus sensor driver"
+        default n
+        depends on ENABLE_MODBUS_SUPPORT
+        help
+            Enable support for sensors connected via Modbus RTU/TCP.
+            Allows reading from industrial sensors and controllers.
+
+    config SENSOR_DRIVER_MAX_INSTANCES
+        int "Maximum number of sensor instances"
+        default 16
+        range 1 64
+        help
+            Maximum number of sensor instances that can be configured.
+            Each sensor instance consumes memory, so adjust based on
+            your application needs.
+
+    config SENSOR_DRIVER_DEFAULT_POLL_INTERVAL_MS
+        int "Default sensor polling interval (ms)"
+        default 1000
+        range 100 60000
+        help
+            Default interval between sensor polls in milliseconds.
+            Can be overridden in runtime configuration.
+
+endmenu

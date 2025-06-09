@@ -1,0 +1,10 @@
+{
+    "name": "ModuChill",
+    "type": "refrigerator",
+    "version": "1.0.0",
+    "serial_number": "",
+    "log_level": "INFO",
+    "watchdog_timeout": 30,
+    "boot_delay": 1000,
+    "factory_reset_enabled": true
+}

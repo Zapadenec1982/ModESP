@@ -1,0 +1,17 @@
+{
+    "setpoint": 4.0,
+    "hysteresis": 0.5,
+    "min_temp": -10.0,
+    "max_temp": 10.0,
+    "control_mode": "single_stage",
+    "differential": 2.0,
+    "ramp_rate": 0.5,
+    "emergency_setpoint": 8.0,
+    "auto_mode": true,
+    "night_mode": {
+        "enabled": false,
+        "start_hour": 22,
+        "end_hour": 6,
+        "setpoint_offset": 1.0
+    }
+}
