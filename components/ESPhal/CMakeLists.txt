@@ -1,24 +1,26 @@
 idf_component_register(
     SRCS 
         "src/esphal.cpp"
-        "src/gpio_output_impl.cpp"
-        "src/gpio_input_impl.cpp"
-        "src/onewire_bus_impl.cpp"
-        "src/adc_channel_impl.cpp"
+        "modules/rtc_module/rtc_module.cpp"
+        "modules/sensor_module/src/sensor_module.cpp"
+        # Other modules temporarily disabled until fixed:
+        # "modules/actuator_module/src/actuator_module.cpp"
     INCLUDE_DIRS 
         "include"
         "boards"
+        "modules/rtc_module"
+        "modules/sensor_module/include"
+        # Other module includes temporarily disabled:
+        # "modules/actuator_module/include"
     PRIV_REQUIRES 
         driver
         esp_adc
         esp_timer
+        freertos
     REQUIRES
-        nlohmann_json
-)
-
-# Додати залежності для драйверів ESP-IDF
-target_link_libraries(${COMPONENT_LIB} INTERFACE
-    idf::driver
-    idf::esp_adc
-    idf::esp_timer
+        json
+        base_module
+        core
+        sensor_drivers
+        # actuator_drivers
 )

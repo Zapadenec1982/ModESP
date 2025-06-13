@@ -20,20 +20,3 @@
 #else
     #error "No board type selected in menuconfig! Please run 'idf.py menuconfig' and select ESPhal Board Type."
 #endif
-
-// Validate that essential configurations are defined
-#ifndef BOARD_NAME
-    #error "Board configuration must define BOARD_NAME"
-#endif
-
-#ifndef GPIO_OUTPUTS
-    #error "Board configuration must define GPIO_OUTPUTS array"
-#endif
-
-#ifndef ONEWIRE_BUSES
-    #error "Board configuration must define ONEWIRE_BUSES array"
-#endif
-
-#ifndef ADC_CHANNELS
-    #error "Board configuration must define ADC_CHANNELS array"
-#endif

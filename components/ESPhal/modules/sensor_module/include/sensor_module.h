@@ -135,29 +135,4 @@ private:
     std::unique_ptr<ISensorDriver> create_driver(const std::string& type);
 };
 
-#endif // SENSOR_MODULE_H
-
-    // === SensorModule member variables ===
-    
-    ESPhal& hal_;                                           // HAL instance reference
-    std::vector<SensorConfig> sensor_configs_;              // Sensor configurations
-    std::vector<std::unique_ptr<ISensorDriver>> sensors_;   // Internal sensor objects
-    std::vector<SensorReading> last_readings_;              // Last readings cache
-    
-    uint32_t poll_interval_ms_;     // Polling interval in milliseconds
-    uint32_t last_poll_time_;       // Last poll time (milliseconds since boot)
-    bool initialized_;              // Initialization state
-    uint32_t error_count_;          // Error counter for health monitoring
-    uint32_t successful_polls_;     // Successful poll counter
-    
-    // Helper methods
-    esp_err_t load_sensor_config(const nlohmann::json& config);
-    esp_err_t create_sensor_drivers();
-    std::unique_ptr<ISensorDriver> create_sensor_driver(const SensorConfig& config);
-    
-    void poll_sensors();
-    void publish_sensor_data(size_t sensor_index, const SensorReading& reading);
-    
-    uint32_t get_current_time_ms() const;
-    size_t find_sensor_by_role(const std::string& role) const;
-};
+// End of sensor_module.h

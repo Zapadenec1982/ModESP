@@ -3,11 +3,12 @@
   "idf.espIdfPathWin": "c:\\Users\\User\\esp\\v5.3.3\\esp-idf",
   "idf.pythonInstallPath": "c:\\Users\\User\\esp\\v5.3.3\\esp-idf\\tools\\tools\\idf-python\\3.11.2\\python.exe",
   "idf.openOcdConfigs": [
-    "board/esp32-wrover-kit-3.3v.cfg"
+    "board/esp32s3-builtin.cfg"
   ],
-  "idf.portWin": "COM6",
+  "idf.portWin": "COM3",
   "idf.toolsPathWin": "c:\\Users\\User\\esp\\v5.3.3\\esp-idf\\tools",
   "idf.customExtraVars": {
-    "IDF_TARGET": "c:\\Users\\User\\esp\\v5.3.3\\esp-idf\\tools\\idf.py:368: DeprecationWarning: 'MultiCommand' is deprecated and will be removed in Click 9.0. Use 'Group' instead."
-  }
+    "IDF_TARGET": "esp32s3"
+  },
+  "idf.flashType": "UART",
 }

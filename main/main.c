@@ -3,21 +3,18 @@
 #include "freertos/task.h"
 #include "esp_log.h"
 
-// Core includes
-#include "application.h"
-
 static const char* TAG = "Main";
+
+// Оголошуємо зовнішню функцію, яка визначена у C++ коді
+void launch_application();
 
 void app_main(void) {
     ESP_LOGI(TAG, "ModuChill starting...");
     
-    // Initialize application
-    esp_err_t ret = Application::init();
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to initialize application: %s", esp_err_to_name(ret));
-        return;
-    }
+    // Запускаємо нашу C++ Application
+    launch_application();
     
-    // Run main loop (this function never returns)
-    Application::run();
+    ESP_LOGI(TAG, "C++ application launched. Main task can now exit or do other things.");
+    // Основна задача app_main може завершитися, оскільки
+    // наш додаток тепер працює у власній задачі (app_task).
 }

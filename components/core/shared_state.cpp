@@ -2,6 +2,7 @@
 #include <esp_log.h>
 #include <algorithm>
 #include <cstring>
+#include "error_handling.h"
 
 static const char* TAG = "SharedState";
 
@@ -87,13 +88,11 @@ static bool matches_pattern(const char* pattern, const char* key) {
 static void notify_subscribers(const char* key, const nlohmann::json& value) {
     for (const auto& sub : subscriptions) {
         if (sub.active && matches_pattern(sub.pattern, key)) {
-            try {
+            // Безпечне виконання callback без винятків
+            ModESP::safe_execute("state_callback", [&]() -> esp_err_t {
                 sub.callback(key, value);
-            } catch (const std::exception& e) {
-                ESP_LOGE(TAG, "Exception in subscription callback: %s", e.what());
-            } catch (...) {
-                ESP_LOGE(TAG, "Unknown exception in subscription callback");
-            }
+                return ESP_OK;
+            });
         }
     }
 }

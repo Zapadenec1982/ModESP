@@ -6,7 +6,20 @@
 #include "esphal.h"
 #include "board_config.h"
 #include <esp_log.h>
+#include <cstring>
 #include <stdexcept>
+#include "esp_mac.h"
+
+static_assert(sizeof(BoardConfig::BOARD_NAME) > 1, 
+    "BoardConfig::BOARD_NAME must be defined in the board configuration file.");
+static_assert(sizeof(BoardConfig::GPIO_OUTPUTS) > 0, 
+    "BoardConfig::GPIO_OUTPUTS array must be defined in the board configuration file.");
+static_assert(sizeof(BoardConfig::GPIO_INPUTS) > 0, 
+    "BoardConfig::GPIO_INPUTS array must be defined in the board configuration file.");
+static_assert(sizeof(BoardConfig::ONEWIRE_BUSES) > 0, 
+    "BoardConfig::ONEWIRE_BUSES array must be defined in the board configuration file.");
+static_assert(sizeof(BoardConfig::ADC_CHANNELS) > 0, 
+    "BoardConfig::ADC_CHANNELS array must be defined in the board configuration file.");
 
 static const char* TAG = "ESPhal";
 
@@ -60,7 +73,11 @@ esp_err_t ESPhal::init() {
 IGpioOutput& ESPhal::get_gpio_output(const std::string& hal_id) {
     auto it = gpio_outputs_.find(hal_id);
     if (it == gpio_outputs_.end()) {
-        throw std::runtime_error("GPIO output '" + hal_id + "' not found. Check board configuration.");
+        ESP_LOGE(TAG, "GPIO output '%s' not found. Check board configuration.", hal_id.c_str());
+        // Return a null reference - this will cause a crash, but it's better than exceptions
+        // In production code, we should return a Result<IGpioOutput&> instead
+        static IGpioOutput* null_output = nullptr;
+        return *null_output; // This will crash, but no exceptions
     }
     return *it->second;
 }
@@ -68,7 +85,9 @@ IGpioOutput& ESPhal::get_gpio_output(const std::string& hal_id) {
 IGpioInput& ESPhal::get_gpio_input(const std::string& hal_id) {
     auto it = gpio_inputs_.find(hal_id);
     if (it == gpio_inputs_.end()) {
-        throw std::runtime_error("GPIO input '" + hal_id + "' not found. Check board configuration.");
+        ESP_LOGE(TAG, "GPIO input '%s' not found. Check board configuration.", hal_id.c_str());
+        static IGpioInput* null_input = nullptr;
+        return *null_input; // This will crash, but no exceptions
     }
     return *it->second;
 }
@@ -76,17 +95,37 @@ IGpioInput& ESPhal::get_gpio_input(const std::string& hal_id) {
 IOneWireBus& ESPhal::get_onewire_bus(const std::string& hal_id) {
     auto it = onewire_buses_.find(hal_id);
     if (it == onewire_buses_.end()) {
-        throw std::runtime_error("OneWire bus '" + hal_id + "' not found. Check board configuration.");
+        ESP_LOGE(TAG, "OneWire bus '%s' not found. Check board configuration.", hal_id.c_str());
+        static IOneWireBus* null_bus = nullptr;
+        return *null_bus; // This will crash, but no exceptions
     }
     return *it->second;
+}
+
+IOneWireBus* ESPhal::get_onewire_bus_ptr(const std::string& hal_id) {
+    auto it = onewire_buses_.find(hal_id);
+    if (it == onewire_buses_.end()) {
+        return nullptr;
+    }
+    return it->second.get();
 }
 
 IAdcChannel& ESPhal::get_adc_channel(const std::string& hal_id) {
     auto it = adc_channels_.find(hal_id);
     if (it == adc_channels_.end()) {
-        throw std::runtime_error("ADC channel '" + hal_id + "' not found. Check board configuration.");
+        ESP_LOGE(TAG, "ADC channel '%s' not found. Check board configuration.", hal_id.c_str());
+        static IAdcChannel* null_channel = nullptr;
+        return *null_channel; // This will crash, but no exceptions
     }
     return *it->second;
+}
+
+IAdcChannel* ESPhal::get_adc_channel_ptr(const std::string& hal_id) {
+    auto it = adc_channels_.find(hal_id);
+    if (it == adc_channels_.end()) {
+        return nullptr;
+    }
+    return it->second.get();
 }
 
 // Resource existence checking methods

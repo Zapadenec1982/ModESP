@@ -82,12 +82,28 @@ public:
     IOneWireBus& get_onewire_bus(const std::string& hal_id);
     
     /**
+     * @brief Get OneWire bus driver pointer (safe version)
+     * 
+     * @param hal_id Hardware ID from board configuration
+     * @return Pointer to OneWire bus interface, or nullptr if not found
+     */
+    IOneWireBus* get_onewire_bus_ptr(const std::string& hal_id);
+    
+    /**
      * @brief Get ADC channel driver
      * 
      * @param hal_id Hardware ID from board configuration (e.g., "ADC_PRESSURE_HIGH")
      * @return Reference to ADC channel interface, or throws std::runtime_error if not found
      */
     IAdcChannel& get_adc_channel(const std::string& hal_id);
+    
+    /**
+     * @brief Get ADC channel driver pointer (safe version)
+     * 
+     * @param hal_id Hardware ID from board configuration
+     * @return Pointer to ADC channel interface, or nullptr if not found
+     */
+    IAdcChannel* get_adc_channel_ptr(const std::string& hal_id);
     
     /**
      * @brief Check if GPIO output exists

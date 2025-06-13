@@ -9,13 +9,18 @@
 
 #include "sensor_module.h"
 #include "sensor_driver_registry.h"
+#include "sensor_driver_init.h"
 #include "shared_state.h"
 #include "event_bus.h"
+#include "error_handling.h"
 #include <esp_log.h>
 #include <esp_timer.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <algorithm>
+#include <inttypes.h>
+
+using namespace ModESP;
 
 static const char* TAG = "SensorModule";
 
@@ -32,7 +37,11 @@ esp_err_t SensorModule::init() {
         return ESP_OK;
     }
     
-    ESP_LOGI(TAG, "Initializing SensorModule...");    
+    ESP_LOGI(TAG, "Initializing SensorModule...");
+    
+    // Initialize built-in sensor drivers
+    ModESP::initialize_builtin_sensor_drivers();
+    
     // Log available drivers
     auto& registry = SensorDriverRegistry::instance();
     auto available_drivers = registry.get_registered_types();
@@ -50,42 +59,62 @@ esp_err_t SensorModule::init() {
 }
 
 void SensorModule::configure(const nlohmann::json& config) {
-    ESP_LOGI(TAG, "Configuring SensorModule");
-    
-    // Clear existing sensors
-    sensors_.clear();
-    
-    // Parse global settings
-    if (config.contains("poll_interval_ms")) {
-        poll_interval_ms_ = config["poll_interval_ms"].get<uint32_t>();
-        ESP_LOGI(TAG, "Poll interval: %u ms", poll_interval_ms_);
-    }
-    
-    if (config.contains("publish_on_error")) {
-        publish_on_error_ = config["publish_on_error"].get<bool>();
-    }    
-    // Create sensors from configuration
-    if (config.contains("sensors")) {
-        const auto& sensors_array = config["sensors"];
+    safe_execute("configure_sensor_module", [&]() -> esp_err_t {
+        ESP_LOGI(TAG, "Configuring SensorModule");
         
-        for (const auto& sensor_config : sensors_array) {
-            esp_err_t ret = create_sensor_from_config(sensor_config);
-            if (ret != ESP_OK) {
-                ESP_LOGE(TAG, "Failed to create sensor");
+        // Clear existing sensors
+        sensors_.clear();
+        
+        // Parse global settings (safe JSON access)
+        if (config.contains("poll_interval_ms") && config["poll_interval_ms"].is_number_unsigned()) {
+            poll_interval_ms_ = config["poll_interval_ms"];
+            ESP_LOGI(TAG, "Poll interval: %" PRIu32 " ms", poll_interval_ms_);
+        }
+        
+        if (config.contains("publish_on_error") && config["publish_on_error"].is_boolean()) {
+            publish_on_error_ = config["publish_on_error"];
+        }
+        
+        // Create sensors from configuration
+        if (config.contains("sensors") && config["sensors"].is_array()) {
+            const auto& sensors_array = config["sensors"];
+            
+            for (const auto& sensor_config : sensors_array) {
+                esp_err_t ret = create_sensor_from_config(sensor_config);
+                if (ret != ESP_OK) {
+                    ESP_LOGE(TAG, "Failed to create sensor");
+                    // Continue with other sensors instead of failing completely
+                }
             }
         }
-    }
-    
-    ESP_LOGI(TAG, "Configured %zu sensors", sensors_.size());
+        
+        ESP_LOGI(TAG, "Configured %zu sensors", sensors_.size());
+        return ESP_OK;
+    });
 }
 
 esp_err_t SensorModule::create_sensor_from_config(const nlohmann::json& sensor_config) {
-    try {
-        // Parse sensor configuration
+    return safe_execute("create_sensor_from_config", [&]() -> esp_err_t {
+        // Parse sensor configuration (safe JSON access without exceptions)
+        if (!sensor_config.contains("role") || !sensor_config.contains("type") || 
+            !sensor_config.contains("publish_key")) {
+            ESP_LOGE(TAG, "Missing required sensor config fields");
+            return ESP_ERR_INVALID_ARG;
+        }
+        
         SensorConfig config;
-        config.role = sensor_config["role"].get<std::string>();
-        config.type = sensor_config["type"].get<std::string>();
-        config.publish_key = sensor_config["publish_key"].get<std::string>();
+        
+        // Safe JSON parsing - check if values are strings
+        if (!sensor_config["role"].is_string() || 
+            !sensor_config["type"].is_string() || 
+            !sensor_config["publish_key"].is_string()) {
+            ESP_LOGE(TAG, "Invalid sensor config field types");
+            return ESP_ERR_INVALID_ARG;
+        }
+        
+        config.role = sensor_config["role"];
+        config.type = sensor_config["type"];
+        config.publish_key = sensor_config["publish_key"];
         config.config = sensor_config.value("config", nlohmann::json::object());
         
         ESP_LOGI(TAG, "Creating sensor: role='%s', type='%s'", 
@@ -115,16 +144,9 @@ esp_err_t SensorModule::create_sensor_from_config(const nlohmann::json& sensor_c
         
         sensors_.push_back(std::move(instance));
         
-        ESP_LOGI(TAG, "Sensor created successfully: %s", instance.config.role.c_str());
+        ESP_LOGI(TAG, "Sensor created successfully: %s", config.role.c_str());
         return ESP_OK;
-        
-    } catch (const nlohmann::json::exception& e) {
-        ESP_LOGE(TAG, "JSON parsing error: %s", e.what());
-        return ESP_ERR_INVALID_ARG;
-    } catch (const std::exception& e) {
-        ESP_LOGE(TAG, "Error creating sensor: %s", e.what());
-        return ESP_FAIL;
-    }
+    });
 }
 void SensorModule::update() {
     if (!initialized_) {
@@ -135,31 +157,24 @@ void SensorModule::update() {
     
     // Poll all sensors
     for (auto& sensor : sensors_) {
-        try {
-            // Read sensor value
-            ::SensorReading reading = sensor.driver->read();
-            
-            // Update last reading
-            sensor.last_reading = reading;
-            
-            // Publish to SharedState
-            if (reading.is_valid || publish_on_error_) {
-                publish_sensor_data(sensor, reading);
-            }
-            
-            // Reset failure counter on successful read
-            if (reading.is_valid) {
-                sensor.poll_failures = 0;
-            } else {
-                sensor.poll_failures++;
-                total_errors_++;
-            }
-            
-        } catch (const std::exception& e) {
-            ESP_LOGE(TAG, "Exception reading sensor %s: %s", 
-                     sensor.config.role.c_str(), e.what());
+        // Read sensor value (without exception handling)
+        ::SensorReading reading = sensor.driver->read();
+        
+        // Update last reading
+        sensor.last_reading = reading;
+        
+        // Publish to SharedState
+        if (reading.is_valid || publish_on_error_) {
+            publish_sensor_data(sensor, reading);
+        }
+        
+        // Reset failure counter on successful read
+        if (reading.is_valid) {
+            sensor.poll_failures = 0;
+        } else {
             sensor.poll_failures++;
             total_errors_++;
+            ESP_LOGW(TAG, "Sensor read failed: %s", sensor.config.role.c_str());
         }
     }
 }

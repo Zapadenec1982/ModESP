@@ -1,9 +1,0 @@
-description: "ModuChill Core - Minimal coordination layer for modular climate control"
-version: "1.0.0"
-
-dependencies:
-  nlohmann_json: "^3.11.0"
-  idf: "^5.0"
-  
-targets:
-  - esp32s3

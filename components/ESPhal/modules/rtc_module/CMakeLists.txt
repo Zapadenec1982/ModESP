@@ -1,0 +1,12 @@
+idf_component_register(
+    SRCS 
+        "rtc_module.cpp"
+    INCLUDE_DIRS 
+        "."
+    REQUIRES
+        base_module
+        core
+        json
+    PRIV_REQUIRES
+        esp_timer
+)

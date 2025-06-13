@@ -4,6 +4,8 @@
 #include <esp_timer.h>
 #include <algorithm>
 #include <cctype>
+#include "esp_mac.h"
+#include "error_handling.h"
 
 static const char* TAG = "ModuleManager";
 
@@ -67,7 +69,7 @@ static void update_health_score(ModuleEntry& entry) {
     
     // Штраф за помилки (до 50 балів)
     if (entry.error_count > 0) {
-        uint32_t error_penalty = std::min(50u, entry.error_count * 10);
+        uint32_t error_penalty = std::min<uint32_t>(50u, static_cast<uint32_t>(entry.error_count * 10));
         score = score > error_penalty ? score - error_penalty : 0;
     }
     
@@ -75,7 +77,7 @@ static void update_health_score(ModuleEntry& entry) {
     if (entry.deadline_misses > 0 && entry.update_count > 0) {
         float miss_rate = (float)entry.deadline_misses / entry.update_count;
         if (miss_rate > 0.1f) { // > 10% пропусків
-            uint32_t deadline_penalty = std::min(20u, (uint32_t)(miss_rate * 100));
+            uint32_t deadline_penalty = std::min<uint32_t>(20u, (uint32_t)(miss_rate * 100));
             score = score > deadline_penalty ? score - deadline_penalty : 0;
         }
     }
@@ -155,6 +157,9 @@ esp_err_t register_module(std::unique_ptr<BaseModule> module, ModuleType type) {
 }
 
 void configure_all(const nlohmann::json& config) {
+    using namespace ModESP;
+    static ErrorCollector error_collector;
+    
     ESP_LOGI(TAG, "Configuring %zu modules...", modules.size());
     
     for (auto& entry : modules) {
@@ -166,20 +171,29 @@ void configure_all(const nlohmann::json& config) {
         if (config.contains(config_section)) {
             ESP_LOGD(TAG, "Configuring %s with section '%s'", module_name, config_section.c_str());
             
-            try {
+            esp_err_t result = safe_execute("module_configure", [&]() -> esp_err_t {
                 entry.module->configure(config[config_section]);
                 entry.state = ModuleState::CONFIGURED;  // ModuleManager керує станом
                 ESP_LOGD(TAG, "  [OK] %s configured", module_name);
-                
-            } catch (const std::exception& e) {
-                ESP_LOGE(TAG, "  [FAIL] %s configuration error: %s", module_name, e.what());
+                return ESP_OK;
+            });
+            
+            if (result != ESP_OK) {
+                ESP_LOGE(TAG, "  [FAIL] %s configuration error", module_name);
                 entry.error_count++;
                 entry.last_error = ESP_ERR_INVALID_ARG;
+                error_collector.add(result, std::string("configure_") + module_name);
             }
         } else {
             ESP_LOGW(TAG, "No config section '%s' found for module %s", 
                      config_section.c_str(), module_name);
         }
+    }
+    
+    if (error_collector.has_errors()) {
+        ESP_LOGW(TAG, "Some modules failed to configure");
+        error_collector.log_all(TAG);
+        error_collector.clear();
     }
     
     ESP_LOGI(TAG, "Module configuration completed");
@@ -241,116 +255,134 @@ esp_err_t init_all() {
 }
 
 void tick_all(uint32_t time_budget_ms) {
-    uint64_t start_time_us = esp_timer_get_time();
-    uint64_t budget_us = time_budget_ms * 1000;
-    uint32_t current_time_ms = start_time_us / 1000;
+    using namespace ModESP;
+    static ErrorCollector error_collector;
+    
+    uint32_t start_time_ms = (uint32_t)(esp_timer_get_time() / 1000);
+    uint32_t current_time_ms = start_time_ms;
+    
+    // Визначаємо порядок виконання
+    std::vector<BaseModule*> execution_order;
+    for (auto& entry : modules) {
+        execution_order.push_back(entry.module.get());
+    }
+    
+    if (execution_order_callback) {
+        execution_order_callback(execution_order);
+    }
     
     for (auto& entry : modules) {
-        // Пропускаємо вимкнені модулі або модулі з помилками
+        // Пропускаємо відключені або не ініціалізовані модулі
         if (!entry.enabled || entry.state != ModuleState::INITIALIZED) {
             continue;
         }
         
-        // Перевіряємо часовий бюджет
-        uint64_t elapsed_us = esp_timer_get_time() - start_time_us;
-        if (elapsed_us >= budget_us) {
-            ESP_LOGW(TAG, "Module update time budget (%lums) exceeded", time_budget_ms);
+        // Перевіряємо бюджет часу
+        current_time_ms = (uint32_t)(esp_timer_get_time() / 1000);
+        if (current_time_ms - start_time_ms >= time_budget_ms) {
+            ESP_LOGW(TAG, "Time budget exceeded after %s", entry.module->get_name());
             break;
         }
         
-        // Перевіряємо інтервал оновлення модуля
+        // Перевіряємо інтервал оновлення
         if (entry.update_interval_ms > 0) {
             if (current_time_ms - entry.last_update_time_ms < entry.update_interval_ms) {
-                continue; // Пропускаємо цей цикл
+                continue;
             }
             entry.last_update_time_ms = current_time_ms;
         }
         
-        // Оновлюємо модуль з відстеженням часу
-        uint64_t update_start_us = esp_timer_get_time();
+        // Виконуємо оновлення з відстеженням часу
+        uint64_t start_time_us = esp_timer_get_time();
         
-        try {
+        esp_err_t result = safe_execute("module_update", [&]() -> esp_err_t {
             entry.module->update();
-            
-            // Розраховуємо метрики продуктивності
-            uint64_t update_time_us = esp_timer_get_time() - update_start_us;
-            entry.last_update_time_us = (uint32_t)update_time_us;
-            entry.total_update_time_us += update_time_us;
-            entry.update_count++;
-            
-            if (update_time_us > entry.max_update_time_us) {
-                entry.max_update_time_us = (uint32_t)update_time_us;
-            }
-            
-            // Перевіряємо дотримання дедлайну
-            uint32_t max_allowed_us = entry.module->get_max_update_time_us();
-            if (max_allowed_us == 0) {
-                max_allowed_us = get_type_max_time_us(entry.type);
-            }
-            
-            if (update_time_us > max_allowed_us) {
-                entry.deadline_misses++;
-                ESP_LOGW(TAG, "%s exceeded deadline: %lluμs (max: %luμs)",
-                        entry.module->get_name(), update_time_us, max_allowed_us);
-            }
-            
-            // Викликаємо performance callback якщо зареєстрований
-            if (performance_callback) {
-                performance_callback(entry.module.get(), (uint32_t)update_time_us);
-            }
-            
-        } catch (const std::exception& e) {
-            ESP_LOGE(TAG, "Exception in %s::update(): %s",
-                    entry.module->get_name(), e.what());
+            return ESP_OK;
+        });
+        
+        uint64_t end_time_us = esp_timer_get_time();
+        uint64_t update_time_us = end_time_us - start_time_us;
+        
+        // Оновлюємо статистику
+        entry.last_update_time_us = (uint32_t)update_time_us;
+        entry.total_update_time_us += update_time_us;
+        entry.update_count++;
+        
+        if (update_time_us > entry.max_update_time_us) {
+            entry.max_update_time_us = (uint32_t)update_time_us;
+        }
+        
+        // Перевіряємо на перевищення дедлайну
+        uint32_t max_allowed_us = entry.module->get_max_update_time_us();
+        if (max_allowed_us == 0) {
+            max_allowed_us = get_type_max_time_us(entry.type);
+        }
+        
+        if (update_time_us > max_allowed_us) {
+            entry.deadline_misses++;
+            ESP_LOGW(TAG, "%s update took %lluμs (max: %luμs)", 
+                     entry.module->get_name(), update_time_us, max_allowed_us);
+        }
+        
+        // Callback для аналізу продуктивності
+        if (performance_callback) {
+            performance_callback(entry.module.get(), (uint32_t)update_time_us);
+        }
+        
+        if (result != ESP_OK) {
+            ESP_LOGE(TAG, "Error in %s::update()", entry.module->get_name());
             entry.error_count++;
             entry.last_error = ESP_FAIL;
             entry.state = ModuleState::ERROR;  // ModuleManager керує станом
-            
-        } catch (...) {
-            ESP_LOGE(TAG, "Unknown exception in %s::update()",
-                    entry.module->get_name());
-            entry.error_count++;
-            entry.last_error = ESP_FAIL;
-            entry.state = ModuleState::ERROR;  // ModuleManager керує станом
+            error_collector.add(result, std::string("update_") + entry.module->get_name());
         }
         
         // Оновлюємо бал здоров'я
         update_health_score(entry);
     }
     
-    // Застосовуємо кастомний порядок виконання якщо зареєстрований
-    if (execution_order_callback) {
-        std::vector<BaseModule*> module_pointers;
-        for (auto& entry : modules) {
-            module_pointers.push_back(entry.module.get());
-        }
-        execution_order_callback(module_pointers);
+    if (error_collector.has_errors()) {
+        error_collector.log_all(TAG);
+        error_collector.clear();
     }
 }
 
 void shutdown_all() {
-    ESP_LOGI(TAG, "Shutting down all modules in reverse order...");
+    using namespace ModESP;
+    static ErrorCollector error_collector;
     
-    // Зупиняємо модулі в зворотному порядку пріоритетів
-    for (auto it = modules.rbegin(); it != modules.rend(); ++it) {
-        if (it->state == ModuleState::INITIALIZED) {
-            const char* name = it->module->get_name();
-            ESP_LOGI(TAG, "Stopping %s...", name);
+    ESP_LOGI(TAG, "Shutting down %zu modules...", modules.size());
+    
+    // Зупиняємо в зворотному порядку пріоритету
+    for (auto rit = modules.rbegin(); rit != modules.rend(); ++rit) {
+        auto& entry = *rit;
+        const char* name = entry.module->get_name();
+        
+        if (entry.state == ModuleState::INITIALIZED) {
+            ESP_LOGD(TAG, "Stopping %s...", name);
             
-            try {
-                it->module->stop();
-                it->state = ModuleState::STOPPED;  // ModuleManager керує станом
+            esp_err_t result = safe_execute("module_stop", [&]() -> esp_err_t {
+                entry.module->stop();
+                entry.state = ModuleState::CONFIGURED;
+                return ESP_OK;
+            });
+            
+            if (result != ESP_OK) {
+                ESP_LOGE(TAG, "Error stopping %s", name);
+                error_collector.add(result, std::string("stop_") + name);
+            } else {
                 ESP_LOGD(TAG, "  [OK] %s stopped", name);
-                
-            } catch (const std::exception& e) {
-                ESP_LOGE(TAG, "Exception stopping %s: %s", name, e.what());
-            } catch (...) {
-                ESP_LOGE(TAG, "Unknown exception stopping %s", name);
             }
         }
     }
     
-    ESP_LOGI(TAG, "Module shutdown completed");
+    if (error_collector.has_errors()) {
+        ESP_LOGW(TAG, "Some modules failed to stop cleanly");
+        error_collector.log_all(TAG);
+        error_collector.clear();
+    }
+    
+    ESP_LOGI(TAG, "All modules shutdown completed");
 }
 
 BaseModule* find_module(const char* name) {
@@ -546,16 +578,28 @@ esp_err_t set_update_interval(const char* name, uint32_t interval_ms) {
 }
 
 void register_all_rpc(IJsonRpcRegistrar& registrar) {
+    using namespace ModESP;
+    static ErrorCollector error_collector;
+    
     ESP_LOGI(TAG, "Registering RPC methods for %zu modules", modules.size());
     
     for (auto& entry : modules) {
-        try {
+        esp_err_t result = safe_execute("module_register_rpc", [&]() -> esp_err_t {
             entry.module->register_rpc(registrar);
             ESP_LOGD(TAG, "Registered RPC for %s", entry.module->get_name());
-        } catch (const std::exception& e) {
-            ESP_LOGE(TAG, "Exception registering RPC for %s: %s", 
-                    entry.module->get_name(), e.what());
+            return ESP_OK;
+        });
+        
+        if (result != ESP_OK) {
+            ESP_LOGE(TAG, "Error registering RPC for %s", entry.module->get_name());
+            error_collector.add(result, std::string("register_rpc_") + entry.module->get_name());
         }
+    }
+    
+    if (error_collector.has_errors()) {
+        ESP_LOGW(TAG, "Some modules failed to register RPC");
+        error_collector.log_all(TAG);
+        error_collector.clear();
     }
 }
 

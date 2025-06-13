@@ -3,12 +3,18 @@
 #include "shared_state.h"
 #include "config_manager.h"
 #include "module_manager.h"
+#include "module_registry.h"
+#include "esphal.h"
 
 #include <esp_log.h>
 #include <esp_timer.h>
 #include <esp_system.h>
 #include <nvs_flash.h>
 #include <freertos/task.h>
+#include "esp_mac.h"
+
+// Forward declaration
+// class ESPhal;
 
 static const char* TAG = "Application";
 
@@ -20,6 +26,9 @@ static uint32_t boot_time_ms = 0;
 static uint32_t cycle_count = 0;
 static uint32_t error_count = 0;
 static uint32_t last_health_check_ms = 0;
+
+// Global ESPhal instance
+static ESPhal hal;
 
 // Performance metrics
 static uint32_t min_cycle_time_us = UINT32_MAX;
@@ -52,6 +61,22 @@ esp_err_t init() {
     ESP_ERROR_CHECK(SharedState::init());
     ESP_ERROR_CHECK(ConfigManager::init());
     ESP_ERROR_CHECK(ModuleManager::init());
+    
+    // Initialize Hardware Abstraction Layer
+    ret = hal.init();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize ESPhal: %s", esp_err_to_name(ret));
+        current_state = State::ERROR;
+        return ret;
+    }
+    
+    // Register all available modules
+    ret = ModuleRegistry::register_all_modules();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to register modules: %s", esp_err_to_name(ret));
+        current_state = State::ERROR;
+        return ret;
+    }
     
     // Transition to INIT state
     current_state = State::INIT;
@@ -88,7 +113,7 @@ esp_err_t init() {
 }
 
 [[noreturn]] void run() {
-    ESP_LOGI(TAG, "Main loop starting @ %dHz", 1000 / MAIN_LOOP_PERIOD_MS);
+    ESP_LOGI(TAG, "Main loop starting @ %luHz", 1000UL / MAIN_LOOP_PERIOD_MS);
     
     TickType_t last_wake_time = xTaskGetTickCount();
     
@@ -190,14 +215,14 @@ bool check_health() {
     // Check heap
     size_t free_heap = get_free_heap();
     if (free_heap < 10240) { // < 10KB
-        ESP_LOGW(TAG, "Low heap: %u bytes", free_heap);
+        ESP_LOGW(TAG, "Low heap: %zu bytes", (unsigned int)free_heap);
         healthy = false;
     }
     
     // Check CPU usage
     uint8_t cpu = get_cpu_usage();
     if (cpu > 90) {
-        ESP_LOGW(TAG, "High CPU usage: %d%%", cpu);
+        ESP_LOGW(TAG, "High CPU usage: %u%%", (unsigned int)cpu);
         healthy = false;
     }
     
@@ -231,6 +256,10 @@ uint8_t get_cpu_usage() {
 
 size_t get_stack_high_water_mark() {
     return uxTaskGetStackHighWaterMark(NULL);
+}
+
+ESPhal& get_hal() {
+    return hal;
 }
 
 } // namespace Application

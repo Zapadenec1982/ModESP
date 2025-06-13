@@ -1,0 +1,16 @@
+idf_component_register(
+    SRCS 
+        "src/wifi_manager.cpp"
+    INCLUDE_DIRS 
+        "include"
+    REQUIRES
+        base_module
+        core
+        json
+        esp_wifi
+        esp_netif
+        esp_event
+    PRIV_REQUIRES
+        esp_timer
+        nvs_flash
+) 

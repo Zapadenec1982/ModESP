@@ -1,0 +1,43 @@
+menu "RTC Module Configuration"
+
+    config ENABLE_RTC_MODULE
+        bool "Enable RTC Module"
+        default y
+        help
+            Enable Real-Time Clock module for timestamps and time tracking.
+            Uses ESP32 internal RTC by default.
+
+    config RTC_DEFAULT_TIMEZONE
+        string "Default timezone"
+        default "UTC"
+        depends on ENABLE_RTC_MODULE
+        help
+            Default timezone string (e.g., "UTC", "UTC-3", "UTC+2").
+            Can be changed at runtime via configuration.
+
+    config RTC_PUBLISH_INTERVAL_SEC
+        int "Time publish interval (seconds)"
+        default 60
+        range 10 3600
+        depends on ENABLE_RTC_MODULE
+        help
+            How often to publish time information to SharedState.
+            Lower values increase system load.
+
+    config RTC_ENABLE_NTP_FUTURE
+        bool "Prepare for NTP support (future)"
+        default n
+        depends on ENABLE_RTC_MODULE
+        help
+            Reserve configuration space for future NTP synchronization.
+            Currently not implemented.
+
+    config RTC_ENABLE_EXTERNAL_FUTURE
+        bool "Prepare for external RTC support (future)"
+        default n
+        depends on ENABLE_RTC_MODULE
+        help
+            Reserve configuration space for external RTC chips (DS3231, etc).
+            Currently not implemented.
+
+endmenu

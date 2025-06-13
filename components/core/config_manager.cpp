@@ -2,7 +2,9 @@
 #include <esp_log.h>
 #include <nvs.h>
 #include <cstring>
+#include <cstdlib>
 #include <algorithm>
+#include "error_handling.h"
 
 static const char* TAG = "ConfigManager";
 static const char* NVS_NAMESPACE = "moduchill";
@@ -18,6 +20,8 @@ extern const uint8_t climate_config_start[] asm("_binary_climate_json_start");
 extern const uint8_t climate_config_end[] asm("_binary_climate_json_end");
 extern const uint8_t sensors_config_start[] asm("_binary_sensors_json_start");
 extern const uint8_t sensors_config_end[] asm("_binary_sensors_json_end");
+extern const uint8_t sensor_config_start[] asm("_binary_sensor_json_start");
+extern const uint8_t sensor_config_end[] asm("_binary_sensor_json_end");
 extern const uint8_t actuators_config_start[] asm("_binary_actuators_json_start");
 extern const uint8_t actuators_config_end[] asm("_binary_actuators_json_end");
 extern const uint8_t alarms_config_start[] asm("_binary_alarms_json_start");
@@ -28,6 +32,10 @@ extern const uint8_t ui_config_start[] asm("_binary_ui_json_start");
 extern const uint8_t ui_config_end[] asm("_binary_ui_json_end");
 extern const uint8_t logging_config_start[] asm("_binary_logging_json_start");
 extern const uint8_t logging_config_end[] asm("_binary_logging_json_end");
+extern const uint8_t wifi_config_start[] asm("_binary_wifi_json_start");
+extern const uint8_t wifi_config_end[] asm("_binary_wifi_json_end");
+extern const uint8_t rtc_config_start[] asm("_binary_rtc_json_start");
+extern const uint8_t rtc_config_end[] asm("_binary_rtc_json_end");
 
 // Internal state
 static nlohmann::json config_cache;           // RAM-кеш для швидкого доступу
@@ -50,31 +58,54 @@ static const ConfigModule config_modules[] = {
     {"system", system_config_start, system_config_end},
     {"climate", climate_config_start, climate_config_end},
     {"sensors", sensors_config_start, sensors_config_end},
+    {"sensor", sensor_config_start, sensor_config_end},
     {"actuators", actuators_config_start, actuators_config_end},
     {"alarms", alarms_config_start, alarms_config_end},
     {"network", network_config_start, network_config_end},
     {"ui", ui_config_start, ui_config_end},
-    {"logging", logging_config_start, logging_config_end}
+    {"logging", logging_config_start, logging_config_end},
+    {"wifi", wifi_config_start, wifi_config_end},
+    {"rtc", rtc_config_start, rtc_config_end}
 };
 
 static constexpr size_t CONFIG_MODULES_COUNT = sizeof(config_modules) / sizeof(ConfigModule);
 
 // Helper: завантажити один модульний файл
 static nlohmann::json load_module_config(const ConfigModule& module) {
+    using namespace ModESP;
+    
     if (!module.start || !module.end) {
         ESP_LOGW(TAG, "Module %s not embedded", module.name);
         return nlohmann::json::object();
     }
     
     size_t size = module.end - module.start;
-    std::string json_str(reinterpret_cast<const char*>(module.start), size);
     
-    try {
-        return nlohmann::json::parse(json_str);
-    } catch (const nlohmann::json::exception& e) {
-        ESP_LOGE(TAG, "Failed to parse module %s: %s", module.name, e.what());
+    // Use heap allocation instead of stack for large JSON strings
+    char* json_buffer = static_cast<char*>(malloc(size + 1));
+    if (!json_buffer) {
+        ESP_LOGE(TAG, "Failed to allocate memory for module %s", module.name);
         return nlohmann::json::object();
     }
+    
+    memcpy(json_buffer, module.start, size);
+    json_buffer[size] = '\0';
+    
+    nlohmann::json result = nlohmann::json::object();
+    
+    esp_err_t parse_result = safe_execute("load_module_config", [&]() -> esp_err_t {
+        auto parsed = nlohmann::json::parse(json_buffer, nullptr, false);
+        if (parsed.is_discarded()) {
+            ESP_LOGE(TAG, "Failed to parse module %s: JSON parse error", module.name);
+            return ESP_ERR_INVALID_ARG;
+        }
+        result = std::move(parsed);
+        return ESP_OK;
+    });
+    
+    free(json_buffer);
+    
+    return (parse_result == ESP_OK) ? result : nlohmann::json::object();
 }
 
 // Helper: агрегувати всі модульні файли в єдиний об'єкт
@@ -91,7 +122,9 @@ static nlohmann::json aggregate_embedded_configs() {
         
         if (!module_config.empty()) {
             aggregated[module.name] = module_config;
-            ESP_LOGD(TAG, "Loaded module: %s", module.name);
+            ESP_LOGD(TAG, "Loaded config section: '%s'", module.name);
+        } else {
+            ESP_LOGW(TAG, "Failed to load config for module: %s", module.name);
         }
     }
     
@@ -170,12 +203,23 @@ static void set_value_at_path(nlohmann::json& json, const std::vector<std::strin
 // Helper: повідомити про зміни
 static void notify_change(const std::string& path, const nlohmann::json& old_value, 
                          const nlohmann::json& new_value) {
+    using namespace ModESP;
+    static ErrorCollector error_collector;
+    
     for (const auto& callback : change_callbacks) {
-        try {
+        esp_err_t result = safe_execute("change_callback", [&]() -> esp_err_t {
             callback(path, old_value, new_value);
-        } catch (const std::exception& e) {
-            ESP_LOGE(TAG, "Exception in change callback: %s", e.what());
+            return ESP_OK;
+        });
+        
+        if (result != ESP_OK) {
+            error_collector.add(result, "change_callback for path: " + path);
         }
+    }
+    
+    if (error_collector.has_errors()) {
+        error_collector.log_all(TAG);
+        error_collector.clear();
     }
 }
 
@@ -216,6 +260,8 @@ esp_err_t init() {
 }
 
 esp_err_t load() {
+    using namespace ModESP;
+    
     ESP_LOGI(TAG, "Loading configuration...");
     
     nvs_handle_t handle;
@@ -243,8 +289,14 @@ esp_err_t load() {
         err = nvs_get_str(handle, CONFIG_KEY, json_str, &required_size);
         
         if (err == ESP_OK) {
-            try {
-                nlohmann::json loaded_config = nlohmann::json::parse(json_str);
+            esp_err_t parse_result = safe_execute("parse_saved_config", [&]() -> esp_err_t {
+                auto result = nlohmann::json::parse(json_str, nullptr, false);
+                if (result.is_discarded()) {
+                    ESP_LOGE(TAG, "Failed to parse saved config: JSON parse error");
+                    return ESP_ERR_INVALID_ARG;
+                }
+                
+                nlohmann::json loaded_config = result;
                 
                 // Перевіряємо версію та виконуємо міграцію при необхідності
                 uint32_t loaded_version = loaded_config.value("version", 0);
@@ -259,21 +311,22 @@ esp_err_t load() {
                 dirty_flag = false;
                 
                 ESP_LOGI(TAG, "Configuration loaded from NVS (%zu bytes)", required_size);
-                
-            } catch (const nlohmann::json::exception& e) {
-                ESP_LOGE(TAG, "Failed to parse saved config: %s", e.what());
+                return ESP_OK;
+            });
+            
+            if (parse_result != ESP_OK) {
                 ESP_LOGW(TAG, "Using embedded defaults due to parse error");
-                // Залишаємо config_cache з вбудованими значеннями
+                // Залишаємо агреговану конфігурацію з init()
                 dirty_flag = true;
-                err = ESP_ERR_INVALID_ARG;
             }
+        } else {
+            ESP_LOGW(TAG, "Failed to read config from NVS: %s", esp_err_to_name(err));
         }
         
         free(json_str);
     } else {
-        ESP_LOGI(TAG, "No saved config found, using embedded defaults");
-        // Конфігурація вже завантажена в init() з вбудованих файлів
-        dirty_flag = true;
+        ESP_LOGW(TAG, "No saved configuration found, using embedded defaults");
+        dirty_flag = true; // Позначаємо для збереження
     }
     
     nvs_close(handle);
@@ -455,27 +508,37 @@ std::string export_config(bool pretty) {
 }
 
 esp_err_t import_config(const std::string& json_str) {
-    try {
-        nlohmann::json new_config = nlohmann::json::parse(json_str);
-        
-        if (!validate(new_config)) {
-            ESP_LOGE(TAG, "Imported configuration failed validation");
+    using namespace ModESP;
+    
+    Result<nlohmann::json> parse_result = safe_execute("parse_imported_config", [&]() -> esp_err_t {
+        auto result = nlohmann::json::parse(json_str, nullptr, false);
+        if (result.is_discarded()) {
+            ESP_LOGE(TAG, "Failed to parse imported JSON: JSON parse error");
             return ESP_ERR_INVALID_ARG;
         }
-        
-        // Зберігаємо старий кеш для відновлення у разі помилки
-        nlohmann::json old_cache = config_cache;
-        
-        config_cache = new_config;
-        dirty_flag = true;
-        
-        ESP_LOGI(TAG, "Configuration imported successfully");
         return ESP_OK;
-        
-    } catch (const nlohmann::json::exception& e) {
-        ESP_LOGE(TAG, "Failed to parse imported JSON: %s", e.what());
+    }) == ESP_OK ? Result<nlohmann::json>(nlohmann::json::parse(json_str)) 
+                  : Result<nlohmann::json>(ESP_ERR_INVALID_ARG, "JSON parse failed");
+
+    if (!parse_result) {
+        return parse_result.error();
+    }
+    
+    nlohmann::json new_config = *parse_result;
+    
+    if (!validate(new_config)) {
+        ESP_LOGE(TAG, "Imported configuration failed validation");
         return ESP_ERR_INVALID_ARG;
     }
+    
+    // Зберігаємо старий кеш для відновлення у разі помилки
+    nlohmann::json old_cache = config_cache;
+    
+    config_cache = new_config;
+    dirty_flag = true;
+    
+    ESP_LOGI(TAG, "Configuration imported successfully");
+    return ESP_OK;
 }
 
 void on_change(ChangeCallback callback) {
@@ -494,26 +557,30 @@ std::vector<std::string> get_config_modules() {
 }
 
 esp_err_t reload_defaults() {
+    using namespace ModESP;
+    
     ESP_LOGI(TAG, "Reloading default configuration from embedded files");
     
     // Зберігаємо старий кеш для відновлення
     nlohmann::json old_cache = config_cache;
     
-    try {
+    esp_err_t result = safe_execute("reload_defaults", [&]() -> esp_err_t {
         // Агрегуємо свіжу конфігурацію з вбудованих файлів
         config_cache = aggregate_embedded_configs();
         dirty_flag = true;
         
         ESP_LOGI(TAG, "Default configuration reloaded");
         return ESP_OK;
-        
-    } catch (const std::exception& e) {
-        ESP_LOGE(TAG, "Failed to reload defaults: %s", e.what());
-        
+    });
+    
+    if (result != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to reload defaults");
         // Відновлюємо старий кеш
         config_cache = old_cache;
         return ESP_ERR_INVALID_STATE;
     }
+    
+    return ESP_OK;
 }
 
 } // namespace ConfigManager

@@ -8,13 +8,12 @@
 #include "esphal.h"
 #include <esp_log.h>
 #include <esp_timer.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include <cmath>
 #include <numeric>
 
 static const char* TAG = "NTC";
-
-// Auto-register this driver
-static SensorDriverRegistrar<NTCDriver> registrar("NTC");
 
 // Constants
 static constexpr float KELVIN_OFFSET = 273.15f;
@@ -23,50 +22,48 @@ esp_err_t NTCDriver::init(ESPhal& hal, const nlohmann::json& config) {
     ESP_LOGI(TAG, "Initializing NTC driver");
     
     // Parse configuration
-    try {
-        config_.hal_id = config["hal_id"].get<std::string>();
-        
-        // Load NTC type if specified
-        if (config.contains("ntc_type")) {
-            std::string type_str = config["ntc_type"].get<std::string>();
-            if (type_str == "10K_3950") config_.ntc_type = NTCType::NTC_10K_3950;
-            else if (type_str == "10K_3435") config_.ntc_type = NTCType::NTC_10K_3435;
-            else if (type_str == "100K_3950") config_.ntc_type = NTCType::NTC_100K_3950;
-            else config_.ntc_type = NTCType::CUSTOM;
-        }        
-        // Load profile or custom parameters
-        if (config_.ntc_type != NTCType::CUSTOM) {
-            load_ntc_profile(config_.ntc_type);
-        }
-        
-        // Override with any custom parameters
-        config_.r_nominal = config.value("r_nominal", config_.r_nominal);
-        config_.t_nominal = config.value("t_nominal", config_.t_nominal);
-        config_.beta = config.value("beta", config_.beta);
-        config_.r_series = config.value("r_series", config_.r_series);
-        config_.vcc = config.value("vcc", config_.vcc);
-        config_.averaging_samples = config.value("averaging_samples", config_.averaging_samples);
-        config_.offset = config.value("offset", config_.offset);
-        
-        // Steinhart-Hart coefficients if provided
-        if (config.contains("steinhart_hart")) {
-            auto sh = config["steinhart_hart"];
-            config_.sh_coefficients[0] = sh.value("a", 0.0f);
-            config_.sh_coefficients[1] = sh.value("b", 0.0f);
-            config_.sh_coefficients[2] = sh.value("c", 0.0f);
-            config_.use_steinhart_hart = true;
-        }
-        
-    } catch (const nlohmann::json::exception& e) {
-        ESP_LOGE(TAG, "Configuration error: %s", e.what());
+    if (!config.contains("hal_id") || !config["hal_id"].is_string()) {
+        ESP_LOGE(TAG, "Missing or invalid hal_id in configuration");
         return ESP_ERR_INVALID_ARG;
+    }
+    
+    config_.hal_id = config["hal_id"].get<std::string>();
+    
+    // Load NTC type if specified
+    if (config.contains("ntc_type") && config["ntc_type"].is_string()) {
+        std::string type_str = config["ntc_type"].get<std::string>();
+        if (type_str == "10K_3950") config_.ntc_type = NTCType::NTC_10K_3950;
+        else if (type_str == "10K_3435") config_.ntc_type = NTCType::NTC_10K_3435;
+        else if (type_str == "100K_3950") config_.ntc_type = NTCType::NTC_100K_3950;
+        else config_.ntc_type = NTCType::CUSTOM;
+    }        
+    // Load profile or custom parameters
+    if (config_.ntc_type != NTCType::CUSTOM) {
+        load_ntc_profile(config_.ntc_type);
+    }
+    
+    // Override with any custom parameters
+    config_.r_nominal = config.value("r_nominal", config_.r_nominal);
+    config_.t_nominal = config.value("t_nominal", config_.t_nominal);
+    config_.beta = config.value("beta", config_.beta);
+    config_.r_series = config.value("r_series", config_.r_series);
+    config_.vcc = config.value("vcc", config_.vcc);
+    config_.averaging_samples = config.value("averaging_samples", config_.averaging_samples);
+    config_.offset = config.value("offset", config_.offset);
+    
+    // Steinhart-Hart coefficients if provided
+    if (config.contains("steinhart_hart") && config["steinhart_hart"].is_object()) {
+        auto sh = config["steinhart_hart"];
+        config_.sh_coefficients[0] = sh.value("a", 0.0f);
+        config_.sh_coefficients[1] = sh.value("b", 0.0f);
+        config_.sh_coefficients[2] = sh.value("c", 0.0f);
+        config_.use_steinhart_hart = true;
     }    
+    
     // Get ADC channel from HAL
-    try {
-        adc_channel_ = &hal.get_adc_channel(config_.hal_id);
-    } catch (const std::exception& e) {
-        ESP_LOGE(TAG, "Failed to get ADC channel '%s': %s", 
-                 config_.hal_id.c_str(), e.what());
+    adc_channel_ = hal.get_adc_channel_ptr(config_.hal_id);
+    if (!adc_channel_) {
+        ESP_LOGE(TAG, "Failed to get ADC channel '%s'", config_.hal_id.c_str());
         return ESP_FAIL;
     }
     
@@ -89,6 +86,7 @@ SensorReading NTCDriver::read() {
         reading.error_message = "ADC channel not initialized";
         return reading;
     }    
+    
     // Read multiple samples for averaging
     float sum_resistance = 0;
     int valid_samples = 0;
@@ -119,6 +117,7 @@ SensorReading NTCDriver::read() {
     // Calculate average resistance
     float avg_resistance = sum_resistance / valid_samples;
     last_resistance_ = avg_resistance;    
+    
     // Convert resistance to temperature
     float temperature = resistance_to_temperature(avg_resistance);
     
@@ -154,6 +153,7 @@ nlohmann::json NTCDriver::get_config() const {
         {"averaging_samples", config_.averaging_samples},
         {"offset", config_.offset}
     };    
+    
     // Add NTC type string
     std::string type_str = "CUSTOM";
     switch (config_.ntc_type) {
@@ -176,27 +176,28 @@ nlohmann::json NTCDriver::get_config() const {
 }
 
 esp_err_t NTCDriver::set_config(const nlohmann::json& config) {
-    try {
-        if (config.contains("r_series")) {
-            config_.r_series = config["r_series"].get<float>();
-        }
-        
-        if (config.contains("averaging_samples")) {
-            int samples = config["averaging_samples"].get<int>();
-            if (samples > 0 && samples <= 100) {
-                config_.averaging_samples = samples;
-                sample_buffer_.resize(samples);
-            }
-        }        
-        if (config.contains("offset")) {
-            config_.offset = config["offset"].get<float>();
-        }
-        
-        return ESP_OK;
-    } catch (const nlohmann::json::exception& e) {
-        ESP_LOGE(TAG, "Configuration update error: %s", e.what());
+    if (!config.is_object()) {
+        ESP_LOGE(TAG, "Configuration must be an object");
         return ESP_ERR_INVALID_ARG;
     }
+    
+    if (config.contains("r_series") && config["r_series"].is_number()) {
+        config_.r_series = config["r_series"].get<float>();
+    }
+    
+    if (config.contains("averaging_samples") && config["averaging_samples"].is_number()) {
+        int samples = config["averaging_samples"].get<int>();
+        if (samples > 0 && samples <= 100) {
+            config_.averaging_samples = samples;
+            sample_buffer_.resize(samples);
+        }
+    }        
+    
+    if (config.contains("offset") && config["offset"].is_number()) {
+        config_.offset = config["offset"].get<float>();
+    }
+    
+    return ESP_OK;
 }
 
 nlohmann::json NTCDriver::get_ui_schema() const {
@@ -208,21 +209,18 @@ nlohmann::json NTCDriver::get_ui_schema() const {
                 {"type", "string"},
                 {"title", "NTC Type"},
                 {"enum", {"10K_3950", "10K_3435", "100K_3950", "CUSTOM"}},
-                {"default", "10K_3950"},
-                {"ui:widget", "select"}
+                {"default", "10K_3950"}
             }},
             {"r_series", {
                 {"type", "number"},
                 {"title", "Series Resistor (Ω)"},
-                {"description", "Value of the voltage divider resistor"},
-                {"minimum", 100},
-                {"maximum", 1000000},
+                {"minimum", 1000},
+                {"maximum", 100000},
                 {"default", 10000}
             }},
             {"averaging_samples", {
                 {"type", "integer"},
                 {"title", "Averaging Samples"},
-                {"description", "Number of ADC samples to average"},
                 {"minimum", 1},
                 {"maximum", 100},
                 {"default", 10}
@@ -230,55 +228,44 @@ nlohmann::json NTCDriver::get_ui_schema() const {
             {"offset", {
                 {"type", "number"},
                 {"title", "Temperature Offset (°C)"},
-                {"description", "Calibration offset"},
                 {"minimum", -10.0},
                 {"maximum", 10.0},
-                {"default", 0.0},
-                {"ui:widget", "slider"},
-                {"ui:step", 0.1}
+                {"default", 0.0}
             }}
         }}
     };
 }
+
 esp_err_t NTCDriver::calibrate(const nlohmann::json& calibration_data) {
-    try {
-        if (calibration_data.contains("known_temperature")) {
-            float known_temp = calibration_data["known_temperature"].get<float>();
-            
-            // Read current temperature
-            SensorReading reading = read();
-            if (!reading.is_valid) {
-                return ESP_FAIL;
-            }
-            
-            // Calculate offset
-            config_.offset = known_temp - (reading.value - config_.offset);
-            
-            ESP_LOGI(TAG, "Calibrated with offset: %.2f°C", config_.offset);
-            return ESP_OK;
-        }
-        
-        if (calibration_data.contains("resistance_points")) {
-            // Advanced calibration with multiple points for Steinhart-Hart
-            // TODO: Implement multi-point calibration
-            return ESP_ERR_NOT_SUPPORTED;
-        }
-        
-        return ESP_ERR_INVALID_ARG;
-    } catch (const nlohmann::json::exception& e) {
-        ESP_LOGE(TAG, "Calibration error: %s", e.what());
+    if (!calibration_data.is_object()) {
+        ESP_LOGE(TAG, "Calibration data must be an object");
         return ESP_ERR_INVALID_ARG;
     }
+    
+    if (calibration_data.contains("reference_temp") && 
+        calibration_data.contains("measured_temp")) {
+        
+        float ref_temp = calibration_data["reference_temp"].get<float>();
+        float measured_temp = calibration_data["measured_temp"].get<float>();
+        
+        // Calculate offset correction
+        config_.offset = ref_temp - measured_temp;
+        
+        ESP_LOGI(TAG, "Calibration applied: offset = %.2f°C", config_.offset);
+        return ESP_OK;
+    }
+    
+    return ESP_ERR_INVALID_ARG;
 }
+
 nlohmann::json NTCDriver::get_diagnostics() const {
     return {
+        {"driver_type", "NTC"},
         {"last_temperature", last_temperature_},
         {"last_resistance", last_resistance_},
         {"total_reads", total_reads_},
         {"error_count", error_count_},
-        {"error_rate", total_reads_ > 0 ? 
-            (float)error_count_ / total_reads_ : 0.0f},
-        {"adc_channel", config_.hal_id},
+        {"is_available", is_available()},
         {"ntc_parameters", {
             {"r_nominal", config_.r_nominal},
             {"beta", config_.beta},
@@ -287,46 +274,43 @@ nlohmann::json NTCDriver::get_diagnostics() const {
     };
 }
 
-// Helper methods
 float NTCDriver::calculate_resistance(int adc_value) const {
-    // ADC typically 12-bit (0-4095)
-    const float adc_max = 4095.0f;
-    float adc_voltage = (adc_value / adc_max) * config_.vcc;
+    if (adc_value <= 0) return 0.0f;
+    
+    // Convert ADC value to voltage
+    float voltage = (adc_value / 4095.0f) * config_.vcc;
     
     // Calculate NTC resistance using voltage divider formula
     // Vout = Vcc * R_ntc / (R_series + R_ntc)
     // R_ntc = R_series * Vout / (Vcc - Vout)
+    if (voltage >= config_.vcc) return 0.0f;
     
-    if (adc_voltage >= config_.vcc) {
-        return 0;  // Invalid reading
-    }
-    
-    return config_.r_series * adc_voltage / (config_.vcc - adc_voltage);
+    return config_.r_series * voltage / (config_.vcc - voltage);
 }
+
 float NTCDriver::resistance_to_temperature(float resistance) const {
+    if (resistance <= 0) return NAN;
+    
     if (config_.use_steinhart_hart) {
         return steinhart_hart(resistance);
+    } else {
+        // Beta equation: 1/T = 1/T0 + (1/B) * ln(R/R0)
+        float inv_t = (1.0f / (config_.t_nominal + KELVIN_OFFSET)) + 
+                      (1.0f / config_.beta) * logf(resistance / config_.r_nominal);
+        return (1.0f / inv_t) - KELVIN_OFFSET;
     }
-    
-    // Use Beta equation
-    // 1/T = 1/T0 + (1/Beta) * ln(R/R0)
-    float t_nominal_k = config_.t_nominal + KELVIN_OFFSET;
-    float ln_r = std::log(resistance / config_.r_nominal);
-    float t_kelvin = 1.0f / (1.0f / t_nominal_k + ln_r / config_.beta);
-    
-    return t_kelvin - KELVIN_OFFSET;
 }
 
 float NTCDriver::steinhart_hart(float resistance) const {
-    // Steinhart-Hart equation: 1/T = A + B*ln(R) + C*ln(R)^3
-    float ln_r = std::log(resistance);
-    float ln_r3 = ln_r * ln_r * ln_r;
+    float ln_r = logf(resistance);
+    float ln_r2 = ln_r * ln_r;
+    float ln_r3 = ln_r2 * ln_r;
     
-    float t_kelvin = 1.0f / (config_.sh_coefficients[0] + 
-                             config_.sh_coefficients[1] * ln_r + 
-                             config_.sh_coefficients[2] * ln_r3);
+    float inv_t = config_.sh_coefficients[0] + 
+                  config_.sh_coefficients[1] * ln_r +
+                  config_.sh_coefficients[2] * ln_r3;
     
-    return t_kelvin - KELVIN_OFFSET;
+    return (1.0f / inv_t) - KELVIN_OFFSET;
 }
 
 void NTCDriver::load_ntc_profile(NTCType type) {
@@ -335,21 +319,18 @@ void NTCDriver::load_ntc_profile(NTCType type) {
             config_.r_nominal = 10000.0f;
             config_.t_nominal = 25.0f;
             config_.beta = 3950.0f;
-            break;            
+            break;
         case NTCType::NTC_10K_3435:
             config_.r_nominal = 10000.0f;
             config_.t_nominal = 25.0f;
             config_.beta = 3435.0f;
             break;
-            
         case NTCType::NTC_100K_3950:
             config_.r_nominal = 100000.0f;
             config_.t_nominal = 25.0f;
             config_.beta = 3950.0f;
             break;
-            
         default:
-            // Keep current values for CUSTOM
             break;
     }
 }

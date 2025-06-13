@@ -13,6 +13,9 @@
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
 
+// Forward declarations
+class ESPhal;
+
 namespace Application {
 
 /**
@@ -146,6 +149,12 @@ uint8_t get_cpu_usage();
  * @return Stack bytes remaining
  */
 size_t get_stack_high_water_mark();
+
+/**
+ * @brief Get ESPhal instance
+ * @return Reference to ESPhal instance
+ */
+ESPhal& get_hal();
 
 } // namespace Application
 

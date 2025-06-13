@@ -15,9 +15,40 @@ Hardware Abstraction Layer (HAL) — це низькорівневий прог�
 
 ## Модульна архітектура драйверів
 
-### Нова архітектура SensorModule
+### Повна симетрична архітектура
 
-SensorModule тепер використовує систему модульних драйверів, де кожен тип датчика є окремим компонентом:
+Система тепер має симетричну архітектуру для датчиків та актуаторів:
+
+```
+                              SharedState
+                                  ▲ ▼
+                    ┌─────────────┴─┴─────────────┐
+                    ▼                             ▼
+           ┌────────────────┐            ┌────────────────┐
+           │  SensorModule  │            │ ActuatorModule │
+           │                │            │                │
+           └───────┬────────┘            └───────┬────────┘
+                   │                             │
+                   ▼                             ▼
+           ┌────────────────┐            ┌────────────────┐
+           │ SensorDrivers  │            │ActuatorDrivers │
+           │                │            │                │
+           │ • DS18B20      │            │ • RelayDriver  │
+           │ • NTC          │            │ • PwmDriver    │
+           │ • GpioInput    │            │ • GpioOutput   │
+           │ • Pressure     │            │ • StepperDriver│
+           └────────────────┘            └────────────────┘
+                   │                             │
+                   ▼                             ▼
+              ┌─────────────────────────────────┐
+              │            HAL                   │
+              │   (Hardware Abstraction Layer)   │
+              └─────────────────────────────────┘
+```
+
+### Архітектура SensorModule
+
+SensorModule використовує систему модульних драйверів, де кожен тип датчика є окремим компонентом:
 
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
@@ -30,6 +61,24 @@ SensorModule тепер використовує систему модульни
                         ┌───────────────┐         ┌────────────────┐  ┌────────────┐
                         │ DS18B20Driver │         │  NTCDriver     │  │ GpioInput  │
                         │ (компонент)   │         │  (компонент)   │  │(компонент) │
+                        └───────────────┘         └────────────────┘  └────────────┘
+```
+
+### Архітектура ActuatorModule
+
+ActuatorModule використовує ту саму модульну систему для виконавчих механізмів:
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  SharedState    │────▶│  ActuatorModule  │────▶│ IActuatorDriver  │
+│   (команди)     │     │ (керує драйверами)│     │   (інтерфейс)    │
+└─────────────────┘     └──────────────────┘     └──────────────────┘
+                                                           ▲
+                                ┌──────────────────────────┼────────────────┐
+                                │                          │                │
+                        ┌───────────────┐         ┌────────────────┐  ┌────────────┐
+                        │  RelayDriver  │         │   PwmDriver    │  │ GpioOutput │
+                        │  (компонент)  │         │  (компонент)   │  │(компонент) │
                         └───────────────┘         └────────────────┘  └────────────┘
 ```
 
@@ -144,4 +193,55 @@ IAdcChannel& get_adc_channel(const std::string& hal_id);
 }
 ```
 
-Ця архітектура забезпечує максимальну гнучкість та модульність системи!
+### actuators.json з модульною архітектурою
+
+```json
+{
+  "actuators": [
+    {
+      "role": "compressor",
+      "type": "RELAY",                 // Тип драйвера (зареєстрований)
+      "command_key": "command.actuator.compressor",
+      "status_key": "state.actuator.compressor",
+      "config": {                      // Конфігурація драйвера
+        "hal_id": "RELAY_COMPRESSOR",
+        "min_off_time_s": 180,
+        "min_on_time_s": 60
+      }
+    },
+    {
+      "role": "fan_speed",
+      "type": "PWM",                   // Інший тип драйвера
+      "command_key": "command.actuator.fan_speed",
+      "status_key": "state.actuator.fan_speed",
+      "config": {
+        "gpio_num": 25,
+        "frequency": 25000,
+        "min_duty_percent": 20,
+        "max_duty_percent": 100
+      }
+    }
+  ]
+}
+```
+
+## Потік даних в системі
+
+1. **Датчики → SharedState**:
+   ```
+   Sensor → SensorDriver → SensorModule → SharedState
+   ```
+
+2. **SharedState → Актуатори**:
+   ```
+   SharedState → ActuatorModule → ActuatorDriver → Actuator
+   ```
+
+3. **Бізнес-логіка**:
+   ```
+   ClimateControl читає з SharedState (датчики)
+                 ↓
+   Обробляє логіку
+                 ↓
+   ClimateControl пише в SharedState (команди)
+   ```

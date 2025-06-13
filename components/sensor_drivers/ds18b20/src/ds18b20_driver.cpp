@@ -8,29 +8,34 @@
 #include "esphal.h"
 #include <esp_log.h>
 #include <esp_timer.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include <sstream>
 #include <iomanip>
 
 static const char* TAG = "DS18B20";
 
-// Auto-register this driver
-static SensorDriverRegistrar<DS18B20Driver> registrar("DS18B20");
-
 esp_err_t DS18B20Driver::init(ESPhal& hal, const nlohmann::json& config) {
     ESP_LOGI(TAG, "Initializing DS18B20 driver");
     
     // Parse configuration
-    try {
-        config_.hal_id = config["hal_id"].get<std::string>();
-        config_.address = config["address"].get<std::string>();
-        config_.resolution = config.value("resolution", 12);
-        config_.offset = config.value("offset", 0.0f);
-        config_.read_timeout_ms = config.value("read_timeout_ms", 1000);
-        config_.use_crc = config.value("use_crc", true);
-    } catch (const nlohmann::json::exception& e) {
-        ESP_LOGE(TAG, "Configuration error: %s", e.what());
+    if (!config.contains("hal_id") || !config["hal_id"].is_string()) {
+        ESP_LOGE(TAG, "Missing or invalid hal_id in configuration");
         return ESP_ERR_INVALID_ARG;
     }
+    
+    if (!config.contains("address") || !config["address"].is_string()) {
+        ESP_LOGE(TAG, "Missing or invalid address in configuration");
+        return ESP_ERR_INVALID_ARG;
+    }
+    
+    config_.hal_id = config["hal_id"].get<std::string>();
+    config_.address = config["address"].get<std::string>();
+    config_.resolution = config.value("resolution", 12);
+    config_.offset = config.value("offset", 0.0f);
+    config_.read_timeout_ms = config.value("read_timeout_ms", 1000);
+    config_.use_crc = config.value("use_crc", true);
+    
     // Validate configuration
     if (config_.resolution < 9 || config_.resolution > 12) {
         ESP_LOGE(TAG, "Invalid resolution: %d", config_.resolution);
@@ -38,11 +43,9 @@ esp_err_t DS18B20Driver::init(ESPhal& hal, const nlohmann::json& config) {
     }
     
     // Get OneWire bus from HAL
-    try {
-        bus_ = &hal.get_onewire_bus(config_.hal_id);
-    } catch (const std::exception& e) {
-        ESP_LOGE(TAG, "Failed to get OneWire bus '%s': %s", 
-                 config_.hal_id.c_str(), e.what());
+    bus_ = hal.get_onewire_bus_ptr(config_.hal_id);
+    if (!bus_) {
+        ESP_LOGE(TAG, "Failed to get OneWire bus '%s'", config_.hal_id.c_str());
         return ESP_FAIL;
     }
     
@@ -95,6 +98,7 @@ SensorReading DS18B20Driver::read() {
     
     // Wait for conversion
     vTaskDelay(pdMS_TO_TICKS(get_conversion_time_ms()));
+    
     // Read temperature
     auto result = bus_->read_temperature(sensor_address_);
     if (!result.is_ok()) {
@@ -126,6 +130,7 @@ SensorReading DS18B20Driver::read() {
     
     return reading;
 }
+
 nlohmann::json DS18B20Driver::get_config() const {
     return {
         {"hal_id", config_.hal_id},
@@ -138,28 +143,29 @@ nlohmann::json DS18B20Driver::get_config() const {
 }
 
 esp_err_t DS18B20Driver::set_config(const nlohmann::json& config) {
-    try {
-        if (config.contains("resolution")) {
-            int res = config["resolution"].get<int>();
-            if (res >= 9 && res <= 12) {
-                config_.resolution = res;
-            }
-        }
-        
-        if (config.contains("offset")) {
-            config_.offset = config["offset"].get<float>();
-        }
-        
-        if (config.contains("use_crc")) {
-            config_.use_crc = config["use_crc"].get<bool>();
-        }
-        
-        return ESP_OK;
-    } catch (const nlohmann::json::exception& e) {
-        ESP_LOGE(TAG, "Configuration update error: %s", e.what());
+    if (!config.is_object()) {
+        ESP_LOGE(TAG, "Configuration must be an object");
         return ESP_ERR_INVALID_ARG;
     }
+    
+    if (config.contains("resolution") && config["resolution"].is_number()) {
+        int res = config["resolution"].get<int>();
+        if (res >= 9 && res <= 12) {
+            config_.resolution = res;
+        }
+    }
+    
+    if (config.contains("offset") && config["offset"].is_number()) {
+        config_.offset = config["offset"].get<float>();
+    }
+    
+    if (config.contains("use_crc") && config["use_crc"].is_boolean()) {
+        config_.use_crc = config["use_crc"].get<bool>();
+    }
+    
+    return ESP_OK;
 }
+
 nlohmann::json DS18B20Driver::get_ui_schema() const {
     return {
         {"type", "object"},
@@ -168,133 +174,68 @@ nlohmann::json DS18B20Driver::get_ui_schema() const {
             {"resolution", {
                 {"type", "integer"},
                 {"title", "Resolution"},
-                {"description", "Measurement resolution in bits"},
                 {"minimum", 9},
                 {"maximum", 12},
-                {"default", 12},
-                {"ui:widget", "slider"},
-                {"ui:help", "Higher resolution = slower conversion"}
+                {"default", 12}
             }},
             {"offset", {
                 {"type", "number"},
                 {"title", "Temperature Offset"},
-                {"description", "Calibration offset in °C"},
                 {"minimum", -10.0},
                 {"maximum", 10.0},
-                {"default", 0.0},
-                {"ui:widget", "slider"},
-                {"ui:step", 0.1}
+                {"default", 0.0}
             }},
             {"use_crc", {
                 {"type", "boolean"},
                 {"title", "Enable CRC Check"},
-                {"description", "Validate data integrity"},
                 {"default", true}
             }}
         }}
     };
 }
-nlohmann::json DS18B20Driver::get_ui_schema() const {
-    return {
-        {"type", "object"},
-        {"title", "DS18B20 Temperature Sensor Settings"},
-        {"properties", {
-            {"resolution", {
-                {"type", "integer"},
-                {"title", "Resolution"},
-                {"description", "Measurement resolution in bits"},
-                {"minimum", 9},
-                {"maximum", 12},
-                {"default", 12},
-                {"ui:widget", "slider"},
-                {"ui:help", "Higher resolution = slower conversion"}
-            }},
-            {"offset", {
-                {"type", "number"},
-                {"title", "Temperature Offset"},
-                {"description", "Calibration offset in °C"},
-                {"minimum", -10.0},
-                {"maximum", 10.0},
-                {"default", 0.0},
-                {"ui:widget", "slider"},
-                {"ui:step", 0.1}
-            }},
-            {"use_crc", {
-                {"type", "boolean"},
-                {"title", "Enable CRC Check"},
-                {"description", "Validate data integrity"},
-                {"default", true}
-            }}
-        }}
-    };
-}
+
 esp_err_t DS18B20Driver::calibrate(const nlohmann::json& calibration_data) {
-    try {
-        if (calibration_data.contains("known_temperature")) {
-            float known_temp = calibration_data["known_temperature"].get<float>();
-            
-            // Read current temperature
-            SensorReading reading = read();
-            if (!reading.is_valid) {
-                return ESP_FAIL;
-            }
-            
-            // Calculate offset
-            float raw_temp = reading.value - config_.offset;  // Remove current offset
-            config_.offset = known_temp - raw_temp;
-            
-            ESP_LOGI(TAG, "Calibrated with offset: %.2f°C", config_.offset);
-            return ESP_OK;
-        }
-        
-        return ESP_ERR_INVALID_ARG;
-    } catch (const nlohmann::json::exception& e) {
-        ESP_LOGE(TAG, "Calibration error: %s", e.what());
+    if (!calibration_data.is_object()) {
+        ESP_LOGE(TAG, "Calibration data must be an object");
         return ESP_ERR_INVALID_ARG;
     }
+    
+    if (calibration_data.contains("reference_temp") && 
+        calibration_data.contains("measured_temp")) {
+        
+        float ref_temp = calibration_data["reference_temp"].get<float>();
+        float measured_temp = calibration_data["measured_temp"].get<float>();
+        
+        // Calculate offset correction
+        config_.offset = ref_temp - measured_temp;
+        
+        ESP_LOGI(TAG, "Calibration applied: offset = %.2f°C", config_.offset);
+        return ESP_OK;
+    }
+    
+    return ESP_ERR_INVALID_ARG;
 }
 
 nlohmann::json DS18B20Driver::get_diagnostics() const {
     return {
-        {"sensor_available", sensor_available_},
+        {"driver_type", "DS18B20"},
+        {"sensor_address", config_.address},
         {"last_temperature", last_temperature_},
         {"successful_reads", successful_reads_},
         {"error_count", error_count_},
-        {"error_rate", successful_reads_ > 0 ? 
-            (float)error_count_ / (successful_reads_ + error_count_) : 0.0f},
-        {"sensor_address", config_.address},
+        {"sensor_available", sensor_available_},
         {"resolution_bits", config_.resolution}
     };
 }
-// Helper methods implementation
-uint64_t DS18B20Driver::parse_address(const std::string& hex_address) {
-    // Remove any spaces or dashes
-    std::string clean_address;
-    for (char c : hex_address) {
-        if (std::isxdigit(c)) {
-            clean_address += c;
-        }
-    }
-    
-    if (clean_address.length() != 16) {
-        ESP_LOGE(TAG, "Invalid address length: %zu", clean_address.length());
-        return 0;
-    }
-    
-    try {
-        return std::stoull(clean_address, nullptr, 16);
-    } catch (const std::exception& e) {
-        ESP_LOGE(TAG, "Failed to parse address: %s", e.what());
-        return 0;
-    }
-}
 
+// Helper methods
 int DS18B20Driver::get_conversion_time_ms() const {
-    // Conversion times for different resolutions
+    // DS18B20 conversion times by resolution:
+    // 9 bits: 93.75ms, 10 bits: 187.5ms, 11 bits: 375ms, 12 bits: 750ms
     switch (config_.resolution) {
-        case 9:  return 94;
-        case 10: return 188;
-        case 11: return 375;
+        case 9: return 100;
+        case 10: return 200;
+        case 11: return 400;
         case 12: return 750;
         default: return 750;
     }
@@ -302,5 +243,40 @@ int DS18B20Driver::get_conversion_time_ms() const {
 
 bool DS18B20Driver::validate_temperature(float temp) const {
     // DS18B20 valid range: -55°C to +125°C
-    return temp >= -55.0f && temp <= 125.0f;
+    return (temp >= -55.0f && temp <= 125.0f);
+}
+
+uint64_t DS18B20Driver::parse_address(const std::string& address_str) {
+    if (address_str.empty()) {
+        return 0;
+    }
+    
+    // Remove any "0x" prefix
+    std::string clean_addr = address_str;
+    if (clean_addr.substr(0, 2) == "0x" || clean_addr.substr(0, 2) == "0X") {
+        clean_addr = clean_addr.substr(2);
+    }
+    
+    // Parse hex string
+    uint64_t address = 0;
+    if (clean_addr.length() != 16) {
+        ESP_LOGE(TAG, "Address string must be exactly 16 hex characters");
+        return 0;
+    }
+    
+    for (char c : clean_addr) {
+        address <<= 4;
+        if (c >= '0' && c <= '9') {
+            address |= (c - '0');
+        } else if (c >= 'A' && c <= 'F') {
+            address |= (c - 'A' + 10);
+        } else if (c >= 'a' && c <= 'f') {
+            address |= (c - 'a' + 10);
+        } else {
+            ESP_LOGE(TAG, "Invalid hex character in address: %c", c);
+            return 0;
+        }
+    }
+    
+    return address;
 }

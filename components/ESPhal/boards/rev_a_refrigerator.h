@@ -1,8 +1,7 @@
 /**
  * @file rev_a_refrigerator.h
  * @brief Board configuration for Rev A Refrigerator Controller
- * 
- * Original refrigerator controller board with basic relay and sensor support.
+ * * Original refrigerator controller board with basic relay and sensor support.
  * - 4x Relay outputs (compressor, fan, defrost heater, lights)
  * - 2x OneWire buses (chamber sensors, evaporator sensors)  
  * - 4x ADC channels (pressure, door sensor, spare inputs)
@@ -11,7 +10,7 @@
 
 #pragma once
 
-#include "driver/gpio.h"
+#include "driver/gpio.h" // ДОДАНО: для визначення GPIO_NUM_xx
 #include "driver/adc.h"
 
 namespace BoardConfig {
@@ -26,11 +25,11 @@ struct GpioOutputConfig {
 
 static const GpioOutputConfig GPIO_OUTPUTS[] = {
     {"RELAY_COMPRESSOR",    GPIO_NUM_4,  true,  "Main compressor relay"},
-    {"RELAY_FAN",          GPIO_NUM_5,  true,  "Evaporator fan relay"},
-    {"RELAY_DEFROST",      GPIO_NUM_18, true,  "Defrost heater relay"},
-    {"RELAY_LIGHTS",       GPIO_NUM_19, true,  "Internal lights relay"},
-    {"LED_STATUS",         GPIO_NUM_2,  false, "Status LED (built-in)"},
-    {"LED_ALARM",          GPIO_NUM_21, false, "Alarm indicator LED"}
+    {"RELAY_FAN",           GPIO_NUM_5,  true,  "Evaporator fan relay"},
+    {"RELAY_DEFROST",       GPIO_NUM_18, true,  "Defrost heater relay"},
+    {"RELAY_LIGHTS",        GPIO_NUM_19, true,  "Internal lights relay"},
+    {"LED_STATUS",          GPIO_NUM_2,  false, "Status LED (built-in)"},
+    {"LED_ALARM",           GPIO_NUM_21, false, "Alarm indicator LED"}
 };
 
 static const size_t GPIO_OUTPUTS_COUNT = sizeof(GPIO_OUTPUTS) / sizeof(GPIO_OUTPUTS[0]);
@@ -44,9 +43,9 @@ struct GpioInputConfig {
 };
 
 static const GpioInputConfig GPIO_INPUTS[] = {
-    {"INPUT_DOOR_SWITCH",   GPIO_NUM_25, true,  "Door open/close switch"},
-    {"INPUT_DEFROST_END",   GPIO_NUM_26, true,  "Defrost end switch"},
-    {"INPUT_EMERGENCY",     GPIO_NUM_27, true,  "Emergency stop button"}
+    {"INPUT_DOOR_SWITCH",   GPIO_NUM_15, true,  "Door open/close switch"},
+    {"INPUT_DEFROST_END",   GPIO_NUM_16, true,  "Defrost end switch"},
+    {"INPUT_EMERGENCY",     GPIO_NUM_17, true,  "Emergency stop button"}
 };
 
 static const size_t GPIO_INPUTS_COUNT = sizeof(GPIO_INPUTS) / sizeof(GPIO_INPUTS[0]);
@@ -76,10 +75,10 @@ struct AdcConfig {
 };
 
 static const AdcConfig ADC_CHANNELS[] = {
-    {"ADC_PRESSURE_HIGH",   ADC_UNIT_1, ADC_CHANNEL_0, ADC_ATTEN_DB_11, "High pressure sensor"},
-    {"ADC_PRESSURE_LOW",    ADC_UNIT_1, ADC_CHANNEL_1, ADC_ATTEN_DB_11, "Low pressure sensor"},
-    {"ADC_AMBIENT_TEMP",    ADC_UNIT_1, ADC_CHANNEL_2, ADC_ATTEN_DB_11, "Ambient temperature (NTC)"},
-    {"ADC_SPARE_INPUT",     ADC_UNIT_1, ADC_CHANNEL_3, ADC_ATTEN_DB_11, "Spare analog input"}
+    {"ADC_PRESSURE_HIGH",   ADC_UNIT_1, ADC_CHANNEL_0, ADC_ATTEN_DB_12, "High pressure sensor"},
+    {"ADC_PRESSURE_LOW",    ADC_UNIT_1, ADC_CHANNEL_1, ADC_ATTEN_DB_12, "Low pressure sensor"},
+    {"ADC_AMBIENT_TEMP",    ADC_UNIT_1, ADC_CHANNEL_2, ADC_ATTEN_DB_12, "Ambient temperature (NTC)"},
+    {"ADC_SPARE_INPUT",     ADC_UNIT_1, ADC_CHANNEL_3, ADC_ATTEN_DB_12, "Spare analog input"}
 };
 
 static const size_t ADC_CHANNELS_COUNT = sizeof(ADC_CHANNELS) / sizeof(ADC_CHANNELS[0]);

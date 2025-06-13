@@ -1,4 +1,4 @@
 idf_component_register(
     INCLUDE_DIRS "."
-    REQUIRES json
+    REQUIRES mittelab__nlohmann-json
 )

@@ -14,6 +14,7 @@
 #include <string>
 #include <functional>
 #include <esp_log.h>
+#include <memory>
 
 /**
  * @brief Singleton registry for sensor drivers
@@ -85,6 +86,10 @@ private:
     std::unordered_map<std::string, SensorDriverFactory> factories_;
 };
 
+// Forward declarations
+class NTCDriver;
+class DS18B20Driver;
+
 /**
  * @brief Helper class for automatic driver registration
  * 
@@ -95,8 +100,11 @@ template<typename T>
 class SensorDriverRegistrar {
 public:
     explicit SensorDriverRegistrar(const std::string& type) {
-        SensorDriverRegistry::instance().register_driver(type, []() {
+        ESP_LOGI("DriverRegistrar", "Registering driver type: %s", type.c_str());
+        bool success = SensorDriverRegistry::instance().register_driver(type, []() -> std::unique_ptr<ISensorDriver> {
             return std::make_unique<T>();
         });
+        ESP_LOGI("DriverRegistrar", "Registration %s for type: %s", 
+                 success ? "SUCCESS" : "FAILED", type.c_str());
     }
 };

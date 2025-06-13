@@ -17,8 +17,12 @@
 #include "nlohmann/json.hpp"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
+#include "error_handling.h"  // Додаємо підтримку обробки помилок
 
 namespace EventBus {
+
+// Error collector для відстеження помилок в обробниках
+static ModESP::ErrorCollector error_collector;
 
 /**
  * @brief Event priority levels
@@ -39,9 +43,9 @@ struct Event {
     uint64_t timestamp;         // esp_timer_get_time() when published
     Priority priority;          // Execution priority
     
-    Event() : priority(Priority::NORMAL), timestamp(0) {}
+    Event() : timestamp(0), priority(Priority::NORMAL) {}
     Event(const std::string& t, const nlohmann::json& d, Priority p = Priority::NORMAL)
-        : type(t), data(d), priority(p), timestamp(esp_timer_get_time()) {}
+        : type(t), data(d), timestamp(esp_timer_get_time()), priority(p) {}
 };
 
 /**
@@ -194,6 +198,29 @@ Stats get_stats();
  * @brief Reset statistics counters
  */
 void reset_stats();
+
+/**
+ * @brief Get error information
+ * @return True if there are errors
+ */
+bool has_errors();
+
+/**
+ * @brief Get total error count
+ * @return Number of errors since init or last clear
+ */
+size_t get_error_count();
+
+/**
+ * @brief Clear all error records
+ */
+void clear_errors();
+
+/**
+ * @brief Log all errors
+ * @param tag Tag for logging
+ */
+void log_errors(const char* tag = "EventBus");
 
 /**
  * @brief Set event filter

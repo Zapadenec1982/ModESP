@@ -22,6 +22,18 @@
 class ESPhal;
 
 /**
+ * @brief Sensor types supported by the system
+ */
+enum class SensorType {
+    TEMPERATURE,
+    HUMIDITY,
+    PRESSURE,
+    VOLTAGE,
+    CURRENT,
+    UNKNOWN
+};
+
+/**
  * @brief Sensor reading result with timestamp and status
  */
 struct SensorReading {

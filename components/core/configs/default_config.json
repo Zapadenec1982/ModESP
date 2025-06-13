@@ -26,18 +26,31 @@
         "temperature_exit": 10.0,
         "drip_time": 300
     },
-    "sensors": {
-        "temperature": {
-            "type": "NTC10K",
-            "offset": 0.0,
-            "filter_samples": 10,
-            "read_interval": 1000
-        },
-        "humidity": {
-            "enabled": false,
-            "type": "none",
-            "offset": 0.0
-        }
+    "sensor": {
+        "poll_interval_ms": 1000,
+        "publish_on_error": true,
+        "sensors": [
+            {
+                "role": "chamber_temp",
+                "type": "NTC10K",
+                "publish_key": "sensors/chamber_temp",
+                "config": {
+                    "gpio": 1,
+                    "offset": 0.0,
+                    "filter_samples": 10
+                }
+            },
+            {
+                "role": "evaporator_temp", 
+                "type": "NTC10K",
+                "publish_key": "sensors/evaporator_temp",
+                "config": {
+                    "gpio": 2,
+                    "offset": 0.0,
+                    "filter_samples": 5
+                }
+            }
+        ]
     },
     "actuators": {
         "compressor": {

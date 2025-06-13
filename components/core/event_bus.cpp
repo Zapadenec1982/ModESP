@@ -2,6 +2,7 @@
 #include <esp_log.h>
 #include <algorithm>
 #include <cstring>
+#include "esp_mac.h"
 
 static const char* TAG = "EventBus";
 
@@ -23,7 +24,7 @@ static bool processing_paused = false;
 static EventFilter event_filter = nullptr;
 
 // Statistics
-static Stats stats = {0};
+static Stats stats = {0, 0, 0, 0, 0, 0, 0};
 
 // Configuration
 static size_t max_queue_size = 32;
@@ -82,14 +83,14 @@ esp_err_t publish(const std::string& type, const nlohmann::json& data, Priority 
         // Process immediately
         for (const auto& sub : subscriptions) {
             if (matches_pattern(sub->pattern, event->type)) {
-                try {
+                // Безпечне виконання handler без винятків
+                // Припускаємо, що handler може викликати помилки,
+                // але не повертає код помилки
+                ModESP::safe_execute("event_handler", [&]() -> esp_err_t {
                     sub->handler(*event);
                     sub->call_count++;
-                } catch (const std::exception& e) {
-                    ESP_LOGE(TAG, "Exception in handler for %s: %s", type.c_str(), e.what());
-                } catch (...) {
-                    ESP_LOGE(TAG, "Unknown exception in handler for %s", type.c_str());
-                }
+                    return ESP_OK;
+                });
             }
         }
         stats.total_processed++;
@@ -177,15 +178,19 @@ size_t process(uint32_t max_ms) {
         // Dispatch to all matching subscribers
         for (const auto& sub : subscriptions) {
             if (matches_pattern(sub->pattern, event->type)) {
-                try {
+                // Безпечне виконання handler без винятків
+                esp_err_t result = ModESP::safe_execute("event_handler", [&]() -> esp_err_t {
                     sub->handler(*event);
                     sub->call_count++;
-                } catch (const std::exception& e) {
-                    ESP_LOGE(TAG, "Exception in handler for %s: %s", 
-                             event->type.c_str(), e.what());
-                } catch (...) {
-                    ESP_LOGE(TAG, "Unknown exception in handler for %s", 
-                             event->type.c_str());
+                    return ESP_OK;
+                });
+                
+                if (result != ESP_OK) {
+                    error_collector.add(result, std::string("handler_") + event->type);
+                }
+                
+                if (result != ESP_OK) {
+                    error_collector.add(result, std::string("handler_") + event->type);
                 }
             }
         }
@@ -208,7 +213,7 @@ size_t get_queue_size() {
 
 bool is_queue_full() {
     if (event_queue == nullptr) return false;
-    return uxQueueSpaceAvailable(event_queue) == 0;
+    return uxQueueSpacesAvailable(event_queue) == 0;
 }
 
 void clear() {
@@ -243,6 +248,22 @@ void reset_stats() {
     stats.total_processed = 0;
     stats.total_dropped = 0;
     stats.avg_process_time_us = 0;
+}
+
+bool has_errors() {
+    return error_collector.has_errors();
+}
+
+size_t get_error_count() {
+    return error_collector.error_count();
+}
+
+void clear_errors() {
+    error_collector.clear();
+}
+
+void log_errors(const char* tag) {
+    error_collector.log_all(tag);
 }
 
 void set_filter(EventFilter filter) {
