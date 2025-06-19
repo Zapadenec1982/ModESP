@@ -1,4 +1,4 @@
-# Install script for directory: C:/ModESP/components/ESPhal
+# Install script for directory: C:/ModESP_dev/components/ESPhal
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

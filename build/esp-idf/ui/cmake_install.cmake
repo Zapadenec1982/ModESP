@@ -1,4 +1,4 @@
-# Install script for directory: C:/ModESP/components/ui
+# Install script for directory: C:/ModESP_dev/components/ui
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

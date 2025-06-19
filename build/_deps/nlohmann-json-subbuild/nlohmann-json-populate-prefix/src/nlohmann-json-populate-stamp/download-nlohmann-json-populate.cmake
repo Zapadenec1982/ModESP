@@ -22,14 +22,14 @@ function(check_file_hash has_hash hash_is_good)
   set("${has_hash}" TRUE PARENT_SCOPE)
 
   message(VERBOSE "verifying file...
-       file='C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp'")
+       file='C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp'")
 
-  file("SHA256" "C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp" actual_value)
+  file("SHA256" "C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp" actual_value)
 
   if(NOT "${actual_value}" STREQUAL "9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6")
     set("${hash_is_good}" FALSE PARENT_SCOPE)
     message(VERBOSE "SHA256 hash of
-    C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp
+    C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp
   does not match expected value
     expected: '9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6'
       actual: '${actual_value}'")
@@ -71,32 +71,32 @@ function(sleep_before_download attempt)
   execute_process(COMMAND "${CMAKE_COMMAND}" -E sleep "${sleep_seconds}")
 endfunction()
 
-if(EXISTS "C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp")
+if(EXISTS "C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp")
   check_file_hash(has_hash hash_is_good)
   if(has_hash)
     if(hash_is_good)
       message(VERBOSE "File already exists and hash match (skip download):
-  file='C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp'
+  file='C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp'
   SHA256='9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6'"
       )
       return()
     else()
       message(VERBOSE "File already exists but hash mismatch. Removing...")
-      file(REMOVE "C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp")
+      file(REMOVE "C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp")
     endif()
   else()
     message(VERBOSE "File already exists but no hash specified (use URL_HASH):
-  file='C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp'
+  file='C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp'
 Old file will be removed and new file downloaded from URL."
     )
-    file(REMOVE "C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp")
+    file(REMOVE "C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp")
   endif()
 endif()
 
 set(retry_number 5)
 
 message(VERBOSE "Downloading...
-   dst='C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp'
+   dst='C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp'
    timeout='none'
    inactivity timeout='none'"
 )
@@ -119,7 +119,7 @@ foreach(i RANGE ${retry_number})
 
       file(
         DOWNLOAD
-        "${url}" "C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp"
+        "${url}" "C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp"
         SHOW_PROGRESS
         # no TIMEOUT
         # no INACTIVITY_TIMEOUT
@@ -136,7 +136,7 @@ foreach(i RANGE ${retry_number})
         check_file_hash(has_hash hash_is_good)
         if(has_hash AND NOT hash_is_good)
           message(VERBOSE "Hash mismatch, removing...")
-          file(REMOVE "C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp")
+          file(REMOVE "C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann/json_impl.hpp")
         else()
           message(VERBOSE "Downloading... done")
           return()

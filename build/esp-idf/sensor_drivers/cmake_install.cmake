@@ -1,4 +1,4 @@
-# Install script for directory: C:/ModESP/components/sensor_drivers
+# Install script for directory: C:/ModESP_dev/components/sensor_drivers
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

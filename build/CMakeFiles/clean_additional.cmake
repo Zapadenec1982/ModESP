@@ -25,7 +25,6 @@ if("${CONFIG}" STREQUAL "" OR "${CONFIG}" STREQUAL "")
   "network.json.S"
   "project_elf_src_esp32s3.c"
   "rtc.json.S"
-  "sensor.json.S"
   "sensors.json.S"
   "system.json.S"
   "ui.json.S"

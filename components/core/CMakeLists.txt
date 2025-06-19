@@ -3,7 +3,6 @@ set(CONFIG_FILES
     "configs/system.json"
     "configs/climate.json"
     "configs/sensors.json"
-    "configs/sensor.json"
     "configs/actuators.json"
     "configs/alarms.json"
     "configs/network.json"

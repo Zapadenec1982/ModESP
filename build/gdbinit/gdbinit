@@ -1,2 +1,2 @@
-source C:/ModESP/build/gdbinit/symbols
-source C:/ModESP/build/gdbinit/connect
+source C:/ModESP_dev/build/gdbinit/symbols
+source C:/ModESP_dev/build/gdbinit/connect

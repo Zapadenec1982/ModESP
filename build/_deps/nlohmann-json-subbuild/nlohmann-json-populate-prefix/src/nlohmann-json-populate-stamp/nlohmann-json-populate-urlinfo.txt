@@ -3,9 +3,9 @@
 # No other meaning or use of this file is supported.
 
 method=url
-command=C:/Users/User/esp/v5.3.3/esp-idf/tools/tools/cmake/3.30.2/bin/cmake.exe;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;C:/ModESP/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/download-nlohmann-json-populate.cmake;COMMAND;C:/Users/User/esp/v5.3.3/esp-idf/tools/tools/cmake/3.30.2/bin/cmake.exe;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;C:/ModESP/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/verify-nlohmann-json-populate.cmake
-source_dir=C:/ModESP/build/_deps/nlohmann-json-src
-work_dir=C:/ModESP/build/_deps
+command=C:/Users/User/esp/v5.3.3/esp-idf/tools/tools/cmake/3.30.2/bin/cmake.exe;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/download-nlohmann-json-populate.cmake;COMMAND;C:/Users/User/esp/v5.3.3/esp-idf/tools/tools/cmake/3.30.2/bin/cmake.exe;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/verify-nlohmann-json-populate.cmake
+source_dir=C:/ModESP_dev/build/_deps/nlohmann-json-src
+work_dir=C:/ModESP_dev/build/_deps
 url(s)=https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp
 hash=SHA256=9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6
       no_extract=YES

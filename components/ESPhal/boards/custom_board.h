@@ -97,7 +97,7 @@ struct AdcConfig {
 
 static const AdcConfig ADC_CHANNELS[] = {
     // Порожній масив - ADC канали не використовуються в цій конфігурації
-    {"PLACEHOLDER", ADC_UNIT_1, ADC_CHANNEL_0, ADC_ATTEN_DB_11, "Placeholder ADC channel"}
+    {"PLACEHOLDER", ADC_UNIT_1, ADC_CHANNEL_0, ADC_ATTEN_DB_12, "Placeholder ADC channel"}
 };
 
 static const size_t ADC_CHANNELS_COUNT = sizeof(ADC_CHANNELS) / sizeof(ADC_CHANNELS[0]);

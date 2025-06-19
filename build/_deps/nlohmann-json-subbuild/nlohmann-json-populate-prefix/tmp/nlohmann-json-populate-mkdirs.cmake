@@ -6,22 +6,22 @@ cmake_minimum_required(VERSION 3.5)
 # If CMAKE_DISABLE_SOURCE_CHANGES is set to true and the source directory is an
 # existing directory in our source tree, calling file(MAKE_DIRECTORY) on it
 # would cause a fatal error, even though it would be a no-op.
-if(NOT EXISTS "C:/ModESP/build/_deps/nlohmann-json-src")
-  file(MAKE_DIRECTORY "C:/ModESP/build/_deps/nlohmann-json-src")
+if(NOT EXISTS "C:/ModESP_dev/build/_deps/nlohmann-json-src")
+  file(MAKE_DIRECTORY "C:/ModESP_dev/build/_deps/nlohmann-json-src")
 endif()
 file(MAKE_DIRECTORY
-  "C:/ModESP/build/_deps/nlohmann-json-build"
-  "C:/ModESP/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix"
-  "C:/ModESP/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/tmp"
-  "C:/ModESP/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp"
-  "C:/ModESP/managed_components/mittelab__nlohmann-json/nlohmann"
-  "C:/ModESP/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp"
+  "C:/ModESP_dev/build/_deps/nlohmann-json-build"
+  "C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix"
+  "C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/tmp"
+  "C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp"
+  "C:/ModESP_dev/managed_components/mittelab__nlohmann-json/nlohmann"
+  "C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "C:/ModESP/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/${subDir}")
+    file(MAKE_DIRECTORY "C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "C:/ModESP/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp${cfgdir}") # cfgdir has leading slash
 endif()

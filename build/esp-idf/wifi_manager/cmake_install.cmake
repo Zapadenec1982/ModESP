@@ -1,4 +1,4 @@
-# Install script for directory: C:/ModESP/components/wifi_manager
+# Install script for directory: C:/ModESP_dev/components/wifi_manager
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

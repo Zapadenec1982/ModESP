@@ -1,4 +1,4 @@
-# Install script for directory: C:/ModESP/components/core
+# Install script for directory: C:/ModESP_dev/components/core
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

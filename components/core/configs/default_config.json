@@ -26,51 +26,20 @@
         "temperature_exit": 10.0,
         "drip_time": 300
     },
-    "sensor": {
-        "poll_interval_ms": 10000,
-        "publish_on_error": true,
-        "sensors": [
-            {
-                "role": "chamber_temp",
-                "type": "NTC",
-                "publish_key": "sensors/chamber_temp",
-                "config": {
-                    "hal_id": "ADC_AMBIENT_TEMP",
-                    "ntc_type": "10K_3950",
-                    "r_series": 10000,
-                    "vcc": 3.3,
-                    "averaging_samples": 10,
-                    "offset": 0.0
-                }
-            },
-            {
-                "role": "evaporator_temp", 
-                "type": "NTC",
-                "publish_key": "sensors/evaporator_temp",
-                "config": {
-                    "hal_id": "ADC_SPARE_INPUT",
-                    "ntc_type": "10K_3950",
-                    "r_series": 10000,
-                    "vcc": 3.3,
-                    "averaging_samples": 5,
-                    "offset": 0.0
-                }
-            }
-        ]
-    },
+
     "actuators": {
         "compressor": {
-            "gpio": 4,
+            "gpio": 1,
             "active_low": false,
             "pwm_enabled": false
         },
         "evaporator_fan": {
-            "gpio": 5,
+            "gpio": 2,
             "active_low": false,
             "stop_on_defrost": true
         },
         "defrost_heater": {
-            "gpio": 6,
+            "gpio": 3,
             "active_low": false,
             "max_power_percent": 100
         }
