@@ -1,6 +1,7 @@
 idf_component_register(
     SRCS 
         "src/esphal.cpp"
+        "src/onewire_impl.cpp"
         "modules/rtc_module/rtc_module.cpp"
         "modules/sensor_module/src/sensor_module.cpp"
         # Other modules temporarily disabled until fixed:
@@ -17,6 +18,8 @@ idf_component_register(
         esp_adc
         esp_timer
         freertos
+        esp_rom
+        hal
         sensor_drivers  # Added here for linking
     REQUIRES
         json

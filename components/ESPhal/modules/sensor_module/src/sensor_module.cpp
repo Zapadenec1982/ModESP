@@ -28,16 +28,16 @@ static const char* TAG = "SensorModule";
 
 SensorModule::SensorModule(ESPhal& hal) 
     : hal_(hal) {
-    ESP_LOGI(TAG, "SensorModule created");
+    ESP_LOGI(TAG, "SensorsModule created");
 }
 
 esp_err_t SensorModule::init() {
     if (initialized_) {
-        ESP_LOGW(TAG, "SensorModule already initialized");
+        ESP_LOGW(TAG, "SensorsModule already initialized");
         return ESP_OK;
     }
     
-    ESP_LOGI(TAG, "Initializing SensorModule...");
+    ESP_LOGI(TAG, "Initializing SensorsModule...");
     
     // Log available drivers
     auto& registry = SensorDriverRegistry::instance();
@@ -51,13 +51,13 @@ esp_err_t SensorModule::init() {
     // Configuration will be loaded later via configure()
     initialized_ = true;
     
-    ESP_LOGI(TAG, "SensorModule initialized successfully");
+    ESP_LOGI(TAG, "SensorsModule initialized successfully");
     return ESP_OK;
 }
 
 void SensorModule::configure(const nlohmann::json& config) {
     safe_execute("configure_sensor_module", [&]() -> esp_err_t {
-        ESP_LOGI(TAG, "Configuring SensorModule");
+        ESP_LOGI(TAG, "Configuring SensorsModule");
         
         // Clear existing sensors
         sensors_.clear();

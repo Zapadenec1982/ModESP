@@ -20,8 +20,6 @@ extern const uint8_t climate_config_start[] asm("_binary_climate_json_start");
 extern const uint8_t climate_config_end[] asm("_binary_climate_json_end");
 extern const uint8_t sensors_config_start[] asm("_binary_sensors_json_start");
 extern const uint8_t sensors_config_end[] asm("_binary_sensors_json_end");
-extern const uint8_t sensor_config_start[] asm("_binary_sensor_json_start");
-extern const uint8_t sensor_config_end[] asm("_binary_sensor_json_end");
 extern const uint8_t actuators_config_start[] asm("_binary_actuators_json_start");
 extern const uint8_t actuators_config_end[] asm("_binary_actuators_json_end");
 extern const uint8_t alarms_config_start[] asm("_binary_alarms_json_start");
@@ -58,7 +56,6 @@ static const ConfigModule config_modules[] = {
     {"system", system_config_start, system_config_end},
     {"climate", climate_config_start, climate_config_end},
     {"sensors", sensors_config_start, sensors_config_end},
-    {"sensor", sensor_config_start, sensor_config_end},
     {"actuators", actuators_config_start, actuators_config_end},
     {"alarms", alarms_config_start, alarms_config_end},
     {"network", network_config_start, network_config_end},

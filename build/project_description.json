@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "ModESP",
-    "project_version":    "b8d8473-dirty",
+    "project_version":    "79ecac0-dirty",
     "project_path":       "C:/ModESP_dev",
     "idf_path":           "C:/Users/User/esp/v5.3.3/esp-idf",
     "build_dir":          "C:/ModESP_dev/build",
@@ -36,11 +36,11 @@
             "type": "LIBRARY",
             "lib": "__idf_ESPhal",
             "reqs": [ "json", "base_module", "core", "sensor_drivers" ],
-            "priv_reqs": [ "driver", "esp_adc", "esp_timer", "freertos", "sensor_drivers" ],
+            "priv_reqs": [ "driver", "esp_adc", "esp_timer", "freertos", "esp_rom", "hal", "sensor_drivers" ],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/ModESP_dev/build/esp-idf/ESPhal/libESPhal.a",
-            "sources": [ "C:/ModESP_dev/components/ESPhal/src/esphal.cpp", "C:/ModESP_dev/components/ESPhal/modules/rtc_module/rtc_module.cpp", "C:/ModESP_dev/components/ESPhal/modules/sensor_module/src/sensor_module.cpp" ],
+            "sources": [ "C:/ModESP_dev/components/ESPhal/src/esphal.cpp", "C:/ModESP_dev/components/ESPhal/src/onewire_impl.cpp", "C:/ModESP_dev/components/ESPhal/modules/rtc_module/rtc_module.cpp", "C:/ModESP_dev/components/ESPhal/modules/sensor_module/src/sensor_module.cpp" ],
             "include_dirs": [ "include", "boards", "modules/rtc_module", "modules/sensor_module/include" ]
         },
         "actuator_drivers": {
@@ -2935,7 +2935,7 @@
             "dir": "C:/ModESP_dev/components/ESPhal",
             "lib": "__idf_ESPhal",
             "reqs": [ "json", "base_module", "core", "sensor_drivers" ],
-            "priv_reqs": [ "driver", "esp_adc", "esp_timer", "freertos", "sensor_drivers" ],
+            "priv_reqs": [ "driver", "esp_adc", "esp_timer", "freertos", "esp_rom", "hal", "sensor_drivers" ],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "include_dirs": [ "include", "boards", "modules/rtc_module", "modules/sensor_module/include" ]

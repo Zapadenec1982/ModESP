@@ -39,11 +39,11 @@ esp_err_t register_all_modules() {
         return ret;
     }
     
-    // Register SensorModule (requires ESPhal)
+    // Register SensorsModule (requires ESPhal)
     auto sensor_module = std::make_unique<SensorModule>(Application::get_hal());
     ret = ModuleManager::register_module(std::move(sensor_module), ModuleType::HIGH);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to register SensorModule: %s", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "Failed to register SensorsModule: %s", esp_err_to_name(ret));
         return ret;
     }
     

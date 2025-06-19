@@ -5,6 +5,7 @@
 
 #include "esphal.h"
 #include "board_config.h"
+#include "onewire_impl.h"
 #include <esp_log.h>
 #include <cstring>
 #include <stdexcept>
@@ -210,9 +211,9 @@ esp_err_t ESPhal::init_onewire_buses() {
         
         ESP_LOGD(TAG, "  Creating OneWire bus: %s on pin %d", config.hal_id, config.data_pin);
         
-        // TODO: Create actual OneWireBusImpl when we implement it
-        // auto onewire_bus = std::make_unique<OneWireBusImpl>(config.data_pin, config.power_pin);
-        // onewire_buses_[config.hal_id] = std::move(onewire_bus);
+        // Create actual OneWire bus implementation
+        auto onewire_bus = std::make_unique<OneWireBusImpl>(config.data_pin, config.power_pin);
+        onewire_buses_[config.hal_id] = std::move(onewire_bus);
         
         ESP_LOGD(TAG, "    %s - Data pin: %d, Power pin: %d", 
                 config.hal_id, config.data_pin, 

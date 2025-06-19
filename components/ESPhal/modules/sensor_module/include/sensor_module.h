@@ -66,7 +66,7 @@ public:
     // === BaseModule interface ===
     
     const char* get_name() const override {
-        return "SensorModule";  // Config section: "sensors"
+        return "SensorsModule";  // Config section: "sensors"
     }
     
     esp_err_t init() override;

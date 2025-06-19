@@ -8,8 +8,8 @@
       "type": "DS18B20_Async",
       "publish_key": "state.sensor.temperature_1",
       "config": {
-        "hal_id": "ONEWIRE_BUS_1",
-        "address": "28FF123456789012",
+        "hal_id": "ONEWIRE_BUS_2",
+        "address": "99736cd4458ea328",
         "resolution": 12,
         "offset": 0.0,
         "max_retries": 3
@@ -20,8 +20,8 @@
       "type": "DS18B20_Async",
       "publish_key": "state.sensor.temperature_2",
       "config": {
-        "hal_id": "ONEWIRE_BUS_2",
-        "address": "28FF234567890123",
+        "hal_id": "ONEWIRE_BUS_1",
+        "address": "299cdcd534646128",
         "resolution": 12,
         "offset": 0.0,
         "max_retries": 3
