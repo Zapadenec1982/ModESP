@@ -102,6 +102,15 @@ esp_err_t init_all();
 void tick_all(uint32_t time_budget_ms = 8);
 
 /**
+ * @brief Update all modules except sensors (for multicore distribution)
+ * 
+ * Called from main loop on Core 0. Skips SensorModule which runs on Core 1.
+ * 
+ * @param time_budget_ms Total time budget in milliseconds (default 8ms)
+ */
+void tick_all_except_sensors(uint32_t time_budget_ms = 8);
+
+/**
  * @brief Shutdown all modules
  * 
  * Stops modules in reverse priority order.

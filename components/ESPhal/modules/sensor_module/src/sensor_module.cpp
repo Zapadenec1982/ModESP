@@ -39,9 +39,6 @@ esp_err_t SensorModule::init() {
     
     ESP_LOGI(TAG, "Initializing SensorModule...");
     
-    // Initialize built-in sensor drivers
-    ModESP::initialize_builtin_sensor_drivers();
-    
     // Log available drivers
     auto& registry = SensorDriverRegistry::instance();
     auto available_drivers = registry.get_registered_types();
@@ -129,7 +126,7 @@ esp_err_t SensorModule::create_sensor_from_config(const nlohmann::json& sensor_c
         }
         
         // Initialize driver with HAL and config
-        esp_err_t ret = driver->init(hal_, config.config);
+        esp_err_t ret = driver->init(&hal_, config.config);
         if (ret != ESP_OK) {
             ESP_LOGE(TAG, "Failed to initialize driver: %s", esp_err_to_name(ret));
             return ret;
@@ -154,6 +151,14 @@ void SensorModule::update() {
     }
     
     update_count_++;
+    
+    // Check if it's time to poll sensors
+    uint32_t now_ms = esp_timer_get_time() / 1000;
+    if (now_ms - last_poll_time_ms_ < poll_interval_ms_) {
+        return; // Not time to poll yet
+    }
+    
+    last_poll_time_ms_ = now_ms;
     
     // Poll all sensors
     for (auto& sensor : sensors_) {

@@ -76,11 +76,11 @@ public:
     /**
      * @brief Initialize the sensor driver
      * 
-     * @param hal Reference to HAL for accessing hardware resources
+     * @param hal Pointer to HAL for accessing hardware resources
      * @param config Driver-specific configuration from JSON
      * @return ESP_OK on success
      */
-    virtual esp_err_t init(ESPhal& hal, const nlohmann::json& config) = 0;
+    virtual esp_err_t init(ESPhal* hal, const nlohmann::json& config) = 0;
     
     /**
      * @brief Read current sensor value

@@ -1,42 +1,30 @@
 menu "Sensor Drivers Configuration"
 
-    config ENABLE_DS18B20_DRIVER
-        bool "Enable DS18B20 temperature sensor driver"
+    config SENSOR_DRIVER_DS18B20_ASYNC_ENABLED
+        bool "Enable DS18B20 Async driver"
         default y
         help
-            Enable support for DS18B20 OneWire temperature sensors.
-            This driver supports automatic device discovery, configurable
-            resolution, and temperature offset calibration.
+            Enable non-blocking DS18B20 driver with state machine.
+            Saves ~18KB of flash if disabled.
 
-    config ENABLE_NTC_DRIVER
+    config SENSOR_DRIVER_NTC_ENABLED
         bool "Enable NTC thermistor driver"
         default y
         help
-            Enable support for NTC thermistors connected to ADC channels.
-            Supports multiple NTC profiles (10K, 100K) and both Beta
-            coefficient and Steinhart-Hart equation calculations.
+            Enable support for NTC thermistor temperature sensors.
+            Disable to save ~10KB of flash if not using NTC.
 
-    config ENABLE_PRESSURE_4_20MA_DRIVER
+    config SENSOR_DRIVER_PRESSURE_4_20MA_ENABLED
         bool "Enable 4-20mA pressure sensor driver"
         default n
         help
             Enable support for industrial 4-20mA pressure sensors.
-            Requires proper signal conditioning circuit.
 
-    config ENABLE_GPIO_INPUT_DRIVER
-        bool "Enable GPIO input sensor driver"
+    config SENSOR_DRIVER_GPIO_INPUT_ENABLED
+        bool "Enable GPIO input driver"
         default y
         help
-            Enable support for digital inputs like door switches,
-            alarm contacts, and other binary sensors.
-
-    config ENABLE_MODBUS_SENSOR_DRIVER
-        bool "Enable Modbus sensor driver"
-        default n
-        depends on ENABLE_MODBUS_SUPPORT
-        help
-            Enable support for sensors connected via Modbus RTU/TCP.
-            Allows reading from industrial sensors and controllers.
+            Enable support for digital GPIO inputs (switches, buttons).
 
     config SENSOR_DRIVER_MAX_INSTANCES
         int "Maximum number of sensor instances"

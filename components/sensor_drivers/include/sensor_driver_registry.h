@@ -88,7 +88,7 @@ private:
 
 // Forward declarations
 class NTCDriver;
-class DS18B20Driver;
+class DS18B20AsyncDriver;
 
 /**
  * @brief Helper class for automatic driver registration

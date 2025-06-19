@@ -8,7 +8,10 @@
 #include <esp_log.h>
 #include <cstring>
 #include <stdexcept>
+#include <map>
 #include "esp_mac.h"
+#include "esp_adc/adc_oneshot.h"
+#include "esp_adc/adc_cali.h"
 
 static_assert(sizeof(BoardConfig::BOARD_NAME) > 1, 
     "BoardConfig::BOARD_NAME must be defined in the board configuration file.");
@@ -65,6 +68,14 @@ esp_err_t ESPhal::init() {
     ESP_LOGI(TAG, "  - GPIO inputs: %zu", gpio_inputs_.size());
     ESP_LOGI(TAG, "  - OneWire buses: %zu", onewire_buses_.size());
     ESP_LOGI(TAG, "  - ADC channels: %zu", adc_channels_.size());
+    
+    // Log available ADC channels
+    if (!adc_channels_.empty()) {
+        ESP_LOGI(TAG, "Available ADC channels:");
+        for (const auto& [id, channel] : adc_channels_) {
+            ESP_LOGI(TAG, "    - %s", id.c_str());
+        }
+    }
     
     return ESP_OK;
 }
@@ -212,6 +223,89 @@ esp_err_t ESPhal::init_onewire_buses() {
     return ESP_OK;
 }
 
+// Shared ADC unit handles - one per ADC unit
+static std::map<adc_unit_t, adc_oneshot_unit_handle_t> shared_adc_handles;
+
+// Real ADC implementation using new oneshot API with shared unit handles
+class AdcChannelImpl : public IAdcChannel {
+public:
+    AdcChannelImpl(adc_unit_t unit, adc_channel_t channel, adc_atten_t attenuation, const std::string& id) 
+        : unit_(unit), channel_(channel), attenuation_(attenuation), id_(id) {
+        
+        // Get or create shared ADC unit handle
+        if (shared_adc_handles.find(unit) == shared_adc_handles.end()) {
+            // Create new unit handle
+            adc_oneshot_unit_init_cfg_t init_config = {
+                .unit_id = unit,
+                .clk_src = ADC_RTC_CLK_SRC_DEFAULT,
+                .ulp_mode = ADC_ULP_MODE_DISABLE,
+            };
+            
+            adc_oneshot_unit_handle_t handle;
+            esp_err_t ret = adc_oneshot_new_unit(&init_config, &handle);
+            if (ret != ESP_OK) {
+                ESP_LOGE("AdcChannelImpl", "Failed to initialize ADC unit %d: %s", unit, esp_err_to_name(ret));
+                return;
+            }
+            
+            shared_adc_handles[unit] = handle;
+            ESP_LOGD("AdcChannelImpl", "Created new ADC unit handle for unit %d", unit);
+        }
+        
+        // Configure this channel on the shared unit
+        adc_oneshot_chan_cfg_t config = {
+            .atten = attenuation,
+            .bitwidth = ADC_BITWIDTH_12,
+        };
+        
+        esp_err_t ret = adc_oneshot_config_channel(shared_adc_handles[unit], channel, &config);
+        if (ret != ESP_OK) {
+            ESP_LOGE("AdcChannelImpl", "Failed to configure ADC channel %d: %s", channel, esp_err_to_name(ret));
+            return;
+        }
+        
+        ESP_LOGD("AdcChannelImpl", "ADC channel %s configured: Unit=%d, Channel=%d, Atten=%d", 
+                 id_.c_str(), unit, channel, attenuation);
+    }
+    
+    HalResult<int> read_raw() override {
+        HalResult<int> result;
+        
+        auto it = shared_adc_handles.find(unit_);
+        if (it == shared_adc_handles.end()) {
+            result.error = ESP_ERR_INVALID_STATE;
+            result.value = 0;
+            return result;
+        }
+        
+        int adc_reading;
+        esp_err_t err = adc_oneshot_read(it->second, channel_, &adc_reading);
+        result.error = err;
+        result.value = (err == ESP_OK) ? adc_reading : 0;
+        
+        return result;
+    }
+    
+    HalResult<int> read_voltage_mv() override {
+        auto raw = read_raw();
+        if (raw.is_ok()) {
+            HalResult<int> result;
+            // Convert raw ADC reading to voltage in mV
+            // This uses a simple linear conversion - for more accuracy, use esp_adc_cal
+            result.value = (raw.value * 3300) / 4095;  // Assuming 3.3V reference and 12-bit ADC
+            result.error = ESP_OK;
+            return result;
+        }
+        return {0, raw.error};
+    }
+    
+private:
+    adc_unit_t unit_;
+    adc_channel_t channel_;
+    adc_atten_t attenuation_;
+    std::string id_;
+};
+
 esp_err_t ESPhal::init_adc_channels() {
     ESP_LOGI(TAG, "Initializing ADC channels...");
     
@@ -221,9 +315,9 @@ esp_err_t ESPhal::init_adc_channels() {
         ESP_LOGD(TAG, "  Creating ADC channel: %s on ADC%d_CH%d", 
                 config.hal_id, config.unit, config.channel);
         
-        // TODO: Create actual AdcChannelImpl when we implement it
-        // auto adc_channel = std::make_unique<AdcChannelImpl>(config.unit, config.channel, config.attenuation);
-        // adc_channels_[config.hal_id] = std::move(adc_channel);
+        // Create real ADC channel
+        auto adc_channel = std::make_unique<AdcChannelImpl>(config.unit, config.channel, config.attenuation, config.hal_id);
+        adc_channels_[config.hal_id] = std::move(adc_channel);
         
         ESP_LOGD(TAG, "    %s - Unit: %d, Channel: %d, Atten: %d", 
                 config.hal_id, config.unit, config.channel, config.attenuation);

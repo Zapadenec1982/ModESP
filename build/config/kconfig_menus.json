@@ -19819,10 +19819,7 @@
                         "help": "After the panic handler executes, you can specify a number of seconds to\nwait before the device reboots.",
                         "id": "ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS",
                         "name": "ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS",
-                        "range": [
-                            0,
-                            99
-                        ],
+                        "range": null,
                         "title": "Panic reboot delay (Seconds)",
                         "type": "int"
                     },
@@ -31288,6 +31285,16 @@
                                 "range": null,
                                 "title": "Rev C - Display Unit",
                                 "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice ESPHAL_BOARD_TYPE>",
+                                "help": "Custom board configuration with:\n- 4x Relay outputs (GPIO 1-4)\n- 5x Button inputs (GPIO 9-13)\n- I2C OLED Display (GPIO 15-16)\n- 2x DS18B20 sensors (GPIO 7-8)",
+                                "id": "ESPHAL_BOARD_CUSTOM",
+                                "name": "ESPHAL_BOARD_CUSTOM",
+                                "range": null,
+                                "title": "Custom Board",
+                                "type": "bool"
                             }
                         ],
                         "depends_on": null,
@@ -31435,19 +31442,19 @@
                     {
                         "children": [],
                         "depends_on": null,
-                        "help": "Enable support for DS18B20 OneWire temperature sensors.\nThis driver supports automatic device discovery, configurable\nresolution, and temperature offset calibration.",
-                        "id": "ENABLE_DS18B20_DRIVER",
-                        "name": "ENABLE_DS18B20_DRIVER",
+                        "help": "Enable non-blocking DS18B20 driver with state machine.\nSaves ~18KB of flash if disabled.",
+                        "id": "SENSOR_DRIVER_DS18B20_ASYNC_ENABLED",
+                        "name": "SENSOR_DRIVER_DS18B20_ASYNC_ENABLED",
                         "range": null,
-                        "title": "Enable DS18B20 temperature sensor driver",
+                        "title": "Enable DS18B20 Async driver",
                         "type": "bool"
                     },
                     {
                         "children": [],
                         "depends_on": null,
-                        "help": "Enable support for NTC thermistors connected to ADC channels.\nSupports multiple NTC profiles (10K, 100K) and both Beta\ncoefficient and Steinhart-Hart equation calculations.",
-                        "id": "ENABLE_NTC_DRIVER",
-                        "name": "ENABLE_NTC_DRIVER",
+                        "help": "Enable support for NTC thermistor temperature sensors.\nDisable to save ~10KB of flash if not using NTC.",
+                        "id": "SENSOR_DRIVER_NTC_ENABLED",
+                        "name": "SENSOR_DRIVER_NTC_ENABLED",
                         "range": null,
                         "title": "Enable NTC thermistor driver",
                         "type": "bool"
@@ -31455,9 +31462,9 @@
                     {
                         "children": [],
                         "depends_on": null,
-                        "help": "Enable support for industrial 4-20mA pressure sensors.\nRequires proper signal conditioning circuit.",
-                        "id": "ENABLE_PRESSURE_4_20MA_DRIVER",
-                        "name": "ENABLE_PRESSURE_4_20MA_DRIVER",
+                        "help": "Enable support for industrial 4-20mA pressure sensors.",
+                        "id": "SENSOR_DRIVER_PRESSURE_4_20MA_ENABLED",
+                        "name": "SENSOR_DRIVER_PRESSURE_4_20MA_ENABLED",
                         "range": null,
                         "title": "Enable 4-20mA pressure sensor driver",
                         "type": "bool"
@@ -31465,21 +31472,11 @@
                     {
                         "children": [],
                         "depends_on": null,
-                        "help": "Enable support for digital inputs like door switches,\nalarm contacts, and other binary sensors.",
-                        "id": "ENABLE_GPIO_INPUT_DRIVER",
-                        "name": "ENABLE_GPIO_INPUT_DRIVER",
+                        "help": "Enable support for digital GPIO inputs (switches, buttons).",
+                        "id": "SENSOR_DRIVER_GPIO_INPUT_ENABLED",
+                        "name": "SENSOR_DRIVER_GPIO_INPUT_ENABLED",
                         "range": null,
-                        "title": "Enable GPIO input sensor driver",
-                        "type": "bool"
-                    },
-                    {
-                        "children": [],
-                        "depends_on": "ENABLE_MODBUS_SUPPORT",
-                        "help": "Enable support for sensors connected via Modbus RTU/TCP.\nAllows reading from industrial sensors and controllers.",
-                        "id": "ENABLE_MODBUS_SENSOR_DRIVER",
-                        "name": "ENABLE_MODBUS_SENSOR_DRIVER",
-                        "range": null,
-                        "title": "Enable Modbus sensor driver",
+                        "title": "Enable GPIO input driver",
                         "type": "bool"
                     },
                     {

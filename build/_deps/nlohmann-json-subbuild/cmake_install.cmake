@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/User/ModESP/build/_deps/nlohmann-json-subbuild
+# Install script for directory: C:/ModESP/build/_deps/nlohmann-json-subbuild
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -47,6 +47,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-  file(WRITE "C:/Users/User/ModESP/build/_deps/nlohmann-json-subbuild/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "C:/ModESP/build/_deps/nlohmann-json-subbuild/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

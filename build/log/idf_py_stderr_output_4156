@@ -1,0 +1,2 @@
+CMake Error: The current CMakeCache.txt directory C:/ModESP_dev/build/CMakeCache.txt is different than the directory c:/ModESP/build where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt
+CMake Error: The source "C:/ModESP_dev/CMakeLists.txt" does not match the source "C:/ModESP/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.

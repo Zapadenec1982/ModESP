@@ -1,198 +1,110 @@
-# Модульна архітектура драйверів датчиків
+# Sensor Drivers Component
 
-## Огляд
+This component provides modular sensor driver architecture for the ModESP system.
 
-Система ModuChill використовує повністю модульну архітектуру для драйверів датчиків, де кожен тип датчика є окремим самодостатнім компонентом. Це дозволяє:
+## Architecture
 
-- ✅ Додавати нові типи датчиків без зміни коду SensorModule
-- ✅ Видаляти непотрібні драйвери через конфігурацію
-- ✅ Кожен драйвер містить всю специфічну логіку, налаштування та UI схему
-- ✅ SensorModule працює з уніфікованим інтерфейсом, не знаючи деталей датчиків
+The sensor drivers follow a plugin-based architecture where each driver:
+- Implements the `ISensorDriver` interface
+- Is self-contained with all sensor-specific logic
+- Registers itself with the `SensorDriverRegistry`
+- Provides UI schema for configuration
 
-## Архітектура
+## Currently Implemented Drivers
 
-```
-┌─────────────────┐     ┌──────────────────┐
-│  SensorModule   │────▶│ ISensorDriver    │ (interface)
-└─────────────────┘     └──────────────────┘
-         │                       ▲
-         │                       │ implements
-         ▼                       │
-┌─────────────────┐     ┌──────────────────┐
-│ DriverRegistry  │────▶│  DS18B20Driver   │
-└─────────────────┘     ├──────────────────┤
-                        │  NTCDriver       │
-                        ├──────────────────┤
-                        │  PressureDriver  │
-                        └──────────────────┘
-```
+- **DS18B20AsyncDriver** - Non-blocking driver for DS18B20 OneWire temperature sensors
+- **NTCDriver** - Driver for NTC thermistors with various profiles
+- **GpioInputDriver** - Driver for digital inputs (switches, buttons)
 
-## Структура файлів
+## Driver Interface
 
-```
-components/
-├── sensor_drivers/              # Базові інтерфейси та реєстр
-│   ├── include/
-│   │   ├── sensor_driver_interface.h
-│   │   └── sensor_driver_registry.h
-│   ├── CMakeLists.txt
-│   └── Kconfig
-├── sensor_drivers/ds18b20/      # Драйвер DS18B20
-│   ├── include/
-│   │   └── ds18b20_driver.h
-│   ├── src/
-│   │   └── ds18b20_driver.cpp
-│   └── CMakeLists.txt
-├── sensor_drivers/ntc/          # Драйвер NTC термістора
-│   ├── include/
-│   │   └── ntc_driver.h
-│   ├── src/
-│   │   └── ntc_driver.cpp
-│   └── CMakeLists.txt
-└── sensor_drivers/pressure/     # Драйвер датчика тиску (приклад)
-    ├── include/
-    │   └── pressure_driver.h
-    ├── src/
-    │   └── pressure_driver.cpp
-    └── CMakeLists.txt
+Each driver must implement the following methods:
+
+```cpp
+class ISensorDriver {
+public:
+    // Initialize with HAL and config
+    virtual esp_err_t init(ESPhal* hal, const nlohmann::json& config) = 0;
+    
+    // Read sensor value
+    virtual SensorReading read() = 0;
+    
+    // Get driver type identifier
+    virtual std::string get_type() const = 0;
+    
+    // Configuration management
+    virtual nlohmann::json get_config() const = 0;
+    virtual esp_err_t set_config(const nlohmann::json& config) = 0;
+    
+    // UI schema for configuration
+    virtual nlohmann::json get_ui_schema() const = 0;
+    
+    // Optional calibration
+    virtual esp_err_t calibrate(const nlohmann::json& calibration_data);
+};
 ```
 
-## Додавання нового драйвера
+## Adding a New Driver
 
-### 1. Створіть новий компонент драйвера
-
-```bash
-mkdir -p components/sensor_drivers/my_sensor/{include,src}
-```
-
-### 2. Реалізуйте інтерфейс ISensorDriver
-
+### 1. Create driver header
 ```cpp
 // my_sensor_driver.h
 #pragma once
 #include "sensor_driver_interface.h"
 
 class MySensorDriver : public ISensorDriver {
-public:
-    // Реалізуйте всі методи інтерфейсу
-    esp_err_t init(ESPhal& hal, const nlohmann::json& config) override;
-    SensorReading read() override;
-    std::string get_type() const override { return "MY_SENSOR"; }
-    // ... інші методи
+    // Implementation
 };
 ```
 
-### 3. Зареєструйте драйвер
-
+### 2. Implement driver
 ```cpp
 // my_sensor_driver.cpp
 #include "my_sensor_driver.h"
 #include "sensor_driver_registry.h"
 
-// Автоматична реєстрація при старті
-static SensorDriverRegistrar<MySensorDriver> registrar("MY_SENSOR");
+// Implementation...
 
-// Реалізація методів...
+// Auto-register driver
+static bool registered = []() {
+    SensorDriverRegistry::instance().register_driver(
+        "MY_SENSOR",
+        []() -> std::unique_ptr<ISensorDriver> {
+            return std::make_unique<MySensorDriver>();
+        }
+    );
+    return true;
+}();
 ```
 
-### 4. Створіть CMakeLists.txt
+### 3. Add to build system
+Update `CMakeLists.txt` and optionally add Kconfig options.
 
-```cmake
-idf_component_register(
-    SRCS "src/my_sensor_driver.cpp"
-    INCLUDE_DIRS "include"
-    REQUIRES sensor_drivers ESPhal json
-)
-```
+## Configuration
 
-### 5. Додайте в Kconfig (опційно)
-
-```kconfig
-config ENABLE_MY_SENSOR_DRIVER
-    bool "Enable My Sensor driver"
-    default n
-    help
-        Enable support for My Sensor devices.
-```
-
-## Конфігурація
-
-### sensors.json
+Drivers are configured through JSON:
 
 ```json
 {
   "sensors": [
     {
-      "role": "my_measurement",
-      "type": "MY_SENSOR",              // Тип драйвера (як зареєстровано)
-      "publish_key": "state.sensor.my_measurement",
-      "config": {                       // Специфічна конфігурація драйвера
-        "hal_id": "ADC_CHANNEL_X",
-        "custom_param": 42,
-        "calibration": [1.0, 0.0]
+      "role": "temperature",
+      "type": "DS18B20_Async",
+      "config": {
+        "hal_id": "ONEWIRE_BUS_1",
+        "address": "28FF123456789012",
+        "resolution": 12
       }
     }
   ]
 }
 ```
 
-## UI схема драйвера
+## Memory Optimization
 
-Кожен драйвер повертає JSON схему для автоматичної генерації UI:
+Use Kconfig to disable unused drivers and save flash space:
 
-```cpp
-nlohmann::json MySensorDriver::get_ui_schema() const {
-    return {
-        {"type", "object"},
-        {"title", "My Sensor Settings"},
-        {"properties", {
-            {"sensitivity", {
-                {"type", "number"},
-                {"title", "Sensitivity"},
-                {"minimum", 0.1},
-                {"maximum", 10.0},
-                {"default", 1.0},
-                {"ui:widget", "slider"}
-            }},
-            {"mode", {
-                {"type", "string"},
-                {"title", "Operating Mode"},
-                {"enum", {"normal", "fast", "precise"}},
-                {"default", "normal"},
-                {"ui:widget", "select"}
-            }}
-        }}
-    };
-}
+```bash
+idf.py menuconfig
+# Component config → Sensor Drivers Configuration
 ```
-
-## Переваги архітектури
-
-1. **Модульність**: Кожен драйвер - окремий компонент
-2. **Розширюваність**: Додавання нових типів без зміни ядра
-3. **Інкапсуляція**: Вся логіка датчика в одному місці
-4. **Конфігурованість**: Вибір драйверів через menuconfig
-5. **UI інтеграція**: Автоматична генерація налаштувань
-6. **Тестованість**: Кожен драйвер тестується окремо
-
-## Приклади використання
-
-### SensorModule не знає про типи датчиків
-
-```cpp
-// SensorModule просто створює драйвери через реєстр
-auto driver = SensorDriverRegistry::instance().create_driver(config.type);
-if (driver) {
-    driver->init(hal_, config.config);
-    sensors_.push_back({std::move(driver), config});
-}
-```
-
-### Динамічне отримання доступних драйверів
-
-```cpp
-auto available = SensorDriverRegistry::instance().get_registered_types();
-// ["DS18B20", "NTC", "PRESSURE_4_20MA", ...]
-```
-
-Ця архітектура забезпечує максимальну гнучкість та розширюваність системи!

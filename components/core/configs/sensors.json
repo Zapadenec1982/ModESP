@@ -1,80 +1,29 @@
 {
-  "poll_interval_ms": 2000,
+  "poll_interval_ms": 10000,
   "publish_on_error": true,
   "sensors": [
     {
       "role": "chamber_temp",
-      "type": "DS18B20",
+      "type": "DS18B20_Async",
       "publish_key": "state.sensor.chamber_temp",
       "config": {
-        "hal_id": "ONEWIRE_CHAMBER",
-        "address": "28ff640264013c28",
+        "hal_id": "ONEWIRE_BUS_1",
+        "address": "auto",
         "resolution": 12,
         "offset": 0.0,
-        "use_crc": true
+        "read_timeout_ms": 1000
       }
     },
     {
-      "role": "evaporator_temp",
-      "type": "DS18B20",
+      "role": "evaporator_temp", 
+      "type": "DS18B20_Async",
       "publish_key": "state.sensor.evaporator_temp",
       "config": {
-        "hal_id": "ONEWIRE_EVAPORATOR",
-        "address": "28ff640264013c29",
-        "resolution": 11,
-        "offset": -0.5,
-        "use_crc": true
-      }
-    },
-    {
-      "role": "ambient_temp",
-      "type": "NTC",
-      "publish_key": "state.sensor.ambient_temp",
-      "config": {
-        "hal_id": "ADC_AMBIENT_TEMP",
-        "ntc_type": "10K_3950",
-        "r_series": 10000,
-        "vcc": 3.3,
-        "averaging_samples": 10,
-        "offset": 0.0
-      }
-    },
-    {
-      "role": "compressor_temp",
-      "type": "NTC",
-      "publish_key": "state.sensor.compressor_temp",
-      "config": {
-        "hal_id": "ADC_SPARE_INPUT",
-        "ntc_type": "100K_3950",
-        "r_series": 100000,
-        "vcc": 3.3,
-        "averaging_samples": 20,
+        "hal_id": "ONEWIRE_BUS_2",
+        "address": "auto",
+        "resolution": 12,
         "offset": 0.0,
-        "steinhart_hart": {
-          "a": 0.001129148,
-          "b": 0.000234125,
-          "c": 0.0000000876741
-        }
-      }
-    },
-    {
-      "role": "door_open",
-      "type": "GPIO_INPUT",
-      "publish_key": "state.input.door_open",
-      "config": {
-        "hal_id": "INPUT_DOOR_SWITCH",
-        "invert": false,
-        "debounce_ms": 50
-      }
-    },
-    {
-      "role": "defrost_end",
-      "type": "GPIO_INPUT",
-      "publish_key": "state.input.defrost_end",
-      "config": {
-        "hal_id": "INPUT_DEFROST_END",
-        "invert": true,
-        "debounce_ms": 100
+        "read_timeout_ms": 1000
       }
     }
   ]

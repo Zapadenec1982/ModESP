@@ -17,6 +17,7 @@ idf_component_register(
         esp_adc
         esp_timer
         freertos
+        sensor_drivers  # Added here for linking
     REQUIRES
         json
         base_module

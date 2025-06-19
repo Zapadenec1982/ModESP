@@ -126,8 +126,9 @@ private:
     uint32_t total_errors_ = 0;
     
     // Configuration
-    uint32_t poll_interval_ms_ = 1000;  // Default 1 second
+    uint32_t poll_interval_ms_ = 10000;  // Default 10 seconds
     bool publish_on_error_ = true;       // Publish error states
+    uint32_t last_poll_time_ms_ = 0;     // Last time sensors were polled
     
     // Helper methods
     esp_err_t create_sensor_from_config(const nlohmann::json& sensor_config);

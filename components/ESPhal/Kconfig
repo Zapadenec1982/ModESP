@@ -36,6 +36,15 @@ menu "ESPhal Configuration"
                 - TFT display interface
                 - Touch controls
 
+        config ESPHAL_BOARD_CUSTOM
+            bool "Custom Board"
+            help
+                Custom board configuration with:
+                - 4x Relay outputs (GPIO 1-4)
+                - 5x Button inputs (GPIO 9-13)
+                - I2C OLED Display (GPIO 15-16)
+                - 2x DS18B20 sensors (GPIO 7-8)
+
     endchoice
 
     config ESPHAL_ENABLE_DEBUG_LOGGING

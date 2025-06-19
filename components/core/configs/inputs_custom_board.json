@@ -1,0 +1,52 @@
+{
+  "comment": "Конфігурація кнопок для Custom Board",
+  "update_interval_ms": 50,
+  "debounce_ms": 20,
+  "inputs": [
+    {
+      "role": "button_1",
+      "hal_id": "BUTTON_1",
+      "publish_key": "state.input.button_1",
+      "config": {
+        "pull_up": true,
+        "active_low": true
+      }
+    },
+    {
+      "role": "button_2",
+      "hal_id": "BUTTON_2",
+      "publish_key": "state.input.button_2",
+      "config": {
+        "pull_up": true,
+        "active_low": true
+      }
+    },
+    {
+      "role": "button_3",
+      "hal_id": "BUTTON_3",
+      "publish_key": "state.input.button_3",
+      "config": {
+        "pull_up": true,
+        "active_low": true
+      }
+    },
+    {
+      "role": "button_4",
+      "hal_id": "BUTTON_4",
+      "publish_key": "state.input.button_4",
+      "config": {
+        "pull_up": true,
+        "active_low": true
+      }
+    },
+    {
+      "role": "button_5",
+      "hal_id": "BUTTON_5",
+      "publish_key": "state.input.button_5",
+      "config": {
+        "pull_up": true,
+        "active_low": true
+      }
+    }
+  ]
+}

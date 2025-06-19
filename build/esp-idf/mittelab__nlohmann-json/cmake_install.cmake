@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/User/ModESP/managed_components/mittelab__nlohmann-json
+# Install script for directory: C:/ModESP/managed_components/mittelab__nlohmann-json
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

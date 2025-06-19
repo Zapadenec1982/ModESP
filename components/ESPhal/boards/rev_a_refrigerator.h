@@ -11,7 +11,7 @@
 #pragma once
 
 #include "driver/gpio.h" // ДОДАНО: для визначення GPIO_NUM_xx
-#include "driver/adc.h"
+#include "esp_adc/adc_oneshot.h"
 
 namespace BoardConfig {
 

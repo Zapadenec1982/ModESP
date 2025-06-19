@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/User/ModESP/components/actuator_drivers
+# Install script for directory: C:/ModESP/components/actuator_drivers
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

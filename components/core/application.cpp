@@ -5,6 +5,7 @@
 #include "module_manager.h"
 #include "module_registry.h"
 #include "esphal.h"
+#include "sensor_driver_init.h"
 
 #include <esp_log.h>
 #include <esp_timer.h>
@@ -41,6 +42,9 @@ static constexpr uint32_t HEALTH_CHECK_PERIOD_MS = 1000; // 1Hz
 static constexpr uint32_t MODULE_UPDATE_BUDGET_MS = 8;   // 8ms for modules
 static constexpr uint32_t EVENT_PROCESS_BUDGET_MS = 2;   // 2ms for events
 
+// Task handles for multicore operation
+static TaskHandle_t sensor_task_handle = nullptr;
+
 esp_err_t init() {
     ESP_LOGI(TAG, "ModuChill Application starting...");
     ESP_LOGI(TAG, "Free heap: %lu bytes", esp_get_free_heap_size());
@@ -69,6 +73,9 @@ esp_err_t init() {
         current_state = State::ERROR;
         return ret;
     }
+    
+    // Initialize built-in sensor drivers
+    initialize_builtin_sensor_drivers();
     
     // Register all available modules
     ret = ModuleRegistry::register_all_modules();
@@ -112,8 +119,67 @@ esp_err_t init() {
     return ESP_OK;
 }
 
+// Sensor task running on Core 1
+static void sensor_task(void* pvParameters) {
+    ESP_LOGI(TAG, "Sensor task started on Core %d", xPortGetCoreID());
+    
+    TickType_t last_wake_time = xTaskGetTickCount();
+    const TickType_t sensor_period = pdMS_TO_TICKS(100); // 10Hz for sensors
+    
+    uint32_t sensor_cycle_count = 0;
+    uint64_t sensor_total_time_us = 0;
+    uint32_t sensor_max_time_us = 0;
+    uint32_t last_report_ms = 0;
+    
+    while (current_state == State::RUNNING) {
+        uint64_t start_time_us = esp_timer_get_time();
+        
+        // Find and update sensor module on Core 1
+        BaseModule* sensor_module = ModuleManager::find_module("SensorModule");
+        if (sensor_module) {
+            sensor_module->update();
+        }
+        
+        uint64_t end_time_us = esp_timer_get_time();
+        uint32_t cycle_time_us = (uint32_t)(end_time_us - start_time_us);
+        
+        // Update sensor task metrics
+        sensor_cycle_count++;
+        sensor_total_time_us += cycle_time_us;
+        sensor_max_time_us = std::max(sensor_max_time_us, cycle_time_us);
+        
+        // Report sensor task performance every 10 seconds
+        uint32_t now_ms = (uint32_t)(esp_timer_get_time() / 1000);
+        if (now_ms - last_report_ms >= 10000) {
+            uint32_t avg_time_us = sensor_cycle_count > 0 ? 
+                (uint32_t)(sensor_total_time_us / sensor_cycle_count) : 0;
+            ESP_LOGI(TAG, "Core 1 Sensors: %lu cycles, %lu/%lu μs (avg/max)", 
+                     sensor_cycle_count, avg_time_us, sensor_max_time_us);
+            last_report_ms = now_ms;
+        }
+        
+        vTaskDelayUntil(&last_wake_time, sensor_period);
+    }
+    
+    ESP_LOGI(TAG, "Sensor task ended");
+    vTaskDelete(nullptr);
+}
+
 [[noreturn]] void run() {
     ESP_LOGI(TAG, "Main loop starting @ %luHz", 1000UL / MAIN_LOOP_PERIOD_MS);
+    
+    // Create sensor task on Core 1
+    xTaskCreatePinnedToCore(
+        sensor_task,          // Function
+        "sensor_task",        // Name
+        4096,                 // Stack size
+        nullptr,              // Parameters
+        5,                    // Priority
+        &sensor_task_handle,  // Handle
+        1                     // Core 1
+    );
+    
+    ESP_LOGI(TAG, "Main loop (Core 0) and sensor task (Core 1) started");
     
     TickType_t last_wake_time = xTaskGetTickCount();
     
@@ -125,8 +191,8 @@ esp_err_t init() {
         
         uint32_t cycle_start = esp_timer_get_time();
         
-        // 1. Update all modules (8ms budget)
-        ModuleManager::tick_all(MODULE_UPDATE_BUDGET_MS);
+        // 1. Update non-sensor modules only (Core 0)
+        ModuleManager::tick_all_except_sensors(MODULE_UPDATE_BUDGET_MS);
         
         // 2. Process events (2ms budget)
         EventBus::process(EVENT_PROCESS_BUDGET_MS);
@@ -135,6 +201,16 @@ esp_err_t init() {
         uint32_t now_ms = esp_timer_get_time() / 1000;
         if (now_ms - last_health_check_ms >= HEALTH_CHECK_PERIOD_MS) {
             check_health();
+            
+            // Log CPU usage and cycle metrics
+            uint8_t cpu_usage = get_cpu_usage();
+            ESP_LOGI(TAG, "CPU: %u%%, Cycle: %lu/%lu/%lu μs (min/avg/max), Free heap: %zu KB", 
+                     cpu_usage,
+                     min_cycle_time_us,
+                     cycle_count > 0 ? (uint32_t)(total_cycle_time_us / cycle_count) : 0,
+                     max_cycle_time_us,
+                     get_free_heap() / 1024);
+            
             last_health_check_ms = now_ms;
         }
         

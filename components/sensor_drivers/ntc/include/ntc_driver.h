@@ -35,7 +35,7 @@ public:
     NTCDriver() = default;
     ~NTCDriver() override = default;    
     // ISensorDriver interface implementation
-    esp_err_t init(ESPhal& hal, const nlohmann::json& config) override;
+    esp_err_t init(ESPhal* hal, const nlohmann::json& config) override;
     SensorReading read() override;
     std::string get_type() const override { return "NTC"; }
     std::string get_description() const override { return "NTC Thermistor Temperature Sensor"; }
@@ -56,7 +56,7 @@ private:
         float beta = 3950.0f;        // Beta coefficient
         float r_series = 10000.0f;   // Series resistor value
         float vcc = 3.3f;            // Supply voltage
-        int averaging_samples = 10;   // Number of samples to average
+        int averaging_samples = 3;    // Number of samples to average
         float offset = 0.0f;         // Temperature offset for calibration
         
         // Steinhart-Hart coefficients (optional, for better accuracy)

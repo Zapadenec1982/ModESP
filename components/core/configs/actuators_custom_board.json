@@ -1,0 +1,41 @@
+{
+  "comment": "Конфігурація актуаторів для Custom Board",
+  "actuators": [
+    {
+      "role": "relay_1",
+      "type": "RELAY",
+      "hal_id": "RELAY_1",
+      "config": {
+        "active_high": true,
+        "initial_state": false
+      }
+    },
+    {
+      "role": "relay_2",
+      "type": "RELAY",
+      "hal_id": "RELAY_2",
+      "config": {
+        "active_high": true,
+        "initial_state": false
+      }
+    },
+    {
+      "role": "relay_3",
+      "type": "RELAY",
+      "hal_id": "RELAY_3",
+      "config": {
+        "active_high": true,
+        "initial_state": false
+      }
+    },
+    {
+      "role": "relay_4",
+      "type": "RELAY",
+      "hal_id": "RELAY_4",
+      "config": {
+        "active_high": true,
+        "initial_state": false
+      }
+    }
+  ]
+}

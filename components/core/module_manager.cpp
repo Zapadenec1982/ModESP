@@ -301,49 +301,94 @@ void tick_all(uint32_t time_budget_ms) {
         });
         
         uint64_t end_time_us = esp_timer_get_time();
-        uint64_t update_time_us = end_time_us - start_time_us;
+        uint32_t update_time_us = (uint32_t)(end_time_us - start_time_us);
         
-        // Оновлюємо статистику
-        entry.last_update_time_us = (uint32_t)update_time_us;
-        entry.total_update_time_us += update_time_us;
+        // Оновлюємо статистику продуктивності
         entry.update_count++;
+        entry.last_update_time_us = update_time_us;
+        entry.total_update_time_us += update_time_us;
+        entry.max_update_time_us = std::max(entry.max_update_time_us, update_time_us);
         
-        if (update_time_us > entry.max_update_time_us) {
-            entry.max_update_time_us = (uint32_t)update_time_us;
-        }
-        
-        // Перевіряємо на перевищення дедлайну
-        uint32_t max_allowed_us = entry.module->get_max_update_time_us();
-        if (max_allowed_us == 0) {
-            max_allowed_us = get_type_max_time_us(entry.type);
-        }
-        
-        if (update_time_us > max_allowed_us) {
+        // Перевіряємо дедлайн
+        uint32_t max_time_us = get_type_max_time_us(entry.type);
+        if (update_time_us > max_time_us) {
             entry.deadline_misses++;
-            ESP_LOGW(TAG, "%s update took %lluμs (max: %luμs)", 
-                     entry.module->get_name(), update_time_us, max_allowed_us);
+            ESP_LOGW(TAG, "%s update took %luμs (max: %luμs)", 
+                     entry.module->get_name(), update_time_us, max_time_us);
         }
         
-        // Callback для аналізу продуктивності
-        if (performance_callback) {
-            performance_callback(entry.module.get(), (uint32_t)update_time_us);
-        }
-        
+        // Обробляємо результат оновлення
         if (result != ESP_OK) {
-            ESP_LOGE(TAG, "Error in %s::update()", entry.module->get_name());
             entry.error_count++;
-            entry.last_error = ESP_FAIL;
-            entry.state = ModuleState::ERROR;  // ModuleManager керує станом
-            error_collector.add(result, std::string("update_") + entry.module->get_name());
+            entry.last_error = result;
+            ESP_LOGE(TAG, "Error updating %s: %s", 
+                     entry.module->get_name(), esp_err_to_name(result));
         }
         
         // Оновлюємо бал здоров'я
         update_health_score(entry);
+        
+        // Викликаємо callback моніторингу продуктивності
+        if (performance_callback) {
+            performance_callback(entry.module.get(), update_time_us);
+        }
     }
     
     if (error_collector.has_errors()) {
         error_collector.log_all(TAG);
         error_collector.clear();
+    }
+}
+
+void tick_all_except_sensors(uint32_t time_budget_ms) {
+    using namespace ModESP;
+    static ErrorCollector error_collector;
+    
+    uint32_t start_time_ms = (uint32_t)(esp_timer_get_time() / 1000);
+    uint32_t current_time_ms = start_time_ms;
+    
+    for (auto& entry : modules) {
+        // Skip sensors module - it runs on Core 1
+        if (strcmp(entry.module->get_name(), "SensorModule") == 0) {
+            continue;
+        }
+        
+        // Пропускаємо відключені або не ініціалізовані модулі
+        if (!entry.enabled || entry.state != ModuleState::INITIALIZED) {
+            continue;
+        }
+        
+        // Перевіряємо бюджет часу
+        current_time_ms = (uint32_t)(esp_timer_get_time() / 1000);
+        if (current_time_ms - start_time_ms >= time_budget_ms) {
+            ESP_LOGW(TAG, "Time budget exceeded after %s", entry.module->get_name());
+            break;
+        }
+        
+        // Виконуємо оновлення з відстеженням часу
+        uint64_t start_time_us = esp_timer_get_time();
+        
+        esp_err_t result = safe_execute("module_update", [&]() -> esp_err_t {
+            entry.module->update();
+            return ESP_OK;
+        });
+        
+        uint64_t end_time_us = esp_timer_get_time();
+        uint32_t update_time_us = (uint32_t)(end_time_us - start_time_us);
+        
+        // Оновлюємо статистику продуктивності
+        entry.update_count++;
+        entry.last_update_time_us = update_time_us;
+        entry.total_update_time_us += update_time_us;
+        entry.max_update_time_us = std::max(entry.max_update_time_us, update_time_us);
+        
+        // Обробляємо результат оновлення
+        if (result != ESP_OK) {
+            entry.error_count++;
+            entry.last_error = result;
+            ESP_LOGE(TAG, "Error updating %s: %s", 
+                     entry.module->get_name(), esp_err_to_name(result));
+        }
     }
 }
 

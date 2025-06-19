@@ -27,27 +27,33 @@
         "drip_time": 300
     },
     "sensor": {
-        "poll_interval_ms": 1000,
+        "poll_interval_ms": 10000,
         "publish_on_error": true,
         "sensors": [
             {
                 "role": "chamber_temp",
-                "type": "NTC10K",
+                "type": "NTC",
                 "publish_key": "sensors/chamber_temp",
                 "config": {
-                    "gpio": 1,
-                    "offset": 0.0,
-                    "filter_samples": 10
+                    "hal_id": "ADC_AMBIENT_TEMP",
+                    "ntc_type": "10K_3950",
+                    "r_series": 10000,
+                    "vcc": 3.3,
+                    "averaging_samples": 10,
+                    "offset": 0.0
                 }
             },
             {
                 "role": "evaporator_temp", 
-                "type": "NTC10K",
+                "type": "NTC",
                 "publish_key": "sensors/evaporator_temp",
                 "config": {
-                    "gpio": 2,
-                    "offset": 0.0,
-                    "filter_samples": 5
+                    "hal_id": "ADC_SPARE_INPUT",
+                    "ntc_type": "10K_3950",
+                    "r_series": 10000,
+                    "vcc": 3.3,
+                    "averaging_samples": 5,
+                    "offset": 0.0
                 }
             }
         ]

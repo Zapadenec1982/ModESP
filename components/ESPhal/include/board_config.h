@@ -17,6 +17,8 @@
     #include "rev_b_ripening_chamber.h"
 #elif defined(CONFIG_ESPHAL_BOARD_REV_C_DISPLAY_UNIT)
     #include "rev_c_display_unit.h"
+#elif defined(CONFIG_ESPHAL_BOARD_CUSTOM)
+    #include "custom_board.h"
 #else
     #error "No board type selected in menuconfig! Please run 'idf.py menuconfig' and select ESPhal Board Type."
 #endif

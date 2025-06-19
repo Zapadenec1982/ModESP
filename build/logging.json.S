@@ -1,4 +1,4 @@
-/* * Data converted from C:/Users/User/ModESP/components/core/configs/logging.json
+/* * Data converted from C:/ModESP/components/core/configs/logging.json
  */
 .data
 #if !defined (__APPLE__) && !defined (__linux__)
