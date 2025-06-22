@@ -10,6 +10,7 @@
 #include <esp_timer.h>
 #include <sstream>
 #include <iomanip>
+#include <inttypes.h>
 
 static const char* TAG = "DS18B20_Async";
 
@@ -48,28 +49,60 @@ esp_err_t DS18B20AsyncDriver::init(ESPhal* hal, const nlohmann::json& config) {
         return ESP_FAIL;
     }
     
-    // Parse sensor address
-    sensor_address_ = parse_address(config_.address);
-    if (sensor_address_ == 0) {
-        ESP_LOGE(TAG, "Invalid sensor address: %s", config_.address.c_str());
-        return ESP_ERR_INVALID_ARG;
-    }
-    
-    // Verify sensor presence
-    auto devices = bus_->search_devices();
-    sensor_available_ = false;
-    
-    for (auto addr : devices) {
-        if (addr == sensor_address_) {
-            sensor_available_ = true;
-            ESP_LOGI(TAG, "Found sensor at address: 0x%016llx", sensor_address_);
-            break;
+    // Handle automatic sensor detection
+    if (config_.address == "auto") {
+        ESP_LOGI(TAG, "Auto-detecting DS18B20 sensor on bus %s", config_.hal_id.c_str());
+        
+        // Search for devices on the bus
+        auto devices = bus_->search_devices();
+        
+        if (devices.empty()) {
+            ESP_LOGW(TAG, "No DS18B20 sensors found on bus %s", config_.hal_id.c_str());
+            sensor_available_ = false;
+            return ESP_ERR_NOT_FOUND;
         }
-    }
-    
-    if (!sensor_available_) {
-        ESP_LOGE(TAG, "Sensor not found on bus");
-        return ESP_ERR_NOT_FOUND;
+        
+        // Use the first found sensor
+        sensor_address_ = devices[0];
+        sensor_available_ = true;
+        
+        // Update config with found address
+        std::stringstream ss;
+        ss << std::hex << std::setfill('0') << std::setw(16) << sensor_address_;
+        config_.address = ss.str();
+        
+        ESP_LOGI(TAG, "Auto-detected DS18B20 sensor: %s", config_.address.c_str());
+        
+        if (devices.size() > 1) {
+            ESP_LOGW(TAG, "Multiple sensors found on bus, using first one. Found %zu sensors:", devices.size());
+            for (size_t i = 0; i < devices.size(); i++) {
+                ESP_LOGW(TAG, "  Sensor %zu: %016llx", i, devices[i]);
+            }
+        }
+    } else {
+        // Parse specific sensor address
+        sensor_address_ = parse_address(config_.address);
+        if (sensor_address_ == 0) {
+            ESP_LOGE(TAG, "Invalid sensor address: %s", config_.address.c_str());
+            return ESP_ERR_INVALID_ARG;
+        }
+        
+        // Verify sensor presence
+        auto devices = bus_->search_devices();
+        sensor_available_ = false;
+        
+        for (auto addr : devices) {
+            if (addr == sensor_address_) {
+                sensor_available_ = true;
+                ESP_LOGI(TAG, "Found sensor at address: 0x%016llx", sensor_address_);
+                break;
+            }
+        }
+        
+        if (!sensor_available_) {
+            ESP_LOGE(TAG, "Sensor not found on bus");
+            return ESP_ERR_NOT_FOUND;
+        }
     }
     
     // Initialize state
@@ -94,9 +127,9 @@ SensorReading DS18B20AsyncDriver::read() {
     
     switch (state_) {
         case State::IDLE:
-            // Start new conversion
+            // Start new conversion for specific sensor
             ESP_LOGV(TAG, "Starting temperature conversion");
-            if (bus_->request_temperatures() == ESP_OK) {
+            if (bus_->start_temperature_conversion(sensor_address_) == ESP_OK) {
                 state_ = State::CONVERSION_REQUESTED;
                 conversion_start_time_ms_ = current_time_ms;
                 total_conversions_++;
@@ -125,6 +158,15 @@ SensorReading DS18B20AsyncDriver::read() {
             // Try to read temperature
             {
                 auto result = bus_->read_temperature(sensor_address_);
+                
+                // Give more chances for CRC errors with immediate retry
+                if (!result.is_ok() && result.error == ESP_ERR_INVALID_CRC && retry_count_ < 3) {
+                    retry_count_++;
+                    ESP_LOGV(TAG, "CRC error, immediate retry %d/3", retry_count_);
+                    state_ = State::READY_TO_READ;  // immediately retry
+                    break;
+                }
+                
                 if (result.is_ok()) {
                     float temperature = result.value;
                     
@@ -143,8 +185,19 @@ SensorReading DS18B20AsyncDriver::read() {
                         reading.value = temperature;
                         reading.is_valid = true;
                         
-                        // Reset to idle for next conversion
+                        // Log every temperature reading
+                        ESP_LOGI(TAG, "Temperature read: %.2f°C (sensor: %s)", temperature, config_.address.c_str());
+                        
+                        // Log diagnostics every 10 successful reads
+                        if (successful_reads_ % 10 == 0) {
+                            ESP_LOGI(TAG, "Sensor stats: %" PRIu32 " successful, %" PRIu32 " errors", 
+                                     successful_reads_, error_count_);
+                        }
+                        
+                        // Don't start next conversion immediately - let the next poll cycle handle it
+                        // This gives more time margin and reduces timing conflicts
                         state_ = State::IDLE;
+                        retry_count_ = 0;
                     } else {
                         // Temperature out of range
                         ESP_LOGW(TAG, "Temperature out of range: %.2f", temperature);
@@ -159,8 +212,9 @@ SensorReading DS18B20AsyncDriver::read() {
                         }
                     }
                 } else {
-                    // Read failed
-                    ESP_LOGW(TAG, "Failed to read temperature");
+                    // Read failed - log detailed error information
+                    ESP_LOGW(TAG, "Failed to read temperature: %s (0x%x), retry %d/%d", 
+                             esp_err_to_name(result.error), result.error, retry_count_, config_.max_retries);
                     error_count_++;
                     
                     if (++retry_count_ < config_.max_retries) {
@@ -329,14 +383,14 @@ nlohmann::json DS18B20AsyncDriver::get_diagnostics() const {
 
 // Helper methods
 int DS18B20AsyncDriver::get_conversion_time_ms() const {
-    // DS18B20 conversion times by resolution:
+    // DS18B20 conversion times by resolution (with improved OneWire timing):
     // 9 bits: 93.75ms, 10 bits: 187.5ms, 11 bits: 375ms, 12 bits: 750ms
     switch (config_.resolution) {
-        case 9: return 100;
-        case 10: return 200;
-        case 11: return 400;
-        case 12: return 750;
-        default: return 750;
+        case 9: return 150;   // +60% margin 
+        case 10: return 300;  // +60% margin
+        case 11: return 600;  // +60% margin
+        case 12: return 1200; // +60% margin
+        default: return 1200;
     }
 }
 

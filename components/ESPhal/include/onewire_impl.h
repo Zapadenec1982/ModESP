@@ -30,6 +30,7 @@ public:
     // IOneWireBus interface implementation
     std::vector<uint64_t> search_devices() override;
     esp_err_t request_temperatures() override;
+    esp_err_t start_temperature_conversion(uint64_t address) override;
     HalResult<float> read_temperature(uint64_t address) override;
 
 private:
@@ -49,4 +50,5 @@ private:
     uint8_t read_byte();
     bool search_device(uint8_t* address);
     bool check_crc(const uint8_t* data, uint8_t len, uint8_t expected_crc);
+    void debug_line_states();
 };

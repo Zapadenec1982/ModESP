@@ -91,6 +91,13 @@ public:
     virtual esp_err_t request_temperatures() = 0;
     
     /**
+     * @brief Запускає конвертацію температури для конкретного пристрою
+     * @param address 64-бітна адреса пристрою
+     * @return ESP_OK при успіху
+     */
+    virtual esp_err_t start_temperature_conversion(uint64_t address) = 0;
+    
+    /**
      * @brief Читає температуру з конкретного пристрою
      * @param address 64-бітна адреса пристрою
      * @return Результат з температурою в градусах Цельсія
