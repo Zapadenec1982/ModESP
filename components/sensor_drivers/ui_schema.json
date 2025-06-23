@@ -1,0 +1,72 @@
+{
+    "module": "sensor_module",
+    "label": "Sensors",
+    "version": "1.0",
+    "update_rate_ms": 1000,
+    "controls": [
+        {
+            "id": "temperature",
+            "type": "gauge",
+            "label": "Temperature",
+            "unit": "°C",
+            "min": -40,
+            "max": 60,
+            "read_method": "sensor.get_temperature",
+            "thresholds": {
+                "low": -10,
+                "normal": [10, 35],
+                "high": 40
+            }
+        },
+        {
+            "id": "humidity",
+            "type": "gauge",
+            "label": "Humidity",
+            "unit": "%",
+            "min": 0,
+            "max": 100,
+            "read_method": "sensor.get_humidity"
+        },
+        {
+            "id": "door_open",
+            "type": "switch",
+            "label": "Door Status",
+            "read_method": "sensor.get_door_status",
+            "read_only": true
+        },
+        {
+            "id": "temp_offset",
+            "type": "number",
+            "label": "Temp Calibration",
+            "unit": "°C",
+            "min": -5,
+            "max": 5,
+            "step": 0.1,
+            "read_method": "sensor.get_temp_offset",
+            "write_method": "sensor.set_temp_offset"
+        }
+    ],
+    "telemetry": {
+        "temperature": {
+            "source": "state.sensor.temperature",
+            "interval": 60
+        },
+        "humidity": {
+            "source": "state.sensor.humidity",
+            "interval": 60
+        }
+    },
+    "alarms": {
+        "high_temp": {
+            "condition": "temperature > 40",
+            "message": "High temperature alarm: {temperature}°C",
+            "severity": "critical"
+        },
+        "door_open": {
+            "condition": "door_open == true",
+            "message": "Door is open",
+            "severity": "warning",
+            "delay_s": 30
+        }
+    }
+}

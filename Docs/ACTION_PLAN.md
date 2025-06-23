@@ -23,43 +23,49 @@
    - Test: Basic system boot and logs
 
 3. Choose First TODO Item
-   - Beginner: TODO-004 (Configuration Validator) - 3 hours
+   - **High Priority**: TODO-006 (API Contract) - 3-4 hours
+   - **High Priority**: TODO-007 (WebUIModule) - 6-8 hours  
    - Intermediate: TODO-001 (ModuleHeartbeat) - 2-3 hours
    - Advanced: TODO-002 (Memory Pool) - 3-4 hours
 ```
 
-### Day 3-5: First Coding Session
+### Day 3-5: First Coding Session - API Foundation
 ```bash
-# 🔥 CODING SESSION 1: ModuleHeartbeat System
+# 🔥 CODING SESSION 1: API Contract & System Foundation
 
 Session Plan:
-├── Duration: 3-4 hours
-├── TODO Item: TODO-001
+├── Duration: 4-6 hours
+├── TODO Items: TODO-006 (API Contract) + TODO-001 (ModuleHeartbeat)
 ├── AI Collaboration: Full partnership
-└── Expected Output: Working heartbeat system
+└── Expected Output: API infrastructure + monitoring system
 
 Pre-session Preparation:
-1. Read: Docs/Core.txt (understand ModuleManager)
-2. Study: components/ESPhal/modules/ (existing patterns)
-3. Review: TODO-001 requirements in TODO.md
+1. Read: Docs/API_CONTRACT.md (understand all contracts)
+2. Study: Docs/API_UI_ARCHITECTURE_ANALYSIS.md (architecture decisions)
+3. Review: components/ui/include/api_dispatcher.h (existing interface)
 
 Coding Session Steps:
-1. AI Analysis (30 min):
-   - Analyze existing ModuleManager code
-   - Design heartbeat class architecture
-   - Plan integration points
+1. AI Analysis (45 min):
+   - Analyze existing SharedState/EventBus usage
+   - Design system_contract.h structure
+   - Plan IJsonRpcRegistrar interface
 
-2. Implementation (2 hours):
-   - Create components/core/include/module_heartbeat.h
-   - Implement components/core/src/module_heartbeat.cpp
-   - Add CMakeLists.txt configuration
+2. Implementation Part 1 - API Contracts (2 hours):
+   - Create components/core/system_contract.h
+   - Implement components/core/json_rpc_interface.h
+   - Add validation and error handling
 
-3. Testing & Integration (1 hour):
-   - Basic unit tests
+3. Implementation Part 2 - ModuleHeartbeat (1.5 hours):
+   - Create components/core/module_heartbeat.h
+   - Implement components/core/module_heartbeat.cpp  
    - Integration with ModuleManager
-   - Hardware validation
 
-4. Documentation (30 min):
+4. Testing & Integration (1 hour):
+   - API contract validation
+   - Heartbeat system testing
+   - Memory profiling
+
+5. Documentation (30 min):
    - Update API documentation
    - Add usage examples
    - Commit with proper format
@@ -68,30 +74,30 @@ Coding Session Steps:
 
 ## 📅 Week 2: UI Foundation Sprint
 
-### Day 6-8: Web Interface Development
+### Day 6-8: WebUIModule Development
 ```bash
-# 🌐 CODING SESSION 3: Modern Web UI
+# 🌐 CODING SESSION 2: WebUIModule & API Implementation
 
-Focus: TODO-006 (Web UI Framework)
-Duration: 6-8 hours (can split across 2 days)
+Focus: TODO-007 (WebUIModule) + TODO-008 (Module RPC Registration)
+Duration: 8-10 hours (across 3 days)
 
-Day 6: Dashboard Foundation (3 hours)
-├── HTML/CSS responsive layout
-├── JavaScript WebSocket client
-├── Basic sensor/actuator display
-└── Mobile-friendly design
+Day 6: HTTP Server & API Dispatcher (3-4 hours)
+├── ESP-IDF HTTP server setup
+├── API Dispatcher implementation
+├── Basic REST endpoint routing
+└── JSON-RPC request handling
 
-Day 7: Real-time Features (3 hours)  
-├── Live data updates via WebSocket
-├── Chart.js integration for trends
-├── Configuration forms
-└── PWA manifest
+Day 7: WebSocket & Real-time Updates (3 hours)  
+├── WebSocket server integration
+├── Real-time data broadcasting
+├── SharedState change notifications
+└── Client connection management
 
-Day 8: Integration & Testing (2 hours)
-├── Backend API integration
-├── Cross-browser testing
-├── Performance optimization
-└── User experience validation
+Day 8: Module RPC Integration (2-3 hours)
+├── Add register_rpc() to SensorModule
+├── Add register_rpc() to ActuatorModule
+├── REST to RPC mapping testing
+└── End-to-end API validation
 ```
 
 ### Day 9-10: Network Resilience
@@ -164,16 +170,18 @@ Day 15: Real-world Validation (3 hours)
 ## 📊 Success Metrics & Checkpoints
 
 ### Week 1 Success Criteria
-- [ ] ModuleHeartbeat system operational
-- [ ] Module failure detection working
-- [ ] Performance overhead < 1%
-- [ ] All existing modules integrated
+- [ ] API Contract system operational (system_contract.h)
+- [ ] ModuleHeartbeat system working
+- [ ] JSON-RPC infrastructure functional
+- [ ] All modules register RPC methods
+- [ ] API validation and error handling complete
 
 ### Week 2 Success Criteria  
-- [ ] Web interface accessible and responsive
-- [ ] Real-time data updates functional
-- [ ] WiFi auto-reconnection working
-- [ ] MQTT connectivity established
+- [ ] HTTP server accessible on port 80
+- [ ] WebSocket real-time updates working
+- [ ] REST API endpoints functional through RPC
+- [ ] JSON-RPC direct calls working
+- [ ] Module RPC registration complete
 
 ### Week 3 Success Criteria
 - [ ] Emergency stop response < 100ms

@@ -15,7 +15,7 @@
 #### ✅ TODO-001: Heartbeat система для модулів
 **Статус**: Не розпочато  
 **Час**: 2-3 години  
-**Файли**: `components/core/include/module_heartbeat.h`, `components/core/src/module_heartbeat.cpp`
+**Файли**: `components/core/module_heartbeat.h`, `components/core/module_heartbeat.cpp`
 
 **Завдання**:
 - [ ] Створити клас ModuleHeartbeat
@@ -33,7 +33,7 @@
 #### ✅ TODO-002: Memory Pool для оптимізації
 **Статус**: Не розпочато  
 **Час**: 3-4 години  
-**Файли**: `components/core/include/memory_pool.h`, `components/core/src/memory_pool.cpp`
+**Файли**: `components/core/memory_pool.h`, `components/core/memory_pool.cpp`
 
 **Завдання**:
 - [ ] Реалізувати fixed-size memory pool
@@ -51,7 +51,7 @@
 #### ✅ TODO-003: Enhanced Error Recovery
 **Статус**: Не розпочато  
 **Час**: 4-5 годин  
-**Файли**: `components/core/include/error_recovery.h`, `components/core/src/error_recovery.cpp`
+**Файли**: `components/core/error_recovery.h`, `components/core/error_recovery.cpp`
 
 **Завдання**:
 - [ ] Створити ErrorRecovery клас
@@ -70,7 +70,7 @@
 #### ✅ TODO-004: Configuration Validator
 **Статус**: Не розпочато  
 **Час**: 3 години  
-**Файли**: `components/core/include/config_validator.h`, `components/core/src/config_validator.cpp`
+**Файли**: `components/core/config_validator.h`, `components/core/config_validator.cpp`
 
 **Завдання**:
 - [ ] Валідація sensors.json schema
@@ -88,7 +88,7 @@
 #### ✅ TODO-005: Performance Profiling System
 **Статус**: Не розпочато  
 **Час**: 2 години  
-**Файли**: `components/core/include/profiler.h`, `components/core/src/profiler.cpp`
+**Файли**: `components/core/profiler.h`, `components/core/profiler.cpp`
 
 **Завдання**:
 - [ ] ProfileTimer RAII клас
@@ -109,46 +109,64 @@
 
 ### 🌐 Web Interface
 
-#### ✅ TODO-006: Modern Web UI Framework
+#### ✅ TODO-006: API Contract Implementation  
 **Статус**: Не розпочато  
+**Час**: 3-4 години  
+**Файли**: `components/core/system_contract.h`, `components/core/json_rpc_interface.h`
+
+**Завдання**:
+- [ ] Створити system_contract.h з API контрактами
+- [ ] Реалізувати IJsonRpcRegistrar інтерфейс
+- [ ] Додати validation для API запитів
+- [ ] Створити error handling для RPC методів
+- [ ] Інтегрувати з існуючим EventBus/SharedState
+
+**Критерії готовності**:
+- Всі API контракти з API_CONTRACT.md реалізовані
+- Type-safe доступ до SharedState ключів
+- RPC методи можуть реєструватися модулями
+- JSON validation для всіх запитів
+- Comprehensive error handling
+
+#### ✅ TODO-007: WebUIModule Implementation
+**Статус**: Частково (є api_dispatcher.h)  
 **Час**: 6-8 годин  
-**Файли**: `components/ui/web/`, HTML/CSS/JS файли
+**Файли**: `components/ui/src/web_ui_module.cpp`, `components/ui/include/web_ui_module.h`
 
 **Завдання**:
-- [ ] Responsive HTML5 dashboard
-- [ ] Real-time WebSocket data
-- [ ] Configuration forms
-- [ ] Chart.js integration for graphs
-- [ ] PWA manifest та service worker
+- [ ] HTTP Server з ESP-IDF httpd
+- [ ] WebSocket підтримка для real-time даних
+- [ ] API Dispatcher інтеграція
+- [ ] Static files serving (HTML/CSS/JS)
+- [ ] Responsive web dashboard
 
 **Критерії готовності**:
-- Mobile-friendly responsive design
-- < 2 second load time
-- Real-time updates (< 1s latency)
-- Offline capability (PWA)
-- Cross-browser compatibility
+- HTTP server працює на порту 80
+- WebSocket real-time updates < 1s latency  
+- REST API endpoints functional
+- JSON-RPC підтримка
+- Mobile-friendly interface
 
-#### ✅ TODO-007: RESTful API Enhancement
+#### ✅ TODO-008: Module RPC Registration
 **Статус**: Не розпочато  
-**Час**: 4 години  
-**Файли**: `components/ui/src/rest_api.cpp`, `components/ui/include/rest_api.h`
+**Час**: 4-5 годин  
+**Файли**: Оновлення існуючих модулів + `components/ui/src/api_dispatcher.cpp`
 
 **Завдання**:
-- [ ] Complete REST API endpoints
-- [ ] JSON schema validation
-- [ ] Rate limiting protection
-- [ ] API authentication (basic)
-- [ ] Swagger/OpenAPI documentation
+- [ ] Додати register_rpc() до SensorModule
+- [ ] Додати register_rpc() до ActuatorModule  
+- [ ] Додати register_rpc() до Core modules
+- [ ] Реалізувати API Dispatcher routing
+- [ ] Створити REST to RPC mappings
 
 **Критерії готовності**:
-- 100% API coverage для всіх функцій
-- Input validation на всіх endpoints
-- Rate limiting: 60 req/min per IP
-- Documented API responses
+- Всі модулі реєструють свої RPC методи
+- API Dispatcher правильно маршрутизує запити
+- REST endpoints працюють через RPC
+- JSON-RPC прямі виклики працюють
+- Error handling для всіх RPC методів
 
-### 📡 Network Resilience
-
-#### ✅ TODO-008: Robust WiFi Manager
+#### ✅ TODO-009: WiFi Manager Enhancement
 **Статус**: Частково  
 **Час**: 3 години  
 **Файли**: `components/wifi_manager/src/wifi_manager.cpp`
@@ -166,7 +184,7 @@
 - Automatic fallback to AP mode
 - Signal strength monitoring
 
-#### ✅ TODO-009: MQTT Integration
+#### ✅ TODO-010: MQTT Integration
 **Статус**: Не розпочато  
 **Час**: 4 години  
 **Файли**: `components/mqtt_client/`, новий компонент

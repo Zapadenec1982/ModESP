@@ -15,7 +15,6 @@
 - [COLLABORATIVE_ROADMAP.md](COLLABORATIVE_ROADMAP.md) - AI-Human collaboration strategy
 - [TODO.md](TODO.md) - Детальний список завдань з критеріями готовності
 - [CODING_SESSIONS.md](CODING_SESSIONS.md) - План сесій програмування
-- [CURRENT_TASKS.md](CURRENT_TASKS.md) - Поточні завдання для розробки
 
 ### 🛠️ Стандарти розробки
 - [DEVELOPMENT_GUIDELINES.md](DEVELOPMENT_GUIDELINES.md) - Coding standards та best practices

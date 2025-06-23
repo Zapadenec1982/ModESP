@@ -111,3 +111,23 @@ enum class ModuleType {
 };
 
 #endif // BASE_MODULE_H
+    
+    /**
+     * @brief Get UI schema for automatic UI generation
+     * @return JSON schema describing module's UI elements
+     */
+    virtual nlohmann::json get_ui_schema() const { 
+        return nlohmann::json::object(); 
+    }
+    
+    /**
+     * @brief Get module capabilities
+     * @return JSON object with supported features and protocols
+     */
+    virtual nlohmann::json get_capabilities() const {
+        return {
+            {"features", {"read"}},
+            {"protocols", {"rest", "mqtt"}},
+            {"update_rate_ms", 1000}
+        };
+    }

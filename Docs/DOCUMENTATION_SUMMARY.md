@@ -183,7 +183,6 @@ Docs/
 ├── COLLABORATIVE_ROADMAP.md        # 🆕 AI-Human collaboration
 ├── TODO.md                         # 🆕 Структурований task list
 ├── CODING_SESSIONS.md              # 🆕 Практичні сесії
-├── CURRENT_TASKS.md                # ✅ Оновлені поточні задачі
 │
 ├── DEVELOPMENT_GUIDELINES.md       # 🆕 Стандарти коду
 ├── GIT_WORKFLOW.md                 # 🆕 Git процеси

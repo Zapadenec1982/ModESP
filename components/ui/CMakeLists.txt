@@ -1,4 +1,19 @@
 idf_component_register(
-    # Empty component for now
-    # Will be implemented later
+    SRCS 
+        "src/web_ui_module.cpp"
+        "src/api_dispatcher.cpp"
+        "src/websocket_manager.cpp"
+        "src/static_files.cpp"
+    INCLUDE_DIRS 
+        "include"
+    REQUIRES 
+        core
+        base_module
+        esp_http_server
+        nvs_flash
+        esp_wifi
+    PRIV_REQUIRES
+        mbedtls
+        esp_timer
+        json
 )
