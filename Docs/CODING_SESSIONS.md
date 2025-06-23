@@ -177,144 +177,77 @@ public:
 
 ---
 
-## Session 3: Web UI Development Marathon
-**Тривалість**: 6 години (можна розділити на 2 сесії)  
-**Фокус**: Modern, responsive web interface
+## Session 3: API Infrastructure & WebUIModule  
+**Тривалість**: 6-8 годин (можна розділити на 2 дні)  
+**Фокус**: Комплексна API система
 
 ### 🎯 Session Goals
-1. Complete web dashboard
-2. Real-time data visualization
-3. Configuration management UI
-4. PWA functionality
+1. Реалізувати system_contract.h з type-safe API
+2. Створити WebUIModule з HTTP сервером
+3. Інтегрувати API Dispatcher з модулями
+4. Налаштувати real-time WebSocket комунікацію
 
-### 🛠️ Frontend Development Strategy
+### 🛠️ Technical Implementation
 
-#### Phase A: Dashboard Foundation (2 години)
+#### Phase A: API Contract System (3 години)
 
 **AI Assistant Role**:
-- Generate responsive HTML/CSS templates
-- Create JavaScript data binding
-- Implement WebSocket client
-- Design component architecture
+- Аналізувати API_CONTRACT.md та створити system_contract.h
+- Генерувати type-safe константи для SharedState/EventBus
+- Реалізувати IJsonRpcRegistrar інтерфейс
+- Створити validation та error handling
 
-**Technologies Stack**:
-- Pure HTML5/CSS3/JavaScript (no external frameworks)
-- Chart.js for data visualization
-- WebSocket for real-time updates
-- CSS Grid/Flexbox for responsive design
-
-```html
-<!-- Dashboard Structure Template -->
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ModuChill Control Panel</title>
-    <link rel="stylesheet" href="/css/dashboard.css">
-    <link rel="manifest" href="/manifest.json">
-</head>
-<body>
-    <div id="app">
-        <header class="dashboard-header">
-            <h1>ModuChill System</h1>
-            <div class="system-status"></div>
-        </header>
-        
-        <main class="dashboard-grid">
-            <section class="sensors-panel">
-                <h2>Sensors</h2>
-                <div id="sensors-container"></div>
-            </section>
-            
-            <section class="actuators-panel">
-                <h2>Actuators</h2>
-                <div id="actuators-container"></div>
-            </section>
-            
-            <section class="charts-panel">
-                <h2>Trends</h2>
-                <canvas id="temperature-chart"></canvas>
-            </section>
-            
-            <section class="alarms-panel">
-                <h2>Alarms</h2>
-                <div id="alarms-list"></div>
-            </section>
-        </main>
-    </div>
-    
-    <script src="/js/chart.min.js"></script>
-    <script src="/js/dashboard.js"></script>
-</body>
-</html>
-```
-
-#### Phase B: Real-time Functionality (2 години)
-
-**WebSocket Implementation**:
-```javascript
-// Real-time Dashboard Controller
-class ModuChillDashboard {
-    constructor() {
-        this.websocket = null;
-        this.reconnectAttempts = 0;
-        this.maxReconnectAttempts = 5;
-        this.sensors = new Map();
-        this.actuators = new Map();
-        this.charts = new Map();
+**Based on Documentation**:
+```cpp
+// system_contract.h structure based on API_CONTRACT.md
+namespace ModespContract {
+    namespace State {
+        constexpr auto SensorTemperature = "sensor.temperature";
+        constexpr auto SensorHumidity = "sensor.humidity";
+        constexpr auto ActuatorCompressor = "actuator.compressor";
+        // ... all other contracts from API_CONTRACT.md
     }
     
-    async initialize() {
-        await this.connectWebSocket();
-        await this.loadConfiguration();
-        this.setupCharts();
-        this.startPeriodicUpdates();
-    }
-    
-    async connectWebSocket() {
-        const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${wsProtocol}//${location.host}/ws`;
-        
-        this.websocket = new WebSocket(wsUrl);
-        this.websocket.onmessage = (event) => this.handleMessage(event);
-        this.websocket.onclose = () => this.handleDisconnect();
-        this.websocket.onerror = (error) => this.handleError(error);
+    namespace Event {
+        constexpr auto SensorReading = "sensor.reading";
+        constexpr auto ActuatorCommand = "actuator.command";
+        // ... all other events from API_CONTRACT.md
     }
 }
 ```
 
-#### Phase C: Configuration UI (2 години)
+#### Phase B: WebUIModule Implementation (3-4 години)
 
-**AI-Generated Forms**:
-- Dynamic form generation from JSON schema
-- Real-time validation
-- Configuration preview
-- Backup/restore functionality
-
-```javascript
-// Configuration Manager
-class ConfigurationManager {
-    async loadSchema() {
-        const response = await fetch('/api/config/schema');
-        return await response.json();
-    }
+**Implementation based on API_UI_ARCHITECTURE_ANALYSIS.md recommendations**:
+```cpp
+// Decentralized approach with API Dispatcher
+class WebUIModule : public BaseModule {
+private:
+    httpd_handle_t server;
+    WebSocketManager ws_manager;
+    ApiDispatcher api_dispatcher;
     
-    generateForm(schema) {
-        // AI-generated dynamic form creation
-        // Based on JSON schema
-    }
+public:
+    esp_err_t init() override;
+    void register_rpc(IJsonRpcRegistrar& rpc) override;
     
-    async saveConfiguration(config) {
-        const response = await fetch('/api/config', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(config)
-        });
-        return response.ok;
-    }
-}
+private:
+    // Based on analysis recommendations
+    esp_err_t handle_rest_request(httpd_req_t* req);
+    esp_err_t handle_websocket_request(httpd_req_t* req);
+    esp_err_t route_api_request(const std::string& path, 
+                               const nlohmann::json& params,
+                               nlohmann::json& response);
+};
 ```
+
+#### Phase C: Module RPC Integration (1-2 години)
+
+**Collaborative Tasks**:
+- Додати register_rpc() методи до SensorModule
+- Додати register_rpc() методи до ActuatorModule
+- Налаштувати REST to RPC mappings з API_UI_ARCHITECTURE_ANALYSIS.md
+- Тестувати повний API flow
 
 ---
 
