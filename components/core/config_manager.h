@@ -19,6 +19,7 @@
 #include <functional>
 #include "esp_err.h"
 #include "nlohmann/json.hpp"
+#include "json_validator.h"
 
 namespace ConfigManager {
 

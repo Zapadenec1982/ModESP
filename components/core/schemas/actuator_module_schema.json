@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Actuator Module Configuration",
+  "type": "object",
+  "properties": {
+    "update_interval_ms": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 5000,
+      "default": 100,
+      "description": "Update interval for actuator states"
+    },
+    "actuators": {
+      "type": "array",
+      "description": "Array of actuator configurations",
+      "items": {
+        "$ref": "#/definitions/actuator"
+      }
+    }
+  },
+  "required": ["actuators"],
+  "additionalProperties": false,
+  "definitions": {
+    "actuator": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+$",
+          "minLength": 1,
+          "maxLength": 32,          "description": "Logical role/name of the actuator"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["relay", "pwm", "gpio_output"],
+          "description": "Actuator driver type"
+        },
+        "control_key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_.]+$",
+          "description": "SharedState key for control commands"
+        },
+        "status_key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_.]+$",
+          "description": "SharedState key for status updates"
+        },
+        "config": {
+          "type": "object",
+          "description": "Driver-specific configuration",
+          "oneOf": [
+            {"$ref": "#/definitions/relay_config"},
+            {"$ref": "#/definitions/pwm_config"},
+            {"$ref": "#/definitions/gpio_output_config"}
+          ]
+        }
+      },
+      "required": ["role", "type", "control_key", "status_key", "config"],
+      "additionalProperties": false
+    },    "relay_config": {
+      "type": "object",
+      "properties": {
+        "pin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39,
+          "description": "GPIO pin for relay control"
+        },
+        "active_low": {
+          "type": "boolean",
+          "default": false,
+          "description": "True if relay is active when pin is LOW"
+        },
+        "initial_state": {
+          "type": "boolean",
+          "default": false,
+          "description": "Initial relay state on startup"
+        }
+      },
+      "required": ["pin"],
+      "additionalProperties": false
+    },
+    "pwm_config": {
+      "type": "object",
+      "properties": {
+        "pin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39,
+          "description": "GPIO pin for PWM output"
+        },        "frequency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 40000,
+          "default": 5000,
+          "description": "PWM frequency in Hz"
+        },
+        "resolution": {
+          "type": "integer",
+          "minimum": 8,
+          "maximum": 16,
+          "default": 10,
+          "description": "PWM resolution in bits"
+        },
+        "initial_duty": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0,
+          "description": "Initial duty cycle (0.0 to 1.0)"
+        }
+      },
+      "required": ["pin"],
+      "additionalProperties": false
+    },
+    "gpio_output_config": {
+      "type": "object",
+      "properties": {
+        "pin": {
+          "type": "integer",          "minimum": 0,
+          "maximum": 39,
+          "description": "GPIO pin number"
+        },
+        "initial_state": {
+          "type": "boolean",
+          "default": false,
+          "description": "Initial pin state"
+        },
+        "open_drain": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use open-drain output mode"
+        }
+      },
+      "required": ["pin"],
+      "additionalProperties": false
+    }
+  }
+}

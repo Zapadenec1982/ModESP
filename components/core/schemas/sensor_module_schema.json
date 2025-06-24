@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sensor Module Configuration",
+  "type": "object",
+  "properties": {
+    "poll_interval_ms": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 60000,
+      "default": 10000,
+      "description": "Polling interval in milliseconds"
+    },
+    "publish_on_error": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to publish error states to SharedState"
+    },
+    "sensors": {
+      "type": "array",
+      "description": "Array of sensor configurations",
+      "items": {
+        "$ref": "#/definitions/sensor"
+      }
+    }
+  },
+  "required": ["sensors"],
+  "additionalProperties": false,
+  "definitions": {
+    "sensor": {
+      "type": "object",
+      "properties": {        "role": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+$",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "Logical role/name of the sensor"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["DS18B20", "NTC", "GPIO", "BME280", "AHT20"],
+          "description": "Sensor driver type"
+        },
+        "publish_key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_.]+$",
+          "description": "SharedState key for publishing readings"
+        },
+        "config": {
+          "type": "object",
+          "description": "Driver-specific configuration",
+          "oneOf": [
+            {"$ref": "#/definitions/ds18b20_config"},
+            {"$ref": "#/definitions/ntc_config"},
+            {"$ref": "#/definitions/gpio_config"}
+          ]
+        }
+      },
+      "required": ["role", "type", "publish_key", "config"],
+      "additionalProperties": false
+    },    "ds18b20_config": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "pattern": "^[0-9A-Fa-f]{16}$",
+          "description": "64-bit OneWire address in hex"
+        },
+        "resolution": {
+          "type": "integer",
+          "enum": [9, 10, 11, 12],
+          "default": 12,
+          "description": "Temperature resolution in bits"
+        },
+        "offset": {
+          "type": "number",
+          "default": 0,
+          "minimum": -10,
+          "maximum": 10,
+          "description": "Temperature offset for calibration"
+        }
+      },
+      "required": ["address"],
+      "additionalProperties": false
+    },
+    "ntc_config": {
+      "type": "object",
+      "properties": {
+        "pin": {
+          "type": "integer",          "minimum": 0,
+          "maximum": 39,
+          "description": "ADC GPIO pin number"
+        },
+        "r_nominal": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 100000,
+          "default": 10000,
+          "description": "Nominal resistance at 25°C"
+        },
+        "b_coefficient": {
+          "type": "integer",
+          "minimum": 3000,
+          "maximum": 4500,
+          "default": 3950,
+          "description": "Beta coefficient"
+        },
+        "r_series": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 100000,
+          "default": 10000,
+          "description": "Series resistor value"
+        }
+      },
+      "required": ["pin"],
+      "additionalProperties": false
+    },
+    "gpio_config": {
+      "type": "object",      "properties": {
+        "pin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39,
+          "description": "GPIO pin number"
+        },
+        "pull_mode": {
+          "type": "string",
+          "enum": ["none", "up", "down"],
+          "default": "none",
+          "description": "GPIO pull resistor mode"
+        },
+        "inverted": {
+          "type": "boolean",
+          "default": false,
+          "description": "Invert input logic"
+        },
+        "debounce_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000,
+          "default": 50,
+          "description": "Debounce time in milliseconds"
+        }
+      },
+      "required": ["pin"],
+      "additionalProperties": false
+    }
+  }
+}
