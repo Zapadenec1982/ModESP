@@ -3,6 +3,16 @@ dependencies:
     source:
       type: idf
     version: 5.3.3
+  joltwallet/littlefs:
+    component_hash: fe3d04a59a4c370408b0e0b69d9096c06371b9ee12ad8e06b9d52ac63ab1570c
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.20.0
   mittelab/nlohmann-json:
     component_hash: 9a48e24d184a0d60b51e4c0937573bfce187513b02e8610b41bf84f82d75c669
     dependencies:
@@ -14,7 +24,9 @@ dependencies:
       type: service
     version: 3.11.3
 direct_dependencies:
+- idf
+- joltwallet/littlefs
 - mittelab/nlohmann-json
-manifest_hash: 480e3f30b401bb44f0c84f51914b77a9e7fbc2512ca96616fe3a87f3cef42038
+manifest_hash: 5273437f35e71eb01d2c69eb9c8f73d6bd6add553b41d16954173568e715a938
 target: esp32s3
 version: 2.0.0
