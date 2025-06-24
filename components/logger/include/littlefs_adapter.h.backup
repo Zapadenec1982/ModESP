@@ -1,0 +1,41 @@
+#pragma once
+
+#include <esp_err.h>
+#include <littlefs/lfs.h>
+#include <string>
+
+namespace ModESP {
+
+/**
+ * @brief Простий адаптер для LittleFS
+ * Обгортка навколо joltwallet/littlefs для зручного використання
+ */
+class LittleFSAdapter {
+public:
+    struct Config {
+        const char* partition_label = "storage";
+        const char* base_path = "/logs";
+        bool format_if_mount_failed = true;
+    };
+    
+    static esp_err_t mount(const Config& config);
+    static esp_err_t unmount(const char* partition_label);
+    static esp_err_t format(const char* partition_label);
+    static esp_err_t info(const char* partition_label, size_t* total, size_t* used);
+    
+private:
+    static lfs_t s_lfs;
+    static lfs_config s_cfg;
+    static bool s_mounted;
+    static std::string s_base_path;
+    
+    // LittleFS callbacks
+    static int lfs_read(const struct lfs_config *c, lfs_block_t block,
+                       lfs_off_t off, void *buffer, lfs_size_t size);
+    static int lfs_prog(const struct lfs_config *c, lfs_block_t block,
+                       lfs_off_t off, const void *buffer, lfs_size_t size);
+    static int lfs_erase(const struct lfs_config *c, lfs_block_t block);
+    static int lfs_sync(const struct lfs_config *c);
+};
+
+} // namespace ModESP

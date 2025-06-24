@@ -1,0 +1,16 @@
+idf_component_register(
+    SRCS 
+        "logger_module.cpp"
+        "log_storage.cpp"
+    INCLUDE_DIRS 
+        "."
+        "include"
+    REQUIRES 
+        esp_timer
+        nvs_flash
+        spi_flash
+        base_module
+        core
+    PRIV_REQUIRES
+        esp_littlefs
+)

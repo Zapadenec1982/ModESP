@@ -52,6 +52,12 @@
 - [RTC_IMPLEMENTATION_SUMMARY.md](RTC_IMPLEMENTATION_SUMMARY.md) - Підсумок реалізації
 - [RTC_Integration_Examples.md](RTC_Integration_Examples.md) - Приклади інтеграції
 
+#### Logger Module
+- [logger/LoggerModule_Documentation.md](logger/LoggerModule_Documentation.md) - Повна документація модуля логування
+- [logger/LittleFS_Configuration.md](logger/LittleFS_Configuration.md) - Налаштування файлової системи LittleFS
+- [logger/SPIFFS_to_LittleFS_Migration.md](logger/SPIFFS_to_LittleFS_Migration.md) - Інструкція міграції на LittleFS
+- [LoggerModule_Status.md](LoggerModule_Status.md) - Поточний статус реалізації
+
 ### 🌐 UI/API System
 - **[UI_API_INDEX.md](UI_API_INDEX.md)** - 📍 **Центральний індекс UI/API документації**
 - **[UI_API_SYSTEM.md](UI_API_SYSTEM.md)** - Повна документація системи UI/API

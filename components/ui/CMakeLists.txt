@@ -1,9 +1,6 @@
 idf_component_register(
     SRCS 
         "src/web_ui_module.cpp"
-        "src/api_dispatcher.cpp"
-        "src/websocket_manager.cpp"
-        "src/static_files.cpp"
     INCLUDE_DIRS 
         "include"
     REQUIRES 
