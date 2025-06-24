@@ -52,6 +52,13 @@
 - [RTC_IMPLEMENTATION_SUMMARY.md](RTC_IMPLEMENTATION_SUMMARY.md) - Підсумок реалізації
 - [RTC_Integration_Examples.md](RTC_Integration_Examples.md) - Приклади інтеграції
 
+### 🌐 UI/API System
+- **[UI_API_INDEX.md](UI_API_INDEX.md)** - 📍 **Центральний індекс UI/API документації**
+- **[UI_API_SYSTEM.md](UI_API_SYSTEM.md)** - Повна документація системи UI/API
+- **[UI_API_QUICK_START.md](UI_API_QUICK_START.md)** - Додати UI за 3 кроки  
+- **[UI_API_TECHNICAL_REFERENCE.md](UI_API_TECHNICAL_REFERENCE.md)** - Технічні деталі реалізації
+- **[API_CONTRACT.md](API_CONTRACT.md)** - Контракти системи (EventBus, SharedState)
+
 ### 🛠️ Технічні зміни та оновлення
 
 #### Оновлення плат
@@ -71,6 +78,7 @@
 | Робота з датчиками | [SensorModule.txt](SensorModule.txt) | Додавання та конфігурація датчиків |
 | Керування актуаторами | [ActuatorModule.txt](ActuatorModule.txt) | Релейні та PWM драйвери |
 | Час та календар | [RTCModule.md](RTCModule.md) | RTC функціональність |
+| UI/API система | [UI_API_INDEX.md](UI_API_INDEX.md) | Web, MQTT, LCD інтерфейси |
 | HAL інтерфейси | [HAL - Довідник.txt](HAL%20-%20Довідник.txt) | Низькорівневі інтерфейси |
 | Планування розробки | [PROJECT_ROADMAP.md](PROJECT_ROADMAP.md) | Стратегія та цілі проекту |
 | Поточні завдання | [TODO.md](TODO.md) | Actionable development items |
