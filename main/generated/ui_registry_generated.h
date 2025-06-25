@@ -1,5 +1,5 @@
 // Auto-generated UI registry
-// Generated at: 2025-06-23T20:20:12.779419
+// Generated at: 2025-06-25T22:14:58.436864
 
 #pragma once
 

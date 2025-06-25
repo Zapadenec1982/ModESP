@@ -4,6 +4,7 @@
 #include <cstring>
 #include <algorithm>
 #include <sys/stat.h>
+#include <unistd.h>
 
 static const char* TAG = "LogStorage";
 
@@ -65,8 +66,11 @@ esp_err_t LogStorage::mountLittleFS() {
     esp_vfs_littlefs_conf_t conf = {
         .base_path = MOUNT_POINT,
         .partition_label = "storage",
+        .partition = NULL,
         .format_if_mount_failed = true,
-        .dont_mount = false
+        .read_only = false,
+        .dont_mount = false,
+        .grow_on_mount = false
     };
     
     esp_err_t ret = esp_vfs_littlefs_register(&conf);
@@ -274,7 +278,7 @@ bool LogStorage::exportToCSV(std::string& output, const LogFilter& filter) {
     for (const auto& entry : logs) {
         char line[256];
         snprintf(line, sizeof(line), 
-            "%u,%u,%u,%u,%d,%s\n",
+            "%lu,%u,%u,%u,%ld,%s\n",
             entry.timestamp,
             entry.level,
             entry.moduleId,
@@ -299,11 +303,11 @@ bool LogStorage::exportToJSON(std::string& output, const LogFilter& filter) {
         char jsonEntry[512];
         snprintf(jsonEntry, sizeof(jsonEntry),
             "    {\n"
-            "      \"timestamp\": %u,\n"
+            "      \"timestamp\": %lu,\n"
             "      \"level\": %u,\n"
             "      \"module\": %u,\n"
             "      \"event\": %u,\n"
-            "      \"value\": %d,\n"
+            "      \"value\": %ld,\n"
             "      \"message\": \"%s\"\n"
             "    }%s\n",
             entry.timestamp,

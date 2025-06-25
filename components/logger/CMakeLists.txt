@@ -12,5 +12,5 @@ idf_component_register(
         base_module
         core
     PRIV_REQUIRES
-        esp_littlefs
+        littlefs
 )

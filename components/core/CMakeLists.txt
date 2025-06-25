@@ -22,7 +22,7 @@ idf_component_register(
         "module_manager.cpp"
         "module_registry.cpp"
         "shared_state.cpp"
-    INCLUDE_DIRS "."
+    INCLUDE_DIRS "." "include"
     EMBED_FILES ${CONFIG_FILES}
     REQUIRES 
         esp_timer

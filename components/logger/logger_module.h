@@ -1,9 +1,10 @@
 #pragma once
 
-#include "base_module/base_module.h"
+#include "base_module.h"
 #include "logger_interface.h"
 #include "ring_buffer.h"
 #include "log_storage.h"
+#include "event_bus.h"
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/queue.h>
@@ -27,19 +28,16 @@ public:
     LoggerModule();
     ~LoggerModule();
     
-    // IBaseModule interface
-    const char* name() const override { return "LoggerModule"; }
-    const char* version() const override { return "1.0.0"; }
-    
-protected:
-    // BaseModule implementation
-    esp_err_t onInit() override;
-    esp_err_t onStart() override;
-    esp_err_t onStop() override;
-    esp_err_t onReset() override;
+    // BaseModule interface
+    const char* get_name() const override { return "LoggerModule"; }
+    esp_err_t init() override;
+    void update() override {} // Logger doesn't need periodic updates
+    void stop() override;
+    void configure(const nlohmann::json& config) override;
         
     // ILogger interface
-    void log(LogLevel level, const char* module, const char* fmt, ...) override;
+    void logFormatted(LogLevel level, const char* module, const char* message) override;
+    void log(LogLevel level, const char* module, const char* fmt, ...);  // Non-virtual helper
     void logEvent(EventCode code, int32_t value = 0, const char* message = nullptr) override;
     
     void logSensorData(uint8_t sensorId, float value) override;
@@ -79,6 +77,9 @@ private:
     // Статистика
     struct {
         uint32_t totalLogs;
+        uint32_t eventLogs;
+        uint32_t warnings;
+        uint32_t errors;
         uint32_t droppedLogs;
         uint32_t rotations;
         std::map<LogLevel, uint32_t> levelCounts;

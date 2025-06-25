@@ -33,7 +33,7 @@ esp_err_t WebUIModule::init() {
     api_dispatcher_->configure_rest_mappings();
     
     // Publish initial status
-    SharedState::set(State::ApiStatus, nlohmann::json{
+    SharedState::set(std::string(State::ApiStatus), nlohmann::json{
         {"running", false},
         {"port", config_.port}
     });

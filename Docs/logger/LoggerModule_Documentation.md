@@ -27,13 +27,15 @@ LoggerModule - це модуль логування для системи ModuCh
 
 ## Конфігурація
 
-### Таблиця розділів (partitions.csv)
+### Таблиця розділів (partitions.csv) - 4MB Flash
 ```csv
-# Name,   Type, SubType, Offset,  Size,    Flags
-nvs,      data, nvs,     0x9000,  0x6000,
-phy_init, data, phy,     0xF000,  0x1000,
-factory,  app,  factory, 0x10000, 0x200000,
-storage,  data, 0x82,    0x210000, 0x100000,  # LittleFS 1MB
+# Name,   Type, SubType, Offset,   Size,     Flags
+nvs,      data, nvs,     0x9000,   0x5000,     # 20KB
+otadata,  data, ota,     0xE000,   0x2000,     # 8KB
+phy_init, data, phy,     0x10000,  0x1000,     # 4KB
+factory,  app,  factory, 0x11000,  0x170000,   # 1.44MB
+ota_0,    app,  ota_0,   0x181000, 0x170000,   # 1.44MB
+storage,  data, littlefs,0x2F1000, 0x100000,   # 1MB
 ```
 
 ### Параметри LoggerModule

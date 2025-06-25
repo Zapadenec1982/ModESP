@@ -95,23 +95,6 @@ public:
      */
     virtual void register_rpc(IJsonRpcRegistrar& rpc) {}
     
-    // Примітка: Управління станом модуля здійснюється виключно через ModuleManager
-    // Модулі не мають прямого доступу до зміни свого стану
-};
-
-/**
- * @brief Module priority types for execution order
- */
-enum class ModuleType {
-    CRITICAL = 0,    // Safety & protection (< 100μs)
-    HIGH = 1,        // Real-time I/O (< 500μs)  
-    STANDARD = 2,    // Business logic (< 2ms)
-    LOW = 3,         // UI & display (< 5ms)
-    BACKGROUND = 4   // Analytics & logging (< 10ms)
-};
-
-#endif // BASE_MODULE_H
-    
     /**
      * @brief Get UI schema for automatic UI generation
      * @return JSON schema describing module's UI elements
@@ -131,3 +114,20 @@ enum class ModuleType {
             {"update_rate_ms", 1000}
         };
     }
+    
+    // Примітка: Управління станом модуля здійснюється виключно через ModuleManager
+    // Модулі не мають прямого доступу до зміни свого стану
+};
+
+/**
+ * @brief Module priority types for execution order
+ */
+enum class ModuleType {
+    CRITICAL = 0,    // Safety & protection (< 100μs)
+    HIGH = 1,        // Real-time I/O (< 500μs)  
+    STANDARD = 2,    // Business logic (< 2ms)
+    LOW = 3,         // UI & display (< 5ms)
+    BACKGROUND = 4   // Analytics & logging (< 10ms)
+};
+
+#endif // BASE_MODULE_H

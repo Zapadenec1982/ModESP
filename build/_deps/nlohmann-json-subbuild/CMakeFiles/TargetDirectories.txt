@@ -1,0 +1,3 @@
+C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/CMakeFiles/nlohmann-json-populate.dir
+C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/CMakeFiles/edit_cache.dir
+C:/ModESP_dev/build/_deps/nlohmann-json-subbuild/CMakeFiles/rebuild_cache.dir

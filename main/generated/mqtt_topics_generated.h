@@ -1,5 +1,5 @@
 // Auto-generated MQTT topic definitions
-// Generated at: 2025-06-23T20:20:12.778739
+// Generated at: 2025-06-25T22:14:58.435832
 
 #pragma once
 

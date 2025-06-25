@@ -1,5 +1,0 @@
-# LittleFS dependencies for ModESP_dev
-
-dependencies:
-  mittelab/nlohmann-json: "^3.11.2"
-  joltwallet/littlefs: "^2.5.1"

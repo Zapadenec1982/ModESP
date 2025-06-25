@@ -1,5 +1,5 @@
 // Auto-generated LCD menu structure
-// Generated at: 2025-06-23T20:20:12.779081
+// Generated at: 2025-06-25T22:14:58.436291
 
 #pragma once
 

@@ -4,6 +4,8 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <cstdarg>
+#include <cstdio>
 
 namespace ModESP {
 
@@ -106,7 +108,7 @@ public:
     virtual ~ILogger() = default;
     
     // Базові методи логування
-    virtual void log(LogLevel level, const char* module, const char* fmt, ...) = 0;
+    virtual void logFormatted(LogLevel level, const char* module, const char* message) = 0;
     virtual void logEvent(EventCode code, int32_t value = 0, const char* message = nullptr) = 0;
     
     // Спеціалізовані методи
@@ -130,21 +132,34 @@ public:
 // Глобальний доступ до логера
 extern ILogger* g_logger;
 
+// Допоміжна функція для форматованого логування
+inline void log_formatted(ILogger* logger, LogLevel level, const char* module, const char* fmt, ...) {
+    if (!logger) return;
+    
+    char buffer[128];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+    
+    logger->logFormatted(level, module, buffer);
+}
+
 // Макроси для зручного логування
 #define MLOG_DEBUG(fmt, ...) \
-    if (g_logger) g_logger->log(LogLevel::DEBUG, TAG, fmt, ##__VA_ARGS__)
+    log_formatted(g_logger, LogLevel::DEBUG, TAG, fmt, ##__VA_ARGS__)
 
 #define MLOG_INFO(fmt, ...) \
-    if (g_logger) g_logger->log(LogLevel::INFO, TAG, fmt, ##__VA_ARGS__)
+    log_formatted(g_logger, LogLevel::INFO, TAG, fmt, ##__VA_ARGS__)
 
 #define MLOG_WARNING(fmt, ...) \
-    if (g_logger) g_logger->log(LogLevel::WARNING, TAG, fmt, ##__VA_ARGS__)
+    log_formatted(g_logger, LogLevel::WARNING, TAG, fmt, ##__VA_ARGS__)
 
 #define MLOG_ERROR(fmt, ...) \
-    if (g_logger) g_logger->log(LogLevel::ERROR, TAG, fmt, ##__VA_ARGS__)
+    log_formatted(g_logger, LogLevel::ERROR, TAG, fmt, ##__VA_ARGS__)
 
 #define MLOG_CRITICAL(fmt, ...) \
-    if (g_logger) g_logger->log(LogLevel::CRITICAL, TAG, fmt, ##__VA_ARGS__)
+    log_formatted(g_logger, LogLevel::CRITICAL, TAG, fmt, ##__VA_ARGS__)
 
 #define MLOG_EVENT(code, value) \
     if (g_logger) g_logger->logEvent(code, value)

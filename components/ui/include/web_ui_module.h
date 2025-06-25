@@ -14,7 +14,7 @@
 
 // Forward declarations
 class ApiDispatcher;
-class WebSocketManager;
+// TODO: class WebSocketManager;
 
 /**
  * @brief Web UI Module
@@ -69,7 +69,7 @@ private:
     
     // API components
     std::unique_ptr<ApiDispatcher> api_dispatcher_;
-    std::unique_ptr<WebSocketManager> ws_manager_;
+    // TODO: std::unique_ptr<WebSocketManager> ws_manager_;
     
     // Metrics
     struct Metrics {
