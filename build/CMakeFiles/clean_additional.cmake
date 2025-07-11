@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.16)
 
 if("${CONFIG}" STREQUAL "" OR "${CONFIG}" STREQUAL "")
   file(REMOVE_RECURSE
-  "ModESP.map"
   "actuators.json.S"
   "alarms.json.S"
   "climate.json.S"
@@ -16,6 +15,7 @@ if("${CONFIG}" STREQUAL "" OR "${CONFIG}" STREQUAL "")
   "ldgen_libraries.in"
   "littlefs_py_venv"
   "logging.json.S"
+  "modesp.map"
   "network.json.S"
   "project_elf_src_esp32s3.c"
   "rtc.json.S"

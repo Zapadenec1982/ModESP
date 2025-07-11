@@ -1,0 +1,21 @@
+idf_component_register(
+    SRCS 
+        "test_system_lifecycle.cpp"
+        "test_system_stress.cpp"
+        "test_error_scenarios.cpp"
+        "test_multicore.cpp"
+        "test_real_hardware.cpp"
+        "integration_test_utils.cpp"
+    INCLUDE_DIRS 
+        "include"
+    REQUIRES 
+        core
+        logger
+        ESPhal
+        ui
+        unity
+        nvs_flash
+        driver
+        efuse
+        esp_hw_support
+) 

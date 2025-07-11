@@ -1,0 +1,226 @@
+{
+    "module": {
+        "name": "SensorManager",
+        "version": "2.0.0",
+        "description": "Adaptive sensor management with dynamic drivers",
+        "type": "MANAGER",
+        "driver_interface": "ISensorDriver",
+        "priority": "HIGH",
+        "dependencies": ["ESPhal", "SharedState", "EventBus"],
+        "resources": {
+            "stack_size": 4096,
+            "heap_usage": "~2KB",
+            "update_budget_ms": 2
+        }
+    },
+    
+    "configuration": {
+        "config_file": "sensors.json",
+        "schema": {
+            "type": "object",
+            "properties": {
+                "sensors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "role": {"type": "string"},
+                            "type": {"type": "string"}, 
+                            "hal_id": {"type": "string"},
+                            "config": {"type": "object"}
+                        }
+                    }
+                },
+                "update_interval_ms": {
+                    "type": "integer",
+                    "default": 1000,
+                    "minimum": 100,
+                    "maximum": 10000
+                }
+            }
+        }
+    },
+    
+    "apis": {
+        "static": [
+            {
+                "method": "sensor.get_temperature",
+                "handler": "get_temperature_rpc",
+                "description": "Отримати температуру",
+                "access_level": "user",
+                "params": {
+                    "sensor_id": {
+                        "type": "string", 
+                        "required": false
+                    }
+                },
+                "returns": {
+                    "type": "object",
+                    "properties": {
+                        "value": {"type": "float"},
+                        "unit": {"type": "string"},
+                        "timestamp": {"type": "uint64_t"}
+                    }
+                }
+            },
+            {
+                "method": "sensor.get_all_readings",
+                "handler": "get_all_readings_rpc",
+                "description": "Отримати всі показання",
+                "access_level": "user",
+                "params": {},
+                "returns": {
+                    "type": "array"
+                }
+            },
+            {
+                "method": "sensor.calibrate",
+                "handler": "calibrate_sensor_rpc",
+                "description": "Калібрувати датчик",
+                "access_level": "technician",
+                "params": {
+                    "sensor_id": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "reference_value": {
+                        "type": "float",
+                        "required": true
+                    }
+                },
+                "returns": {
+                    "type": "object",
+                    "properties": {
+                        "success": {"type": "boolean"},
+                        "new_offset": {"type": "float"}
+                    }
+                }
+            }
+        ]
+    },
+    
+    "ui": {
+        "adaptive": {
+            "components": [
+                {
+                    "id": "sensor_overview",
+                    "type": "composite",
+                    "conditions": ["always"],
+                    "access_level": "user",
+                    "priority": "high",
+                    "lazy_load": false,
+                    "sub_components": []
+                },
+                {
+                    "id": "sensor_list",
+                    "type": "list",
+                    "conditions": ["always"],
+                    "access_level": "user",
+                    "priority": "high",
+                    "config": {
+                        "data_source": "state.sensor.list",
+                        "item_template": "sensor_item"
+                    }
+                },
+                {
+                    "id": "sensor_config_panel",
+                    "type": "composite", 
+                    "conditions": ["role >= 'technician'"],
+                    "access_level": "technician",
+                    "priority": "medium",
+                    "lazy_load": true,
+                    "sub_components": []
+                },
+                {
+                    "id": "calibration_button",
+                    "type": "button",
+                    "conditions": ["role >= 'technician'"],
+                    "access_level": "technician",
+                    "priority": "low",
+                    "config": {
+                        "label": "Calibrate",
+                        "action": "sensor.calibrate"
+                    }
+                }
+            ]
+        }
+    },
+    
+    "shared_state": {
+        "publishes": {
+            "state.sensor.temperature": {
+                "type": "float",
+                "description": "Температура датчика",
+                "update_rate_ms": 1000
+            },
+            "state.sensor.humidity": {
+                "type": "float",
+                "description": "Вологість",
+                "update_rate_ms": 1000
+            },
+            "state.sensor.door_open": {
+                "type": "boolean",
+                "description": "Стан дверей",
+                "update_rate_ms": 100
+            },
+            "state.sensor.list": {
+                "type": "array",
+                "description": "Список всіх датчиків",
+                "update_rate_ms": 5000
+            }
+        },
+        "subscribes": {
+            "config.sensor.calibration": {
+                "type": "object",
+                "description": "Калібрувальні параметри",
+                "handler": "on_calibration_update"
+            }
+        }
+    },
+    
+    "event_bus": {
+        "publishes": {
+            "sensor.reading_updated": {
+                "description": "Нове показання датчика",
+                "payload": {
+                    "sensor_id": {"type": "string"},
+                    "value": {"type": "float"}, 
+                    "timestamp": {"type": "uint64_t"}
+                }
+            },
+            "sensor.error": {
+                "description": "Помилка датчика",
+                "payload": {
+                    "sensor_id": {"type": "string"},
+                    "error_code": {"type": "esp_err_t"},
+                    "message": {"type": "string"}
+                }
+            },
+            "sensor.calibration_complete": {
+                "description": "Завершена калібровка",
+                "payload": {
+                    "sensor_id": {"type": "string"},
+                    "old_offset": {"type": "float"},
+                    "new_offset": {"type": "float"}
+                }
+            }
+        },
+        "subscribes": {
+            "system.config_changed": {
+                "description": "Зміна конфігурації системи", 
+                "handler": "on_config_changed"
+            },
+            "hal.gpio_interrupt": {
+                "description": "Переривання GPIO",
+                "handler": "on_gpio_interrupt",
+                "filter": {"pin": [4, 5, 18]}
+            }
+        }
+    },
+    
+    "driver_registry": {
+        "path": "sensor_drivers",
+        "pattern": "*_driver_manifest.json",
+        "interface": "ISensorDriver"
+    }
+}

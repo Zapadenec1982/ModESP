@@ -1,0 +1,9 @@
+CMake Error at C:/Users/User/esp/v5.3.3/esp-idf/tools/cmake/build.cmake:288 (message):
+  Failed to resolve component 'core'.
+Call Stack (most recent call first):
+  C:/Users/User/esp/v5.3.3/esp-idf/tools/cmake/build.cmake:324 (__build_resolve_and_add_req)
+  C:/Users/User/esp/v5.3.3/esp-idf/tools/cmake/build.cmake:627 (__build_expand_requirements)
+  C:/Users/User/esp/v5.3.3/esp-idf/tools/cmake/project.cmake:717 (idf_build_process)
+  CMakeLists.txt:3 (project)
+
+

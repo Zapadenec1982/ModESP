@@ -1,0 +1,57 @@
+```mermaid
+sequenceDiagram
+    participant Boot
+    participant ConfigManager
+    participant ModuleManager
+    participant Modules
+    participant AsyncSave
+
+    Note over Boot,AsyncSave: BOOT PHASE (All Synchronous)
+    
+    Boot->>ConfigManager: init()
+    ConfigManager->>ConfigManager: Mount LittleFS
+    
+    Boot->>ConfigManager: load() [BLOCKING]
+    ConfigManager->>ConfigManager: Read all config files
+    ConfigManager->>ConfigManager: Parse JSON
+    ConfigManager->>ConfigManager: Feed watchdog
+    ConfigManager-->>Boot: Config loaded
+    
+    Boot->>ModuleManager: configure_all(config)
+    ModuleManager->>Modules: configure(config.module_name)
+    Note right of Modules: Modules have config!
+    
+    Boot->>ModuleManager: init_all()
+    ModuleManager->>Modules: init()
+    Modules-->>ModuleManager: Ready
+    
+    Note over Boot,AsyncSave: RUNTIME PHASE (Async Allowed)
+    
+    Boot->>ConfigManager: enable_async_save()
+    ConfigManager->>AsyncSave: Create writer task
+    
+    Boot->>ConfigManager: enable_auto_save(true)
+    
+    loop Runtime Operations
+        Modules->>ConfigManager: set(key, value)
+        ConfigManager->>ConfigManager: Update RAM cache
+        ConfigManager->>AsyncSave: schedule_save() [NON-BLOCKING]
+        Note right of AsyncSave: Batches changes
+        AsyncSave->>AsyncSave: Write to flash with WDT feed
+    end
+    
+    Note over Boot,AsyncSave: SHUTDOWN PHASE (Synchronous Again)
+    
+    Boot->>ModuleManager: shutdown_all()
+    ModuleManager->>Modules: stop()
+    
+    Boot->>ConfigManager: force_save_sync() [BLOCKING]
+    ConfigManager->>AsyncSave: flush_pending_saves()
+    AsyncSave-->>ConfigManager: All saved
+    ConfigManager->>ConfigManager: Final sync write
+    ConfigManager-->>Boot: Saved
+    
+    Boot->>ConfigManager: deinit()
+    ConfigManager->>AsyncSave: Stop task
+    ConfigManager->>ConfigManager: Unmount FS
+```

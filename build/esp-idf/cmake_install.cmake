@@ -2,7 +2,7 @@
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/ModESP")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/modesp")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -569,12 +569,22 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/ModESP_dev/build/esp-idf/core/cmake_install.cmake")
+  include("C:/ModESP_dev/build/esp-idf/joltwallet__littlefs/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/ModESP_dev/build/esp-idf/joltwallet__littlefs/cmake_install.cmake")
+  include("C:/ModESP_dev/build/esp-idf/logger/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("C:/ModESP_dev/build/esp-idf/adaptive_ui/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("C:/ModESP_dev/build/esp-idf/core/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
@@ -589,11 +599,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/ModESP_dev/build/esp-idf/logger/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("C:/ModESP_dev/build/esp-idf/ui/cmake_install.cmake")
+  include("C:/ModESP_dev/build/esp-idf/system_contract/cmake_install.cmake")
 endif()
 

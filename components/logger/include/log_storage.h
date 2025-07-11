@@ -72,11 +72,12 @@ private:
     FILE* m_currentFile;
     size_t m_currentFileSize;
     
-    // Шляхи
-    static constexpr const char* MOUNT_POINT = "/logs";
-    static constexpr const char* CURRENT_LOG = "/logs/current.log";
-    static constexpr const char* CRITICAL_LOG = "/logs/critical.log";
-    static constexpr const char* ARCHIVE_PREFIX = "/logs/archive_";
+    // Шляхи (використовує той же базовий шлях що і ConfigManager)
+    static constexpr const char* MOUNT_POINT = "/storage";
+    static constexpr const char* LOG_DIR = "/storage/logs";
+    static constexpr const char* CURRENT_LOG = "/storage/logs/current.log";
+    static constexpr const char* CRITICAL_LOG = "/storage/logs/critical.log";
+    static constexpr const char* ARCHIVE_PREFIX = "/storage/logs/archive_";
 };
 
 } // namespace ModESP

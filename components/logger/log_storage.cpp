@@ -37,6 +37,15 @@ esp_err_t LogStorage::init() {
         return ESP_FAIL;
     }
     
+    // Створюємо директорію для логів
+    if (stat(LOG_DIR, &st) != 0) {
+        ESP_LOGI(TAG, "Creating logs directory: %s", LOG_DIR);
+        if (mkdir(LOG_DIR, 0755) != 0) {
+            ESP_LOGE(TAG, "Failed to create logs directory");
+            return ESP_FAIL;
+        }
+    }
+    
     // Відкриваємо поточний файл логів
     m_currentFile = openLogFile(CURRENT_LOG, "ab");
     if (!m_currentFile) {
@@ -63,6 +72,24 @@ esp_err_t LogStorage::deinit() {
 }
 
 esp_err_t LogStorage::mountLittleFS() {
+    // Перевіряємо чи LittleFS вже змонтована (наприклад ConfigManager)
+    struct stat st;
+    if (stat(MOUNT_POINT, &st) == 0) {
+        ESP_LOGI(TAG, "LittleFS already mounted at %s", MOUNT_POINT);
+        m_mounted = true;
+        
+        // Виводимо інформацію про розділ
+        size_t total = 0, used = 0;
+        esp_err_t ret = esp_littlefs_info("storage", &total, &used);
+        if (ret == ESP_OK) {
+            ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
+        }
+        
+        return ESP_OK;
+    }
+    
+    // Якщо не змонтована, спробуємо змонтувати самостійно
+    ESP_LOGI(TAG, "LittleFS not mounted, attempting to mount");
     esp_vfs_littlefs_conf_t conf = {
         .base_path = MOUNT_POINT,
         .partition_label = "storage",
@@ -76,7 +103,11 @@ esp_err_t LogStorage::mountLittleFS() {
     esp_err_t ret = esp_vfs_littlefs_register(&conf);
     
     if (ret != ESP_OK) {
-        if (ret == ESP_FAIL) {
+        if (ret == ESP_ERR_INVALID_STATE) {
+            ESP_LOGI(TAG, "LittleFS already registered by another component");
+            m_mounted = true;
+            return ESP_OK;
+        } else if (ret == ESP_FAIL) {
             ESP_LOGE(TAG, "Failed to mount or format filesystem");
         } else if (ret == ESP_ERR_NOT_FOUND) {
             ESP_LOGE(TAG, "Failed to find LittleFS partition");
@@ -87,6 +118,7 @@ esp_err_t LogStorage::mountLittleFS() {
     }
     
     m_mounted = true;
+    ESP_LOGI(TAG, "LittleFS mounted successfully");
     
     // Виводимо інформацію про розділ
     size_t total = 0, used = 0;
@@ -102,11 +134,9 @@ esp_err_t LogStorage::unmountLittleFS() {
         return ESP_OK;
     }
     
-    esp_err_t ret = esp_vfs_littlefs_unregister("storage");
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to unmount LittleFS (%s)", esp_err_to_name(ret));
-        return ret;
-    }
+    // Не розмонтовуємо файлову систему, оскільки її може використовувати ConfigManager
+    // та інші компоненти. Залишаємо це на відповідальність головного компонента.
+    ESP_LOGI(TAG, "Skipping LittleFS unmount - used by other components");
     
     m_mounted = false;
     return ESP_OK;

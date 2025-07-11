@@ -1,0 +1,197 @@
+{
+    "module": {
+        "name": "SensorModule",
+        "class_name": "SensorModule", 
+        "version": "1.2.0",
+        "description": "Comprehensive sensor data collection module",
+        "author": "ModESP Team",
+        "priority": "HIGH",
+        "type": "CORE",
+        "dependencies": ["ESPhal", "SharedState", "EventBus"],
+        "auto_register": true
+    },
+    
+    "shared_state_interface": {
+        "publishes": {
+            "state.sensor.temperature": {
+                "type": "float",
+                "unit": "°C",
+                "description": "Temperature sensor reading",
+                "update_rate": "1Hz",
+                "validation": {"min": -50, "max": 100}
+            },
+            "state.sensor.humidity": {
+                "type": "float", 
+                "unit": "%",
+                "description": "Humidity sensor reading",
+                "update_rate": "1Hz",
+                "validation": {"min": 0, "max": 100}
+            }
+        },
+        "subscribes": {
+            "config.sensor.calibration": {
+                "type": "object",
+                "description": "Calibration parameters",
+                "handler": "on_calibration_update"
+            }
+        }
+    },
+    
+    "event_bus_interface": {
+        "publishes": {
+            "sensor.reading_updated": {
+                "description": "New sensor reading available",
+                "payload": {
+                    "sensor_id": "string",
+                    "value": "float",
+                    "timestamp": "uint64_t"
+                },
+                "frequency": "1Hz"
+            },
+            "sensor.error": {
+                "description": "Sensor error occurred", 
+                "payload": {
+                    "sensor_id": "string",
+                    "error_code": "esp_err_t",
+                    "message": "string"
+                },
+                "frequency": "on_error"
+            }
+        },
+        "subscribes": {
+            "system.config_changed": {
+                "description": "System configuration changed",
+                "handler": "on_config_changed"
+            }
+        }
+    },
+    
+    "rpc_interface": {
+        "methods": {
+            "sensor.get_temperature": {
+                "description": "Get current temperature",
+                "params": {
+                    "sensor_id": {"type": "string", "optional": true}
+                },
+                "returns": {
+                    "value": {"type": "float", "unit": "°C"},
+                    "timestamp": {"type": "uint64_t"}
+                },
+                "implementation": "get_temperature_rpc",
+                "access_level": "public"
+            },
+            "sensor.calibrate": {
+                "description": "Calibrate sensor",
+                "params": {
+                    "sensor_id": {"type": "string"},
+                    "reference_value": {"type": "float"}
+                },
+                "returns": {
+                    "success": {"type": "boolean"},
+                    "new_offset": {"type": "float"}
+                },
+                "implementation": "calibrate_sensor_rpc",
+                "access_level": "admin"
+            }
+        }
+    },
+    
+    "ui_interfaces": {
+        "web": {
+            "page_title": "Sensor Monitoring",
+            "layout": "grid",
+            "controls": [
+                {
+                    "id": "temperature",
+                    "type": "gauge",
+                    "label": "Temperature",
+                    "unit": "°C",
+                    "min": -40,
+                    "max": 60,
+                    "read_method": "sensor.get_temperature",
+                    "update_interval": 1000,
+                    "thresholds": {
+                        "low": {"value": -10, "color": "blue"},
+                        "normal": {"min": 10, "max": 35, "color": "green"},
+                        "high": {"value": 40, "color": "red"}
+                    }
+                }
+            ]
+        },
+        "mqtt": {
+            "base_topic": "modesp/sensors",
+            "telemetry": {
+                "temperature": {
+                    "topic": "temperature",
+                    "source": "state.sensor.temperature", 
+                    "interval": 60,
+                    "qos": 1,
+                    "retain": true
+                }
+            },
+            "commands": {
+                "calibrate": {
+                    "topic": "calibrate/set",
+                    "method": "sensor.calibrate",
+                    "response_topic": "calibrate/response"
+                }
+            }
+        },
+        "modbus": {
+            "registers": {
+                "temperature": {
+                    "address": 1000,
+                    "type": "input_register",
+                    "scale": 10,
+                    "source": "state.sensor.temperature"
+                }
+            }
+        }
+    },
+    
+    "configuration_schema": {
+        "config_file": "sensors.json",
+        "schema": {
+            "type": "object",
+            "properties": {
+                "sensors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object", 
+                        "properties": {
+                            "role": {"type": "string"},
+                            "type": {"type": "string"},
+                            "hal_id": {"type": "string"}
+                        },
+                        "required": ["role", "type", "hal_id"]
+                    }
+                },
+                "update_interval_ms": {
+                    "type": "integer",
+                    "default": 1000,
+                    "min": 100,
+                    "max": 10000
+                }
+            }
+        }
+    },
+    
+    "code_generation": {
+        "generate_rpc_stubs": true,
+        "generate_event_handlers": true,
+        "generate_shared_state_accessors": true,
+        "generate_ui_bindings": true,
+        "generate_config_validators": true,
+        "generate_module_registrar": true
+    },
+    
+    "build_options": {
+        "menuconfig_prefix": "SENSOR_MODULE",
+        "depends_on": ["CONFIG_ESPAL_ENABLED"],
+        "optional_features": {
+            "DS18B20_SUPPORT": {"default": true},
+            "NTC_SUPPORT": {"default": true},
+            "CALIBRATION": {"default": false}
+        }
+    }
+} 

@@ -1,0 +1,1647 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40378a52
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (27) boot: Multicore bootloader[0m
+[0;32mI (30) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (43) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (48) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (58) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (69) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (76) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (91) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (103) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (125) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (140) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (183) boot: Disabling RNG early entropy source...[0m
+[0;32mI (195) cpu_start: Multicore app[0m
+[0;32mI (204) cpu_start: Pro cpu start user code[0m
+[0;32mI (204) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (204) app_init: Application information:[0m
+[0;32mI (207) app_init: Project name:     logger_test[0m
+[0;32mI (212) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (229) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (248) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (281) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (302) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (316) main_task: Started on CPU0[0m
+[0;32mI (326) main_task: Calling app_main()[0m
+[0;32mI (326) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (326) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2356) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2356) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2356) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2456) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2456) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2466) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2476) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2476) LoggerModule: Writer task started[0m
+[0;32mI (2476) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2486) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2486) LoggerModule: Writer task stopped[0m
+[0;31mE (2496) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2475) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2475) LoggerModule: Writer task started[0m
+[0;32mI (2475) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2485) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2485) LoggerModule: Writer task stopped[0m
+[0;31mE (2495) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2475) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2475) LoggerModule: Writer task started[0m
+[0;32mI (2475) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2485) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2485) LoggerModule: Writer task stopped[0m
+[0;31mE (2495) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2475) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2475) LoggerModule: Writer task started[0m
+[0;32mI (2475) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2485) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2485) LoggerModule: Writer task stopped[0m
+[0;31mE (2495) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (204) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2475) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2475) LoggerModule: Writer task started[0m
+[0;32mI (2475) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2485) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2485) LoggerModule: Writer task stopped[0m
+[0;31mE (2495) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2485) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2485) LoggerModule: Writer task started[0m
+[0;32mI (2485) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2495) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2495) LoggerModule: Writer task stopped[0m
+[0;31mE (2505) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2485) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2485) LoggerModule: Writer task started[0m
+[0;32mI (2485) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2495) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2495) LoggerModule: Writer task stopped[0m
+[0;31mE (2505) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2485) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2485) LoggerModule: Writer task started[0m
+[0;32mI (2485) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2495) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2495) LoggerModule: Writer task stopped[0m
+[0;31mE (2505) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2485) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2485) LoggerModule: Writer task started[0m
+[0;32mI (2485) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2495) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2495) LoggerModule: Writer task stopped[0m
+[0;31mE (2505) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2485) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2485) LoggerModule: Writer task started[0m
+[0;32mI (2485) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2495) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2495) LoggerModule: Writer task stopped[0m
+[0;31mE (2505) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2465) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2565) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2565) LoggerModule: Writer task started[0m
+[0;32mI (2565) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2565) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2575) LoggerModule: Writer task stopped[0m
+[0;31mE (2575) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2455) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2465) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2465) LoggerModule: Writer task started[0m
+[0;32mI (2465) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2475) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2475) LoggerModule: Writer task stopped[0m
+[0;31mE (2485) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2455) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2465) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2465) LoggerModule: Writer task started[0m
+[0;32mI (2465) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2475) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2475) LoggerModule: Writer task stopped[0m
+[0;31mE (2485) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2455) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2465) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2465) LoggerModule: Writer task started[0m
+[0;32mI (2465) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2475) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2475) LoggerModule: Writer task stopped[0m
+[0;31mE (2485) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2455) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2465) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2465) LoggerModule: Writer task started[0m
+[0;32mI (2465) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2475) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2475) LoggerModule: Writer task stopped[0m
+[0;31mE (2485) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2455) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2465) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2465) LoggerModule: Writer task started[0m
+[0;32mI (2465) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2475) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2475) LoggerModule: Writer task stopped[0m
+[0;31mE (2485) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2455) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2465) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2465) LoggerModule: Writer task started[0m
+[0;32mI (2465) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2475) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2475) LoggerModule: Writer task stopped[0m
+[0;31mE (2485) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (204) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2455) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2465) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2465) LoggerModule: Writer task started[0m
+[0;32mI (2465) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2475) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2475) LoggerModule: Writer task stopped[0m
+[0;31mE (2485) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (280) spi_flash: detected chip: generic[0m
+[0;32mI (284) spi_flash: flash io: dio[0m
+[0;33mW (288) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (301) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) main_task: Started on CPU0[0m
+[0;32mI (325) main_task: Calling app_main()[0m
+[0;32mI (325) LoggerTest: Starting ModESP Logger Tests[0m
+[0;32mI (325) LoggerTest: Free heap: 386212 bytes[0m
+[0;32mI (2355) LoggerTest: Starting Logger tests...[0m
+[0;32mI (2355) LoggerTest: === Starting Logger Tests ===[0m
+[0;32mI (2355) LoggerTest: Resetting logger test state...[0m
+[0;32mI (2455) LoggerModule: Initializing LoggerModule[0m
+[0;32mI (2455) LogStorage: Initializing LittleFS storage[0m
+[0;32mI (2455) LogStorage: Partition size: total: 262144, used: 8192[0m
+[0;32mI (2465) LogStorage: Storage initialized, current log size: 0 bytes[0m
+[0;32mI (2465) LoggerModule: Writer task started[0m
+[0;32mI (2465) LoggerModule: LoggerModule initialized successfully[0m
+[0;32mI (2475) LoggerModule: Stopping LoggerModule[0m
+[0;32mI (2475) LoggerModule: Writer task stopped[0m
+[0;31mE (2485) FreeRTOS: FreeRTOS Task "logger_writer" should not return, Aborting now![0m
+
+abort() was called at PC 0x4037ac7b on core 0
+
+
+Backtrace: 0x40375a52:0x3fca0c60 0x4037a2f9:0x3fca0c80 0x40380d15:0x3fca0ca0 0x4037ac7b:0x3fca0d10
+
+
+
+
+ELF file SHA256: 07dc9e03a
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037598c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1870
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xce8
+load:0x403cb700,len:0x2ed8
+entry 0x403c8918
+[0;32mI (26) boot: ESP-IDF v5.3.3 2nd stage bootloader[0m
+[0;32mI (26) boot: compile time Jun 28 2025 03:15:54[0m
+[0;32mI (26) boot: Multicore bootloader[0m
+[0;32mI (29) boot: chip revision: v0.1[0m
+[0;32mI (33) boot: efuse block revision: v1.3[0m
+[0;32mI (38) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (42) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (52) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (61) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (83) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot:  3 storage          Unknown data     01 82 00110000 00040000[0m
+[0;32mI (98) boot: End of partition table[0m
+[0;32mI (102) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=12938h ( 76088) map[0m
+[0;32mI (124) esp_image: segment 1: paddr=00022960 vaddr=3fc92f00 size=02afch ( 11004) load[0m
+[0;32mI (127) esp_image: segment 2: paddr=00025464 vaddr=40374000 size=0abb4h ( 43956) load[0m
+[0;32mI (139) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=2c358h (181080) map[0m
+[0;32mI (172) esp_image: segment 4: paddr=0005c380 vaddr=4037ebb4 size=04280h ( 17024) load[0m
+[0;32mI (182) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (182) boot: Disabling RNG early entropy source...[0m
+[0;32mI (194) cpu_start: Multicore app[0m
+[0;32mI (203) cpu_start: Pro cpu start user code[0m
+[0;32mI (203) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (203) app_init: Application information:[0m
+[0;32mI (206) app_init: Project name:     logger_test[0m
+[0;32mI (211) app_init: App version:      3c6d213-dirty[0m
+[0;32mI (217) app_init: Compile time:     Jun 28 2025 03:14:32[0m
+[0;32mI (223) app_init: ELF file SHA256:  07dc9e03a...[0m
+[0;32mI (228) app_init: ESP-IDF:          v5.3.3[0m
+[0;32mI (233) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (238) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (243) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (247) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC963B8 len 00053358 (332 KiB): RAM[0m
+[0;32mI (261) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (267) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (273) heap_init

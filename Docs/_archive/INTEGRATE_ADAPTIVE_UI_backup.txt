@@ -1,0 +1,14 @@
+# Integration instructions for process_manifests.py
+
+# Add this import at the top of process_manifests.py:
+from adaptive_ui_generator import generate_adaptive_ui
+
+# In ManifestProcessor.generate_code() method, add after existing generation:
+
+# Generate adaptive UI components
+print("Generating adaptive UI components...")
+generate_adaptive_ui(
+    self.modules,
+    self.drivers,
+    self.output_dir
+)

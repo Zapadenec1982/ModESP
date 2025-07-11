@@ -1,0 +1,22 @@
+/**
+ * @file module_heartbeat.h
+ * @brief Module health monitoring and watchdog functionality
+ * 
+ * Monitors module activity and automatically restarts unresponsive modules.
+ * Designed for minimal resource usage on ESP32.
+ * 
+ * Thread Safety:
+ * - All public methods are thread-safe using FreeRTOS mutex
+ * - Mutex is checked before each operation for robustness
+ * - Uses portMAX_DELAY for critical operations to ensure data consistency
+ * 
+ * For non-critical operations where timeout is preferred, use pattern:
+ * @code
+ * if (xSemaphoreTake(m_mutex, pdMS_TO_TICKS(100)) == pdTRUE) {
+ *     // perform operation
+ *     xSemaphoreGive(m_mutex);
+ * } else {
+ *     ESP_LOGW(TAG, "Failed to acquire mutex within timeout");
+ * }
+ * @endcode
+ */

@@ -6435,6 +6435,156 @@
                 "children": [
                     {
                         "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE",
+                        "help": "Fail immediately on pool exhaustion. Recommended for production.\nWhen disabled, allows fallback to heap allocation (debug only).",
+                        "id": "MEMORY_POOL_STRICT_MODE",
+                        "name": "MEMORY_POOL_STRICT_MODE",
+                        "range": null,
+                        "title": "Strict Mode (No Heap Fallback)",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE",
+                        "help": "Track usage statistics and performance metrics.\nAdds minimal overhead but provides valuable insights.",
+                        "id": "MEMORY_POOL_DIAGNOSTICS",
+                        "name": "MEMORY_POOL_DIAGNOSTICS",
+                        "range": null,
+                        "title": "Enable Pool Diagnostics",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE",
+                        "help": "Fill freed blocks with pattern 0xDEADBEEF for debugging.\nHelps detect use-after-free errors.",
+                        "id": "MEMORY_POOL_POISON_FREED",
+                        "name": "MEMORY_POOL_POISON_FREED",
+                        "range": null,
+                        "title": "Poison Freed Memory (Debug)",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE",
+                        "help": "Number of 32-byte blocks for small allocations.",
+                        "id": "MEMORY_POOL_TINY_COUNT",
+                        "name": "MEMORY_POOL_TINY_COUNT",
+                        "range": [
+                            64,
+                            256
+                        ],
+                        "title": "Tiny Blocks (32B) Count",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE",
+                        "help": "Number of 64-byte blocks for standard events.",
+                        "id": "MEMORY_POOL_SMALL_COUNT",
+                        "name": "MEMORY_POOL_SMALL_COUNT",
+                        "range": [
+                            32,
+                            128
+                        ],
+                        "title": "Small Blocks (64B) Count",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE",
+                        "help": "Number of 128-byte blocks for JSON payloads.",
+                        "id": "MEMORY_POOL_MEDIUM_COUNT",
+                        "name": "MEMORY_POOL_MEDIUM_COUNT",
+                        "range": [
+                            16,
+                            64
+                        ],
+                        "title": "Medium Blocks (128B) Count",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE",
+                        "help": "Number of 256-byte blocks for sensor data batches.",
+                        "id": "MEMORY_POOL_LARGE_COUNT",
+                        "name": "MEMORY_POOL_LARGE_COUNT",
+                        "range": [
+                            8,
+                            32
+                        ],
+                        "title": "Large Blocks (256B) Count",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE",
+                        "help": "Number of 512-byte blocks for web responses.",
+                        "id": "MEMORY_POOL_XLARGE_COUNT",
+                        "name": "MEMORY_POOL_XLARGE_COUNT",
+                        "range": [
+                            4,
+                            16
+                        ],
+                        "title": "XLarge Blocks (512B) Count",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE && MEMORY_POOL_DIAGNOSTICS",
+                        "help": "Trigger low memory warning when usage exceeds this percentage.",
+                        "id": "MEMORY_POOL_ALERT_THRESHOLD",
+                        "name": "MEMORY_POOL_ALERT_THRESHOLD",
+                        "range": [
+                            50,
+                            95
+                        ],
+                        "title": "Low Memory Alert Threshold %",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE && MEMORY_POOL_DIAGNOSTICS",
+                        "help": "Trigger critical memory alert when usage exceeds this percentage.",
+                        "id": "MEMORY_POOL_CRITICAL_THRESHOLD",
+                        "name": "MEMORY_POOL_CRITICAL_THRESHOLD",
+                        "range": [
+                            80,
+                            99
+                        ],
+                        "title": "Critical Memory Alert Threshold %",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "MEMORY_POOL_ENABLE && !MEMORY_POOL_STRICT_MODE",
+                        "help": "Allow fallback to heap allocation when pools are exhausted.\nNOT recommended for production use.",
+                        "id": "MEMORY_POOL_ALLOW_HEAP_FALLBACK",
+                        "name": "MEMORY_POOL_ALLOW_HEAP_FALLBACK",
+                        "range": null,
+                        "title": "Allow Heap Fallback (Debug Only)",
+                        "type": "bool"
+                    }
+                ],
+                "depends_on": null,
+                "help": "Enable deterministic memory allocation for critical components.\nProvides fixed-size memory pools with O(1) allocation/deallocation.",
+                "id": "MEMORY_POOL_ENABLE",
+                "name": "MEMORY_POOL_ENABLE",
+                "range": null,
+                "title": "Enable Memory Pool System",
+                "type": "bool"
+            }
+        ],
+        "depends_on": null,
+        "id": "memory-pool-configuration",
+        "title": "Memory Pool Configuration",
+        "type": "menu"
+    },
+    {
+        "children": [
+            {
+                "children": [
+                    {
+                        "children": [],
                         "depends_on": "<choice COMPILER_OPTIMIZATION>",
                         "help": null,
                         "id": "COMPILER_OPTIMIZATION_DEBUG",

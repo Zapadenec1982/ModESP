@@ -1,0 +1,254 @@
+{
+    "module": {
+        "name": "SensorModule",
+        "version": "1.2.0",
+        "description": "Модуль збору даних з датчиків",
+        "author": "ModESP Team",
+        "priority": "HIGH",
+        "type": "CORE",
+        "dependencies": ["ESPhal", "SharedState", "EventBus"],
+        "resources": {
+            "stack_size": 4096,
+            "heap_usage": "~2KB",
+            "update_budget_ms": 2
+        }
+    },
+    
+    "configuration": {
+        "config_file": "sensors.json",
+        "schema": {
+            "type": "object",
+            "properties": {
+                "sensors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "role": {"type": "string"},
+                            "type": {"type": "string"}, 
+                            "hal_id": {"type": "string"},
+                            "config": {"type": "object"}
+                        }
+                    }
+                },
+                "update_interval_ms": {
+                    "type": "integer",
+                    "default": 1000,
+                    "min": 100,
+                    "max": 10000
+                }
+            }
+        }
+    },
+    
+    "shared_state": {
+        "publishes": {
+            "state.sensor.temperature": {
+                "type": "float",
+                "unit": "°C", 
+                "description": "Температура датчика",
+                "update_rate": "1Hz"
+            },
+            "state.sensor.humidity": {
+                "type": "float",
+                "unit": "%",
+                "description": "Вологість",
+                "update_rate": "1Hz"
+            },
+            "state.sensor.door_open": {
+                "type": "boolean",
+                "description": "Стан дверей",
+                "update_rate": "on_change"
+            }
+        },
+        "subscribes": {
+            "config.sensor.calibration": {
+                "type": "object",
+                "description": "Калібрувальні параметри",
+                "handler": "on_calibration_update"
+            }
+        }
+    },
+    
+    "event_bus": {
+        "publishes": {
+            "sensor.reading_updated": {
+                "description": "Нове показання датчика",
+                "payload": {
+                    "sensor_id": "string",
+                    "value": "float", 
+                    "timestamp": "uint64_t"
+                }
+            },
+            "sensor.error": {
+                "description": "Помилка датчика",
+                "payload": {
+                    "sensor_id": "string",
+                    "error_code": "esp_err_t",
+                    "message": "string"
+                }
+            },
+            "sensor.calibration_complete": {
+                "description": "Завершена калібровка",
+                "payload": {
+                    "sensor_id": "string",
+                    "old_offset": "float",
+                    "new_offset": "float"
+                }
+            }
+        },
+        "subscribes": {
+            "system.config_changed": {
+                "description": "Зміна конфігурації системи", 
+                "handler": "on_config_changed"
+            },
+            "hal.gpio_interrupt": {
+                "description": "Переривання GPIO",
+                "handler": "on_gpio_interrupt",
+                "filter": {"pin": [4, 5, 18]}
+            }
+        }
+    },
+    
+    "rpc_api": {
+        "methods": {
+            "sensor.get_temperature": {
+                "description": "Отримати температуру",
+                "params": {
+                    "sensor_id": {"type": "string", "optional": true}
+                },
+                "returns": {
+                    "value": "float",
+                    "unit": "string",
+                    "timestamp": "uint64_t"
+                },
+                "implementation": "get_temperature_rpc"
+            },
+            "sensor.get_all_readings": {
+                "description": "Отримати всі показання",
+                "params": {},
+                "returns": {
+                    "sensors": "array"
+                },
+                "implementation": "get_all_readings_rpc"
+            },
+            "sensor.calibrate": {
+                "description": "Калібрувати датчик",
+                "params": {
+                    "sensor_id": "string",
+                    "reference_value": "float"
+                },
+                "returns": {
+                    "success": "boolean",
+                    "new_offset": "float"
+                },
+                "implementation": "calibrate_sensor_rpc"
+            }
+        }
+    },
+    
+    "ui_interfaces": {
+        "web": {
+            "controls": [
+                {
+                    "id": "temperature",
+                    "type": "gauge",
+                    "label": "Temperature",
+                    "unit": "°C",
+                    "min": -40,
+                    "max": 60,
+                    "read_method": "sensor.get_temperature",
+                    "thresholds": {
+                        "low": -10,
+                        "normal": [10, 35], 
+                        "high": 40
+                    }
+                },
+                {
+                    "id": "calibrate_btn",
+                    "type": "button",
+                    "label": "Calibrate",
+                    "action": "sensor.calibrate",
+                    "confirmation": "Are you sure?"
+                }
+            ]
+        },
+        "mqtt": {
+            "telemetry": {
+                "temperature": {
+                    "topic": "modesp/sensors/temperature",
+                    "source": "state.sensor.temperature",
+                    "interval": 60,
+                    "qos": 1
+                }
+            },
+            "commands": {
+                "calibrate": {
+                    "topic": "modesp/sensors/calibrate",
+                    "method": "sensor.calibrate"
+                }
+            }
+        },
+        "lcd": {
+            "menu_items": [
+                {
+                    "label": "Temp",
+                    "source": "state.sensor.temperature",
+                    "format": "{:.1f}°C"
+                },
+                {
+                    "label": "Humidity", 
+                    "source": "state.sensor.humidity",
+                    "format": "{:.0f}%"
+                }
+            ]
+        }
+    },
+    
+    "health_monitoring": {
+        "metrics": {
+            "sensor_read_errors": {
+                "type": "counter",
+                "description": "Кількість помилок читання"
+            },
+            "average_read_time": {
+                "type": "gauge",
+                "unit": "ms",
+                "description": "Середній час читання датчика"
+            }
+        },
+        "health_checks": {
+            "sensors_responsive": {
+                "description": "Чи відповідають всі датчики",
+                "critical": true
+            },
+            "read_rate_normal": {
+                "description": "Нормальна частота читання",
+                "critical": false
+            }
+        }
+    },
+    
+    "code_generation": {
+        "generate_rpc_stubs": true,
+        "generate_event_handlers": true,
+        "generate_config_schema": true,
+        "generate_ui_registry": true,
+        "generate_health_monitoring": true
+    },
+    
+    "testing": {
+        "unit_tests": {
+            "mocks": ["ESPhal", "Timer"],
+            "test_scenarios": [
+                "temperature_reading",
+                "sensor_error_handling", 
+                "calibration_process"
+            ]
+        },
+        "integration_tests": {
+            "required_modules": ["SharedState", "EventBus"],
+            "test_data": "test/sensor_test_data.json"
+        }
+    }
+} 

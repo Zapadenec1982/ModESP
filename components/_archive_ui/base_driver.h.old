@@ -1,0 +1,121 @@
+// base_driver.h
+// Base class for all drivers in Manager-Driver pattern
+
+#pragma once
+
+#include <string>
+#include "esp_err.h"
+#include "nlohmann/json.hpp"
+
+/**
+ * @brief Driver state enum
+ */
+enum class DriverState {
+    CREATED,      // Just created
+    INITIALIZED,  // init() called successfully
+    CONFIGURED,   // configure() called
+    RUNNING,      // Active and updating
+    ERROR,        // Error state
+    STOPPED       // Stopped
+};
+
+/**
+ * @brief Base driver interface
+ * 
+ * All drivers (sensor, actuator, etc.) inherit from this
+ */
+class BaseDriver {
+public:
+    virtual ~BaseDriver() = default;
+    
+    /**
+     * @brief Get driver name
+     */
+    virtual const char* get_name() const = 0;
+    
+    /**
+     * @brief Get driver type (e.g., "temperature", "relay")
+     */
+    virtual const char* get_type() const = 0;
+    
+    /**
+     * @brief Initialize driver
+     */
+    virtual esp_err_t init() = 0;
+    
+    /**
+     * @brief Configure driver from JSON
+     */
+    virtual esp_err_t configure(const nlohmann::json& config) = 0;
+    
+    /**
+     * @brief Update driver (called periodically)
+     */
+    virtual esp_err_t update() = 0;
+    
+    /**
+     * @brief Get current state
+     */
+    virtual DriverState get_state() const = 0;
+    
+    /**
+     * @brief Check if driver is healthy
+     */
+    virtual bool is_healthy() const = 0;
+    
+    /**
+     * @brief Get driver capabilities
+     */
+    virtual nlohmann::json get_capabilities() const = 0;
+    
+    /**
+     * @brief Get UI components this driver provides
+     */
+    virtual std::vector<std::string> get_ui_components() const = 0;
+};
+
+/**
+ * @brief Sensor driver interface
+ */
+class ISensorDriver : public BaseDriver {
+public:
+    /**
+     * @brief Read current value
+     */
+    virtual esp_err_t read_value(float& value) = 0;
+    
+    /**
+     * @brief Get measurement unit
+     */
+    virtual const char* get_unit() const = 0;
+    
+    /**
+     * @brief Calibrate sensor
+     */
+    virtual esp_err_t calibrate(float reference_value) { 
+        return ESP_ERR_NOT_SUPPORTED; 
+    }
+};
+
+/**
+ * @brief Actuator driver interface
+ */
+class IActuatorDriver : public BaseDriver {
+public:
+    /**
+     * @brief Set actuator state
+     */
+    virtual esp_err_t set_state(bool state) = 0;
+    
+    /**
+     * @brief Get current state
+     */
+    virtual bool get_current_state() const = 0;
+    
+    /**
+     * @brief Set PWM value (0-100%)
+     */
+    virtual esp_err_t set_pwm(uint8_t percent) {
+        return ESP_ERR_NOT_SUPPORTED;
+    }
+};

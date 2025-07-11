@@ -1,0 +1,2 @@
+source C:/ModESP_dev/test/logger_only_test/build/bootloader/gdbinit/symbols
+source C:/ModESP_dev/test/logger_only_test/build/bootloader/gdbinit/connect

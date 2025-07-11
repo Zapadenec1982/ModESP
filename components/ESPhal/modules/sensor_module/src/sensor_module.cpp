@@ -278,3 +278,21 @@ esp_err_t SensorModule::poll_sensors_now() {
 std::vector<std::string> SensorModule::get_available_drivers() const {
     return SensorDriverRegistry::instance().get_registered_types();
 }
+
+// Register module with factory
+// #include "module_factory.h" // Not needed anymore
+
+// Factory function to create SensorModule
+// Note: This requires ESPhal instance to be available globally or through dependency injection
+static std::unique_ptr<BaseModule> createSensorModule() {
+    // TODO: Get ESPhal instance from system context
+    static ESPhal* g_hal = nullptr;  // This should be set during system initialization
+    if (g_hal) {
+        return std::make_unique<SensorModule>(*g_hal);
+    }
+    ESP_LOGE(TAG, "Cannot create SensorModule: ESPhal not available");
+    return nullptr;
+}
+
+// Register at startup
+// REGISTER_MODULE_AS(SensorModule, "SensorModule"); // Module factory not used anymore

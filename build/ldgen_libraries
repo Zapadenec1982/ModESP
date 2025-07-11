@@ -84,8 +84,8 @@ C:/ModESP_dev/build/esp-idf/wifi_provisioning/libwifi_provisioning.a
 C:/ModESP_dev/build/esp-idf/wifi_manager/libwifi_manager.a
 C:/ModESP_dev/build/esp-idf/sensor_drivers/libsensor_drivers.a
 C:/ModESP_dev/build/esp-idf/ESPhal/libESPhal.a
-C:/ModESP_dev/build/esp-idf/core/libcore.a
 C:/ModESP_dev/build/esp-idf/joltwallet__littlefs/libjoltwallet__littlefs.a
-C:/ModESP_dev/build/esp-idf/main/libmain.a
 C:/ModESP_dev/build/esp-idf/logger/liblogger.a
-C:/ModESP_dev/build/esp-idf/ui/libui.a
+C:/ModESP_dev/build/esp-idf/adaptive_ui/libadaptive_ui.a
+C:/ModESP_dev/build/esp-idf/core/libcore.a
+C:/ModESP_dev/build/esp-idf/main/libmain.a

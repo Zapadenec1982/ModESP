@@ -1,0 +1,245 @@
+{
+    "driver": {
+        "name": "DS18B20AsyncDriver",
+        "type": "temperature",
+        "version": "1.0.0",
+        "description": "Asynchronous DS18B20 OneWire temperature sensor driver",
+        "manufacturer": "Maxim Integrated",
+        "model": "DS18B20",
+        "hal_requirements": ["GPIO", "OneWire"]
+    },
+    
+    "capabilities": {
+        "measurement_range": {
+            "min": -55,
+            "max": 125,
+            "unit": "°C"
+        },
+        "accuracy": "±0.5°C",
+        "resolution": "0.0625°C",
+        "response_time_ms": 750,
+        "supports_calibration": true,
+        "multi_channel": true,
+        "max_sensors_per_bus": 20
+    },
+    
+    "configuration": {
+        "schema": {
+            "type": "object",
+            "required": ["pin", "resolution"],
+            "properties": {
+                "pin": {
+                    "type": "integer",
+                    "description": "GPIO pin for OneWire bus",
+                    "minimum": 0,
+                    "maximum": 39
+                },
+                "resolution": {
+                    "type": "integer",
+                    "description": "Resolution in bits (9-12)",
+                    "minimum": 9,
+                    "maximum": 12,
+                    "default": 12
+                },
+                "parasite_power": {
+                    "type": "boolean",
+                    "description": "Use parasite power mode",
+                    "default": false
+                },
+                "scan_interval_ms": {
+                    "type": "integer",
+                    "description": "Interval between bus scans",
+                    "minimum": 1000,
+                    "default": 30000
+                }
+            }
+        },
+        "defaults": {
+            "resolution": 12,
+            "parasite_power": false,
+            "scan_interval_ms": 30000
+        }
+    },
+    
+    "apis": {
+        "specific": [
+            {
+                "method": "start_conversion",
+                "handler": "startConversion",
+                "description": "Start temperature conversion on all sensors",
+                "params": {},
+                "returns": {
+                    "type": "object",
+                    "properties": {
+                        "success": { "type": "boolean" },
+                        "sensor_count": { "type": "number" }
+                    }
+                }
+            },
+            {
+                "method": "read_temperature",
+                "handler": "readTemperature", 
+                "description": "Read temperature from specific sensor",
+                "params": {
+                    "address": {
+                        "type": "string",
+                        "required": true,
+                        "validation": {
+                            "pattern": "^[0-9A-F]{16}$"
+                        }
+                    }
+                },
+                "returns": {
+                    "type": "object",
+                    "properties": {
+                        "value": { "type": "number" },
+                        "unit": { "type": "string" },
+                        "timestamp": { "type": "number" }
+                    }
+                }
+            },
+            {
+                "method": "scan_bus",
+                "handler": "scanBus",
+                "description": "Scan OneWire bus for sensors",
+                "params": {},
+                "returns": {
+                    "type": "object",
+                    "properties": {
+                        "sensors": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "address": { "type": "string" },
+                                    "type": { "type": "string" },
+                                    "present": { "type": "boolean" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "method": "set_resolution",
+                "handler": "setResolution",
+                "description": "Set resolution for specific sensor",
+                "params": {
+                    "address": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "resolution": {
+                        "type": "number",
+                        "required": true,
+                        "validation": {
+                            "min": 9,
+                            "max": 12
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    
+    "ui_extensions": {
+        "inject_into": "sensor_config_panel",
+        "components": [
+            {
+                "id": "ds18b20_resolution_slider",
+                "type": "slider",
+                "condition": "config.sensor.type == 'DS18B20'",
+                "access_level": "technician",
+                "priority": "medium",
+                "config": {
+                    "label": "Resolution (bits)",
+                    "min": 9,
+                    "max": 12,
+                    "default": 12
+                }
+            },
+            {
+                "id": "ds18b20_parasite_toggle",
+                "type": "toggle", 
+                "condition": "config.sensor.type == 'DS18B20'",
+                "access_level": "technician",
+                "priority": "low",
+                "config": {
+                    "label": "Parasite Power Mode",
+                    "default": false
+                }
+            },
+            {
+                "id": "ds18b20_address_display",
+                "type": "text",
+                "condition": "config.sensor.type == 'DS18B20'",
+                "access_level": "user",
+                "priority": "low",
+                "config": {
+                    "label": "Sensor Address",
+                    "value_source": "state.driver.ds18b20.addresses"
+                }
+            }
+        ],
+        "config_fields": [
+            {
+                "name": "ds18b20_pin",
+                "type": "pin",
+                "label": "OneWire Pin",
+                "description": "GPIO pin connected to DS18B20 data line",
+                "validation": {
+                    "allowed_pins": [4, 5, 13, 14, 15, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33]
+                }
+            },
+            {
+                "name": "ds18b20_resolution", 
+                "type": "select",
+                "label": "Resolution",
+                "description": "Measurement resolution",
+                "options": [
+                    { "value": 9, "label": "9 bit (0.5°C)" },
+                    { "value": 10, "label": "10 bit (0.25°C)" },
+                    { "value": 11, "label": "11 bit (0.125°C)" },
+                    { "value": 12, "label": "12 bit (0.0625°C)" }
+                ],
+                "default": 12
+            },
+            {
+                "name": "ds18b20_parasite",
+                "type": "toggle",
+                "label": "Parasite Power",
+                "description": "Use parasite power mode (2-wire connection)",
+                "default": false
+            }
+        ],
+        "status_widgets": [
+            {
+                "type": "text",
+                "label": "Sensors Found",
+                "value_source": "state.driver.ds18b20.sensor_count"
+            },
+            {
+                "type": "list",
+                "label": "Sensor Addresses",
+                "value_source": "state.driver.ds18b20.addresses"
+            }
+        ]
+    },
+    
+    "shared_state": {
+        "publishes": {
+            "state.driver.ds18b20.sensor_count": {
+                "type": "number",
+                "description": "Number of DS18B20 sensors found on bus"
+            },
+            "state.driver.ds18b20.addresses": {
+                "type": "array",
+                "description": "List of sensor addresses"
+            },
+            "state.driver.ds18b20.last_scan": {
+                "type": "number",
+                "description": "Timestamp of last bus scan"
+            }
+        }
+    }
+}

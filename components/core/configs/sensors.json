@@ -1,31 +1,47 @@
 {
-  "comment": "Фінальна конфігурація після діагностики - GPIO7 потребує перевірки підключення",
-  "poll_interval_ms": 3000,
-  "publish_on_error": true,
-  "sensors": [
-    {
-      "role": "sensor_1",
-      "type": "DS18B20_Async",
-      "publish_key": "state.sensor.temperature_1",
-      "config": {
-        "hal_id": "ONEWIRE_BUS_2",
-        "address": "auto",
-        "resolution": 10,
-        "offset": 0.0,
-        "max_retries": 5
-      }
+    "temperature": {
+        "primary": {
+            "type": "DS18B20",
+            "pin": 4,
+            "resolution": 12,
+            "conversion_time_ms": 750,
+            "power_mode": "parasite",
+            "enabled": true
+        },
+        "secondary": {
+            "type": "NTC",
+            "pin": 36,
+            "adc_channel": 0,
+            "voltage_divider": 10000,
+            "beta": 3950,
+            "nominal_temp": 25.0,
+            "nominal_resistance": 10000,
+            "enabled": false
+        }
     },
-    {
-      "role": "sensor_2", 
-      "type": "DS18B20_Async",
-      "publish_key": "state.sensor.temperature_2",
-      "config": {
-        "hal_id": "ONEWIRE_BUS_1",
-        "address": "auto",
-        "resolution": 10,
-        "offset": 0.0,
-        "max_retries": 5
-      }
+    "humidity": {
+        "enabled": false,
+        "type": "DHT22",
+        "pin": 5,
+        "read_interval_ms": 2000
+    },
+    "pressure": {
+        "enabled": false,
+        "type": "BMP280",
+        "i2c_address": "0x76",
+        "read_interval_ms": 1000
+    },
+    "door": {
+        "enabled": false,
+        "type": "magnetic",
+        "pin": 18,
+        "pull_up": true,
+        "debounce_ms": 100
+    },
+    "sampling": {
+        "interval_ms": 1000,
+        "average_count": 5,
+        "max_error_threshold": 3.0,
+        "calibration_offset": 0.0
     }
-  ]
-}
+} 

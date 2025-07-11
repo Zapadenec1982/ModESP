@@ -1,0 +1,98 @@
+menu "Memory Pool Configuration"
+
+    config MEMORY_POOL_ENABLE
+        bool "Enable Memory Pool System"
+        default y
+        help
+            Enable deterministic memory allocation for critical components.
+            Provides fixed-size memory pools with O(1) allocation/deallocation.
+
+    config MEMORY_POOL_STRICT_MODE
+        bool "Strict Mode (No Heap Fallback)"
+        default y
+        depends on MEMORY_POOL_ENABLE
+        help
+            Fail immediately on pool exhaustion. Recommended for production.
+            When disabled, allows fallback to heap allocation (debug only).
+
+    config MEMORY_POOL_DIAGNOSTICS
+        bool "Enable Pool Diagnostics"
+        default y
+        depends on MEMORY_POOL_ENABLE
+        help
+            Track usage statistics and performance metrics.
+            Adds minimal overhead but provides valuable insights.
+
+    config MEMORY_POOL_POISON_FREED
+        bool "Poison Freed Memory (Debug)"
+        default n
+        depends on MEMORY_POOL_ENABLE
+        help
+            Fill freed blocks with pattern 0xDEADBEEF for debugging.
+            Helps detect use-after-free errors.
+
+    config MEMORY_POOL_TINY_COUNT
+        int "Tiny Blocks (32B) Count"
+        default 128
+        range 64 256
+        depends on MEMORY_POOL_ENABLE
+        help
+            Number of 32-byte blocks for small allocations.
+
+    config MEMORY_POOL_SMALL_COUNT
+        int "Small Blocks (64B) Count"
+        default 64
+        range 32 128
+        depends on MEMORY_POOL_ENABLE
+        help
+            Number of 64-byte blocks for standard events.
+
+    config MEMORY_POOL_MEDIUM_COUNT
+        int "Medium Blocks (128B) Count"
+        default 32
+        range 16 64
+        depends on MEMORY_POOL_ENABLE
+        help
+            Number of 128-byte blocks for JSON payloads.
+
+    config MEMORY_POOL_LARGE_COUNT
+        int "Large Blocks (256B) Count"
+        default 16
+        range 8 32
+        depends on MEMORY_POOL_ENABLE
+        help
+            Number of 256-byte blocks for sensor data batches.
+
+    config MEMORY_POOL_XLARGE_COUNT
+        int "XLarge Blocks (512B) Count"
+        default 8
+        range 4 16
+        depends on MEMORY_POOL_ENABLE
+        help
+            Number of 512-byte blocks for web responses.
+
+    config MEMORY_POOL_ALERT_THRESHOLD
+        int "Low Memory Alert Threshold %"
+        default 80
+        range 50 95
+        depends on MEMORY_POOL_ENABLE && MEMORY_POOL_DIAGNOSTICS
+        help
+            Trigger low memory warning when usage exceeds this percentage.
+
+    config MEMORY_POOL_CRITICAL_THRESHOLD
+        int "Critical Memory Alert Threshold %"
+        default 95
+        range 80 99
+        depends on MEMORY_POOL_ENABLE && MEMORY_POOL_DIAGNOSTICS
+        help
+            Trigger critical memory alert when usage exceeds this percentage.
+
+    config MEMORY_POOL_ALLOW_HEAP_FALLBACK
+        bool "Allow Heap Fallback (Debug Only)"
+        default n
+        depends on MEMORY_POOL_ENABLE && !MEMORY_POOL_STRICT_MODE
+        help
+            Allow fallback to heap allocation when pools are exhausted.
+            NOT recommended for production use.
+
+endmenu

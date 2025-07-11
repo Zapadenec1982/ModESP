@@ -80,6 +80,7 @@ esp_err_t LoggerModule::init() {
     m_stats = {};
     
     m_initialized = true;
+    m_running = true;  // Встановлюємо перед створенням задачі
     
     // Створюємо задачу для асинхронного запису
     BaseType_t task_ret = xTaskCreate(
@@ -93,13 +94,12 @@ esp_err_t LoggerModule::init() {
     
     if (task_ret != pdPASS) {
         ESP_LOGE(TAG, "Failed to create writer task");
+        m_running = false;
         return ESP_FAIL;
     }
     
     // Підписуємось на події
     setupEventSubscriptions();
-    
-    m_running = true;
     
     // Логуємо перше повідомлення
     logEvent(EventCode::SYSTEM_START, esp_timer_get_time() / 1000);
@@ -124,9 +124,8 @@ void LoggerModule::stop() {
         stopEntry.level = static_cast<uint8_t>(LogLevel::NONE);
         xQueueSend(m_writeQueue, &stopEntry, portMAX_DELAY);
         
-        // Очікуємо завершення задачі
-        vTaskDelay(pdMS_TO_TICKS(100));
-        vTaskDelete(m_writerTaskHandle);
+        // Очікуємо завершення задачі (вона видалить себе)
+        vTaskDelay(pdMS_TO_TICKS(200));
         m_writerTaskHandle = nullptr;
     }
     
@@ -455,6 +454,9 @@ void LoggerModule::writerTask() {
     }
     
     ESP_LOGI(TAG, "Writer task stopped");
+    
+    // Видаляємо задачу
+    vTaskDelete(NULL);
 }
 
 void LoggerModule::checkRotation() {

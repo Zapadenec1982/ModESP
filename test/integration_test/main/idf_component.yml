@@ -1,0 +1,8 @@
+## IDF Component Manager Manifest File
+dependencies:
+  ## Required IDF version
+  idf:
+    version: '>=4.1.0'
+  # Required dependencies for ModESP Integration Tests
+  joltwallet/littlefs: '*'
+  mittelab/nlohmann-json: '^3.11.2'

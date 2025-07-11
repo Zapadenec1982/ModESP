@@ -1,0 +1,188 @@
+// multicore_example.cpp - Приклад використання для ModESP
+
+#include "multicore_optimization.h"
+#include "sensor_drivers/temperature_sensor.h"
+#include "actuator_drivers/compressor_driver.h"
+#include "wifi_manager/wifi_manager.h"
+#include "mqtt_ui/mqtt_client.h"
+
+static const char* TAG = "RefrigApp";
+static MulticoreOptimizer multicore_opt;
+
+// Задача читання сенсорів (Core 1)
+static void sensor_task(void* pvParameters) {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xFrequency = pdMS_TO_TICKS(50); // 20Hz
+    
+    ESP_LOGI(TAG, "Sensor task started on Core %d", xPortGetCoreID());
+    
+    while (1) {
+        // Читання всіх сенсорів
+        sensor_data_t data = {
+            .temperature = TemperatureSensor::read(),
+            .humidity = HumiditySensor::read(),
+            .pressure = PressureSensor::read(),
+            .door_status = DoorSensor::read(),
+            .timestamp = esp_timer_get_time()
+        };
+        
+        // Відправка даних в чергу контролера
+        if (xQueueSend(multicore_opt.sensor_queue, &data, 0) != pdTRUE) {
+            ESP_LOGW(TAG, "Sensor queue full, dropping reading");        }
+        
+        // Точна періодична затримка
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    }
+}
+
+// Задача контролю температури (Core 1)
+static void control_task(void* pvParameters) {
+    sensor_data_t sensor_data;
+    control_status_t control_status = {0};
+    
+    ESP_LOGI(TAG, "Control task started on Core %d", xPortGetCoreID());
+    
+    while (1) {
+        // Отримання даних від сенсорів
+        if (xQueueReceive(multicore_opt.sensor_queue, &sensor_data, pdMS_TO_TICKS(100))) {
+            // PID контролер
+            float error = control_status.setpoint - sensor_data.temperature;
+            
+            // Гістерезис для компресора
+            if (sensor_data.temperature > control_status.setpoint + control_status.hysteresis) {
+                control_status.compressor_on = true;
+            } else if (sensor_data.temperature < control_status.setpoint - control_status.hysteresis) {
+                control_status.compressor_on = false;
+            }
+            
+            // Логіка розморожування
+            static uint32_t defrost_timer = 0;
+            defrost_timer++;
+            if (defrost_timer > 7200) { // 6 годин при 50ms циклі                control_status.defrost_on = true;
+                defrost_timer = 0;
+            }
+            
+            // Застосування керуючих дій
+            CompressorDriver::set_state(control_status.compressor_on);
+            DefrostDriver::set_state(control_status.defrost_on);
+            
+            // Відправка статусу в мережеву чергу
+            xQueueSend(multicore_opt.network_queue, &control_status, 0);
+        }
+    }
+}
+
+// Мережева задача (Core 0)
+static void network_task(void* pvParameters) {
+    control_status_t status;
+    
+    ESP_LOGI(TAG, "Network task started on Core %d", xPortGetCoreID());
+    
+    // Ініціалізація WiFi та MQTT
+    WiFiManager::init();
+    MqttClient::init();
+    
+    while (1) {
+        // Отримання статусу для відправки
+        if (xQueueReceive(multicore_opt.network_queue, &status, pdMS_TO_TICKS(1000))) {
+            // Формування JSON
+            char json_buffer[256];
+            snprintf(json_buffer, sizeof(json_buffer),
+                    "{\"temp\":%.1f,\"comp\":%d,\"defrost\":%d,\"alarms\":%u}",                    status.temperature,
+                    status.compressor_on,
+                    status.defrost_on,
+                    status.alarms);
+            
+            // Відправка через MQTT
+            MqttClient::publish("refrigerator/status", json_buffer);
+        }
+        
+        // Обробка WiFi подій
+        WiFiManager::handle_events();
+        
+        // Перевірка OTA оновлень
+        if (OtaManager::check_update_available()) {
+            ESP_LOGI(TAG, "OTA update available, starting download...");
+            OtaManager::perform_update();
+        }
+    }
+}
+
+// Функція ініціалізації багатоядерної системи
+esp_err_t init_multicore_refrigeration_system() {
+    ESP_LOGI(TAG, "Initializing multicore refrigeration system...");
+    
+    // Ініціалізація оптимізатора
+    esp_err_t ret = multicore_opt.init();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to init multicore optimizer");
+        return ret;
+    }
+    
+    // Створення задач на відповідних ядрах    
+    // Core 1: Критичні real-time задачі
+    xTaskCreatePinnedToCore(
+        sensor_task,
+        "sensors",
+        STACK_SENSOR_TASK,
+        nullptr,
+        PRIO_SENSOR_READ,
+        &multicore_opt.sensor_task_handle,
+        REALTIME_CORE
+    );
+    
+    xTaskCreatePinnedToCore(
+        control_task,
+        "control",
+        STACK_CONTROL_TASK,
+        nullptr,
+        PRIO_TEMP_CONTROL,
+        &multicore_opt.control_task_handle,
+        REALTIME_CORE
+    );
+    
+    // Core 0: Мережеві задачі
+    xTaskCreatePinnedToCore(
+        network_task,
+        "network",
+        STACK_NETWORK_TASK,
+        nullptr,
+        PRIO_MQTT_CLIENT,
+        &multicore_opt.network_task_handle,
+        NETWORK_CORE
+    );
+        
+    // Запуск періодичного моніторингу (опціонально)
+    xTaskCreatePinnedToCore(
+        [](void* param) {
+            MulticoreOptimizer* opt = (MulticoreOptimizer*)param;
+            while (1) {
+                vTaskDelay(pdMS_TO_TICKS(30000)); // Кожні 30 секунд
+                opt->print_task_stats();
+                opt->print_core_usage();
+            }
+        },
+        "monitor",
+        2048,
+        &multicore_opt,
+        2, // Низький пріоритет
+        nullptr,
+        NETWORK_CORE
+    );
+    
+    ESP_LOGI(TAG, "Multicore refrigeration system initialized successfully!");
+    ESP_LOGI(TAG, "Core 0: Network, MQTT, OTA");
+    ESP_LOGI(TAG, "Core 1: Sensors, Control, Safety");
+    
+    return ESP_OK;
+}
+
+// Викликається з app_main або launch_application
+void start_refrigeration_system() {
+    if (init_multicore_refrigeration_system() == ESP_OK) {
+        ESP_LOGI(TAG, "System started successfully");
+    } else {
+        ESP_LOGE(TAG, "Failed to start system, entering safe mode");
+        // Безпечний режим - тільки базові функції
+    }
+}

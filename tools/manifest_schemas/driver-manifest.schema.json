@@ -1,0 +1,234 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modesp.com/schemas/driver-manifest.json",
+  "title": "ModESP Driver Manifest",
+  "description": "Schema for ModESP driver manifest files",
+  "type": "object",
+  "required": ["driver"],
+  
+  "definitions": {
+    "paramType": {
+      "type": "string",
+      "enum": ["string", "number", "boolean", "object", "array"]
+    },
+    "apiDefinition": {
+      "type": "object",
+      "required": ["method", "handler", "description"],
+      "properties": {
+        "method": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+$",
+          "description": "Driver-specific method name"
+        },
+        "handler": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+$",
+          "description": "C++ function name"
+        },
+        "description": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type", "required"],
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/paramType"
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "validation": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "returns": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "#/definitions/paramType"
+            },
+            "properties": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "configField": {
+      "type": "object",
+      "required": ["name", "type", "label"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["text", "number", "select", "pin", "i2c_address", "toggle"]
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "default": {},
+        "validation": {
+          "type": "object"
+        },
+        "options": {
+          "type": "array",
+          "description": "For select type"
+        }
+      }
+    }
+  },
+  
+  "properties": {
+    "driver": {
+      "type": "object",
+      "required": ["name", "type", "version"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Z][a-zA-Z0-9]+Driver$",
+          "description": "Driver class name"
+        },
+        "type": {
+          "type": "string",
+          "description": "Driver type (e.g., temperature, humidity, gpio)"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "description": {
+          "type": "string"
+        },
+        "manufacturer": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "hal_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["GPIO", "I2C", "SPI", "UART", "ADC", "DAC", "PWM", "OneWire"]
+          },
+          "description": "Required HAL modules"
+        }
+      }
+    },
+    
+    "capabilities": {
+      "type": "object",
+      "description": "Driver-specific capabilities",
+      "properties": {
+        "measurement_range": {
+          "type": "object",
+          "properties": {
+            "min": { "type": "number" },
+            "max": { "type": "number" },
+            "unit": { "type": "string" }
+          }
+        },
+        "accuracy": {
+          "type": "string"
+        },
+        "response_time_ms": {
+          "type": "number"
+        },
+        "supports_calibration": {
+          "type": "boolean"
+        },
+        "multi_channel": {
+          "type": "boolean"
+        }
+      }
+    },
+    
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "object",
+          "description": "JSON Schema for driver configuration"
+        },
+        "defaults": {
+          "type": "object",
+          "description": "Default configuration values"
+        }
+      }
+    },
+    
+    "apis": {
+      "type": "object",
+      "properties": {
+        "specific": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDefinition"
+          },
+          "description": "Driver-specific API methods"
+        }
+      }
+    },
+    
+    "ui_extensions": {
+      "type": "object",
+      "properties": {
+        "config_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/configField"
+          },
+          "description": "UI fields to inject into manager configuration"
+        },
+        "status_widgets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "value_source": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    "shared_state": {
+      "type": "object",
+      "properties": {
+        "publishes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type", "description"],
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/paramType"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

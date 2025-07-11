@@ -1,0 +1,161 @@
+{
+    "module_info": {
+        "name": "SensorModule",
+        "version": "1.2.0",
+        "description": "Comprehensive sensor data collection module",
+        "enabled": true,
+        "priority": "HIGH"
+    },
+    
+    "api_reference": {
+        "rpc_methods": {
+            "sensor.get_temperature": {
+                "description": "Get current temperature reading",
+                "params": {"sensor_id": "string (optional)"},
+                "returns": {"value": "float", "unit": "°C", "timestamp": "uint64_t"},
+                "example": "sensor.get_temperature() -> {value: 23.5, unit: '°C', timestamp: 1234567890}"
+            },
+            "sensor.get_humidity": {
+                "description": "Get current humidity reading", 
+                "returns": {"value": "float", "unit": "%"},
+                "example": "sensor.get_humidity() -> {value: 65.2, unit: '%'}"
+            },
+            "sensor.set_temp_offset": {
+                "description": "Calibrate temperature sensor",
+                "params": {"offset": "float (-5.0 to 5.0)"},
+                "example": "sensor.set_temp_offset({offset: 1.5})"
+            }
+        },
+        
+        "shared_state_keys": {
+            "state.sensor.temperature": {
+                "type": "float", 
+                "description": "Current temperature in Celsius",
+                "update_frequency": "1 Hz"
+            },
+            "state.sensor.humidity": {
+                "type": "float",
+                "description": "Current humidity percentage", 
+                "update_frequency": "1 Hz"
+            },
+            "state.sensor.door_open": {
+                "type": "boolean",
+                "description": "Door sensor state",
+                "update_frequency": "on change"
+            }
+        },
+        
+        "events_published": {
+            "sensor.reading_updated": {
+                "description": "New sensor reading available",
+                "payload": {"sensor_id": "string", "value": "float", "timestamp": "uint64_t"},
+                "frequency": "1 Hz"
+            },
+            "sensor.error": {
+                "description": "Sensor error occurred",
+                "payload": {"sensor_id": "string", "error_code": "int", "message": "string"},
+                "frequency": "on error"
+            }
+        },
+        
+        "events_subscribed": {
+            "system.config_changed": "Responds to system configuration changes",
+            "hal.gpio_interrupt": "Handles GPIO interrupts for door sensor"
+        }
+    },
+    
+    "ui_schema": {
+        "web": {
+            "controls": [
+                {
+                    "id": "temperature",
+                    "type": "gauge", 
+                    "label": "Temperature",
+                    "unit": "°C",
+                    "min": -40,
+                    "max": 60,
+                    "read_method": "sensor.get_temperature",
+                    "thresholds": {
+                        "low": -10,
+                        "normal": [10, 35],
+                        "high": 40
+                    }
+                },
+                {
+                    "id": "humidity",
+                    "type": "gauge",
+                    "label": "Humidity", 
+                    "unit": "%",
+                    "min": 0,
+                    "max": 100,
+                    "read_method": "sensor.get_humidity"
+                },
+                {
+                    "id": "door_open",
+                    "type": "switch",
+                    "label": "Door Status",
+                    "read_method": "sensor.get_door_status",
+                    "read_only": true
+                },
+                {
+                    "id": "temp_offset",
+                    "type": "number",
+                    "label": "Temp Calibration",
+                    "unit": "°C", 
+                    "min": -5,
+                    "max": 5,
+                    "step": 0.1,
+                    "read_method": "sensor.get_temp_offset",
+                    "write_method": "sensor.set_temp_offset"
+                }
+            ]
+        },
+        
+        "mqtt": {
+            "telemetry": {
+                "temperature": {
+                    "topic": "modesp/sensors/temperature",
+                    "source": "state.sensor.temperature",
+                    "interval": 60
+                },
+                "humidity": {
+                    "topic": "modesp/sensors/humidity", 
+                    "source": "state.sensor.humidity",
+                    "interval": 60
+                }
+            },
+            "commands": {
+                "calibrate": {
+                    "topic": "modesp/sensors/calibrate",
+                    "method": "sensor.set_temp_offset"
+                }
+            }
+        }
+    },
+    
+    "integration_guide": {
+        "dependencies": ["ESPhal", "SharedState", "EventBus"],
+        "config_file": "sensors.json",
+        "example_config": {
+            "sensors": [
+                {"role": "temperature", "type": "DS18B20", "hal_id": "temp_probe_1"},
+                {"role": "humidity", "type": "DHT22", "hal_id": "humidity_sensor_1"},
+                {"role": "door", "type": "GPIO", "hal_id": "door_switch"}
+            ],
+            "update_interval_ms": 1000
+        },
+        
+        "how_to_interact": {
+            "from_other_modules": {
+                "read_temperature": "float temp = SharedState::get<float>(\"state.sensor.temperature\");",
+                "listen_for_updates": "EventBus::subscribe(\"sensor.reading_updated\", my_handler);",
+                "call_rpc": "JsonRpc::call(\"sensor.get_temperature\", {});"
+            },
+            "for_new_developers": {
+                "understanding": "This module collects data from various sensors and provides it through SharedState",
+                "key_files": ["sensor_module.h", "sensor_module.cpp", "sensors.json"],
+                "testing": "Use sensor.get_temperature() RPC to verify module works"
+            }
+        }
+    }
+} 

@@ -1,0 +1,88 @@
+{
+  "name": "ExampleModule",
+  "type": "standard",
+  "version": "1.0.0",
+  "description": "Example module demonstrating manifest integration",
+  "priority": "normal",
+  "dependencies": [
+    "SharedState",
+    "EventBus"
+  ],
+  "config_file": "example.json",
+  "api": [
+    {
+      "method": "example.get_status",
+      "description": "Get current module status",
+      "params": {},
+      "returns": {
+        "type": "object",
+        "properties": {
+          "initialized": {"type": "boolean"},
+          "update_count": {"type": "integer"},
+          "health_score": {"type": "integer"}
+        }
+      },
+      "access_level": "user"
+    },
+    {
+      "method": "example.reset_counter",
+      "description": "Reset the update counter",
+      "params": {},
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "message": {"type": "string"}
+        }
+      },
+      "access_level": "technician"
+    }
+  ],
+  "events": [
+    {
+      "name": "example.milestone",
+      "description": "Published every 10 updates",
+      "payload": {
+        "count": "Update count",
+        "timestamp": "Timestamp in milliseconds"
+      }
+    }
+  ],
+  "ui_schema": {
+    "sections": [
+      {
+        "title": "Example Module Settings",
+        "fields": [
+          {
+            "key": "update_interval_ms",
+            "label": "Update Interval (ms)",
+            "type": "number",
+            "min": 100,
+            "max": 10000,
+            "default": 1000,
+            "description": "How often the module updates"
+          },
+          {
+            "key": "enabled",
+            "label": "Module Enabled",
+            "type": "boolean",
+            "default": true,
+            "description": "Enable or disable the module"
+          }
+        ]
+      }
+    ],
+    "status_widgets": [
+      {
+        "type": "counter",
+        "label": "Update Count",
+        "value_key": "example.state.update_count"
+      },
+      {
+        "type": "health_indicator",
+        "label": "Module Health",
+        "module_name": "ExampleModule"
+      }
+    ]
+  }
+}

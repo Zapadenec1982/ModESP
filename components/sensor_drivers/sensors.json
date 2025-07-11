@@ -1,0 +1,19 @@
+{
+  "comment": "Конфігурація з одним працюючим сенсором (GPIO7 дефектний)",
+  "poll_interval_ms": 3000,
+  "publish_on_error": true,
+  "sensors": [
+    {
+      "role": "evaporator_temp",
+      "type": "DS18B20_Async",
+      "publish_key": "temp.evap",
+      "config": {
+        "hal_id": "EVAP_TEMP",
+        "address": "299cdcd534646128",
+        "resolution": 12,
+        "offset": 0.0,
+        "max_retries": 3
+      }
+    }
+  ]
+}

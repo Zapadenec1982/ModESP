@@ -1,0 +1,419 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modesp.com/schemas/module-manifest.json",
+  "title": "ModESP Module Manifest",
+  "description": "Schema for ModESP module manifest files",
+  "type": "object",
+  "required": ["module"],
+  
+  "definitions": {
+    "moduleType": {
+      "type": "string",
+      "enum": ["CORE", "STANDARD", "OPTIONAL", "MANAGER"]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["CRITICAL", "HIGH", "NORMAL", "LOW"]
+    },
+    "accessLevel": {
+      "type": "string",
+      "enum": ["user", "technician", "admin", "supervisor"]
+    },
+    "paramType": {
+      "type": "string",
+      "enum": ["string", "number", "boolean", "object", "array", "float", "int", "uint64_t", "esp_err_t"]
+    },
+    "layoutType": {
+      "type": "string",
+      "enum": ["grid", "form", "custom"]
+    },
+    "conditionExpression": {
+      "type": "string",
+      "description": "Condition expression like config.path.to.value == 'expected' or has_feature('feature_name')"
+    },
+    "apiDefinition": {
+      "type": "object",
+      "required": ["method", "handler", "description", "access_level"],
+      "properties": {
+        "method": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+$",
+          "description": "API method name in format module.action"
+        },
+        "handler": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+$",
+          "description": "C++ function name"
+        },
+        "description": {
+          "type": "string"
+        },
+        "access_level": {
+          "$ref": "#/definitions/accessLevel"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type", "required"],
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/paramType"
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "validation": {
+                "type": "object",
+                "properties": {
+                  "min": { "type": "number" },
+                  "max": { "type": "number" },
+                  "pattern": { "type": "string" },
+                  "enum": { "type": "array" }
+                }
+              }
+            }
+          }
+        },
+        "returns": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "#/definitions/paramType"
+            },
+            "properties": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "widget": {
+      "type": "object",
+      "required": ["type", "id"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["text", "number", "select", "toggle", "button", "chart", "table", "custom"]
+        },
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value_source": {
+          "type": "string",
+          "description": "SharedState key or API method"
+        },
+        "action": {
+          "type": "string",
+          "description": "API method to call on interaction"
+        },
+        "config": {
+          "type": "object",
+          "description": "Widget-specific configuration"
+        }
+      }
+    }
+  },
+  
+  "properties": {
+    "module": {
+      "type": "object",
+      "description": "Module metadata",
+      "required": ["name", "version", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Z][a-zA-Z0-9]+(Module|Manager)$",
+          "description": "Module class name"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description"
+        },
+        "type": {
+          "$ref": "#/definitions/moduleType"
+        },
+        "priority": {
+          "$ref": "#/definitions/priority",
+          "default": "NORMAL"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of required module names"
+        },
+        "driver_interface": {
+          "type": "string",
+          "description": "Interface name for drivers (for MANAGER type modules)"
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "stack_size": {
+              "type": "number",
+              "minimum": 1024,
+              "description": "Task stack size in bytes"
+            },
+            "heap_usage": {
+              "type": "string",
+              "pattern": "^~?\\d+[KM]?B?$",
+              "description": "Estimated heap usage (e.g., '10K', '1M')"
+            },
+            "update_budget_ms": {
+              "type": "number",
+              "minimum": 1,
+              "description": "Maximum update time in milliseconds"
+            }
+          }
+        }
+      }
+    },
+    
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "config_file": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+\\.json$",
+          "description": "JSON configuration file name"
+        },
+        "schema": {
+          "type": "object",
+          "description": "JSON Schema for configuration validation"
+        }
+      }
+    },
+    
+    "apis": {
+      "type": "object",
+      "properties": {
+        "static": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDefinition"
+          },
+          "description": "Always available APIs"
+        },
+        "dynamic": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["condition", "apis"],
+            "properties": {
+              "condition": {
+                "$ref": "#/definitions/conditionExpression"
+              },
+              "apis": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/apiDefinition"
+                }
+              }
+            }
+          },
+          "description": "Conditionally available APIs"
+        }
+      }
+    },
+    
+    "ui": {
+      "type": "object",
+      "properties": {
+        "static": {
+          "type": "object",
+          "properties": {
+            "menu": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "icon": {
+                  "type": "string"
+                },
+                "order": {
+                  "type": "number"
+                }
+              }
+            },
+            "pages": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "label", "layout", "access_level"],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "layout": {
+                    "$ref": "#/definitions/layoutType"
+                  },
+                  "access_level": {
+                    "$ref": "#/definitions/accessLevel"
+                  },
+                  "widgets": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/widget"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "dynamic": {
+          "type": "object",
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["when", "add_to_page", "section"],
+                "properties": {
+                  "when": {
+                    "$ref": "#/definitions/conditionExpression"
+                  },
+                  "add_to_page": {
+                    "type": "string"
+                  },
+                  "section": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "widgets": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/widget"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    "shared_state": {
+      "type": "object",
+      "properties": {
+        "publishes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type", "description"],
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/paramType"
+              },
+              "description": {
+                "type": "string"
+              },
+              "update_rate_ms": {
+                "type": "number",
+                "minimum": 100
+              }
+            }
+          }
+        },
+        "subscribes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type", "description"],
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/paramType"
+              },
+              "description": {
+                "type": "string"
+              },
+              "handler": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    "event_bus": {
+      "type": "object",
+      "properties": {
+        "publishes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["description"],
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "subscribes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["handler"],
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "handler": {
+                "type": "string",
+                "description": "Handler function name"
+              },
+              "filter": {
+                "type": "object",
+                "description": "Optional event filter"
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    "driver_registry": {
+      "type": "object",
+      "description": "For manager modules that aggregate drivers",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to driver manifests"
+        },
+        "pattern": {
+          "type": "string",
+          "default": "*_driver_manifest.json",
+          "description": "Manifest file pattern"
+        },
+        "interface": {
+          "type": "string",
+          "description": "C++ interface name drivers must implement"
+        }
+      }
+    }
+  }
+}

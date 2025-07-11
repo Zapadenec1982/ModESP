@@ -1,0 +1,135 @@
+# Application - Центральний координатор життєвого циклу ModuChill
+
+## Огляд і призначення
+
+Application є центральним компонентом життєвого циклу системи ModuChill для промислових холодильних установок. Забезпечує детерміністичний запуск, стабільну роботу в реальному часі та грациозне завершення роботи.
+
+## Ключові можливості
+
+* **Багатоядерна архітектура**: Оптимізована для ESP32-S3 з розподілом навантаження між ядрами
+* **Lifecycle Management**: Керування станами BOOT → INIT → RUNNING → ERROR/SHUTDOWN
+* **Фіксована частота виконання**: 100Hz головний цикл для передбачуваного таймінгу
+* **Моніторинг ресурсів**: Відстеження heap, CPU, stack usage в реальному часі
+* **Error handling**: Класифікація помилок, стратегії відновлення, degraded operation
+* **Health monitoring**: Системна діагностика та reporting
+* **Функціональне тестування**: Автоматичні тести компонентів при запуску
+
+## Архітектурні принципи
+
+* **Детерміністична ініціалізація**: Фіксований порядок ініціалізації з урахуванням залежностей
+* **Фіксована частота виконання**: 100Hz головний цикл для передбачуваного таймінгу
+* **Multicore optimization**: Core 0 для бізнес-логіки, Core 1 для датчиків
+* **Graceful degradation**: Система продовжує роботу без некритичних компонентів
+* **Resource bounded**: Всі операції мають обмеження за часом/пам'яттю
+* **Промислова надійність**: Відстеження помилок, перезапуск при критичних ситуаціях
+
+## Багатоядерна архітектура
+
+```
+ESP32-S3 Dual Core Architecture
+
+Core 0 (Protocol CPU)                    Core 1 (Application CPU)
+┌─────────────────────────┐             ┌─────────────────────────┐
+│     Main Application    │             │     Sensor Task         │
+│                         │             │                         │
+│  • Business Logic       │             │  • SensorModule         │
+│  • Climate Control      │             │  • Data Collection      │
+│  • Actuator Control     │             │  • 10Hz Updates         │
+│  • Event Processing     │             │  • Real-time Reading    │
+│  • UI/Network          │             │                         │
+│  • 100Hz Main Loop     │             │                         │
+│                         │             │                         │
+│  ┌─────────────────────┐│             │ ┌─────────────────────┐ │
+│  │   Module Updates    ││             │ │  Sensor Drivers     │ │
+│  │   (8ms budget)      ││◄────────────┤ │  DS18B20, NTC, etc. │ │
+│  └─────────────────────┘│             │ └─────────────────────┘ │
+│                         │             │                         │
+│  ┌─────────────────────┐│             │ ┌─────────────────────┐ │
+│  │  Event Processing   ││             │ │   Shared State      │ │
+│  │   (2ms budget)      ││◄────────────┤ │   Publishing        │ │
+│  └─────────────────────┘│             │ └─────────────────────┘ │
+└─────────────────────────┘             └─────────────────────────┘
+             │                                       │
+             └───────────────────┬───────────────────┘
+                                 │
+                    ┌─────────────────────┐
+                    │    Shared State     │
+                    │   Event Bus        │
+                    │   (Sync Primitives) │
+                    └─────────────────────┘
+```
+
+## State Machine & Lifecycle
+
+### Системні стани
+
+**BOOT (0-10ms)**
+```
+├── Hardware initialization (NVS, GPIO, UART)
+├── System clock configuration
+├── Watchdog setup
+├── MAC address reading
+└── Boot diagnostics
+```
+
+**INIT (10-500ms)**
+```
+├── Core services initialization
+│   ├── EventBus::init()
+│   ├── SharedState::init()
+│   ├── ConfigManager::init()
+│   └── ModuleManager::init()
+├── HAL layer initialization
+├── Module registration
+├── Initial configuration loading
+├── Module initialization (by priority)
+├── Full configuration loading
+├── Functional tests execution
+└── State validation
+```
+
+**RUNNING (Normal operation)**
+```
+Main Loop @ 100Hz (Core 0):
+├── Module updates (8ms budget)
+├── Event processing (2ms budget)
+├── Health monitoring (1Hz)
+├── Performance metrics collection
+└── Watchdog feeding
+
+Sensor Task @ 10Hz (Core 1):
+├── Sensor data collection
+├── SharedState publishing
+├── Performance monitoring
+└── Error reporting
+```
+
+**ERROR (Recovery mode)**
+```
+├── Error classification (WARNING/ERROR/CRITICAL/FATAL)
+├── Recovery attempts
+├── Component disabling
+├── Degraded operation mode
+├── Error reporting via EventBus
+└── Restart if critical/fatal
+```
+
+**SHUTDOWN (Graceful stop)**
+```
+├── Stop accepting new operations
+├── Complete pending work
+├── Save persistent state via ConfigManager
+├── Module shutdown (reverse priority order)
+├── Resource cleanup
+└── System halt
+```
+
+### Переходи станів
+
+* **BOOT → INIT**: Автоматично після готовності hardware
+* **INIT → RUNNING**: Всі критичні сервіси ініціалізовані
+* **RUNNING → ERROR**: Критична помилка компонента
+* **ERROR → RUNNING**: Успішне відновлення
+* **ANY → SHUTDOWN**: Запит на завершення роботи
+* **ERROR → BOOT**: Перезапуск після фатальної помилки
+

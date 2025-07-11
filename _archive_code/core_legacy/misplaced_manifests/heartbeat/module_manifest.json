@@ -1,0 +1,188 @@
+{
+    "module": {
+        "name": "HeartbeatModule",
+        "version": "1.0.0",
+        "description": "System heartbeat and health monitoring",
+        "type": "CORE",
+        "priority": "HIGH",
+        "dependencies": ["SharedState", "EventBus"],
+        "resources": {
+            "stack_size": 2048,
+            "heap_usage": "1K",
+            "update_budget_ms": 1
+        }
+    },
+    
+    "configuration": {
+        "config_file": "heartbeat.json",
+        "schema": {
+            "type": "object",
+            "properties": {
+                "interval_ms": {
+                    "type": "integer",
+                    "default": 1000,
+                    "minimum": 100,
+                    "maximum": 10000,
+                    "description": "Heartbeat interval in milliseconds"
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable heartbeat functionality"
+                }
+            }
+        }
+    },
+    
+    "apis": {
+        "static": [
+            {
+                "method": "system.get_uptime",
+                "handler": "get_uptime_handler",
+                "description": "Get system uptime in seconds",
+                "access_level": "user",
+                "params": {},
+                "returns": {
+                    "type": "object",
+                    "properties": {
+                        "uptime_seconds": {"type": "uint64_t"},
+                        "uptime_formatted": {"type": "string"}
+                    }
+                }
+            },
+            {
+                "method": "system.get_health_status",
+                "handler": "get_health_status_handler",
+                "description": "Get system health status",
+                "access_level": "user",
+                "params": {},
+                "returns": {
+                    "type": "object",
+                    "properties": {
+                        "healthy": {"type": "boolean"},
+                        "free_heap": {"type": "number"},
+                        "cpu_usage": {"type": "number"},
+                        "last_reset_reason": {"type": "string"}
+                    }
+                }
+            },
+            {
+                "method": "system.restart",
+                "handler": "restart_system_handler",
+                "description": "Restart the system",
+                "access_level": "admin",
+                "params": {
+                    "delay_ms": {
+                        "type": "number",
+                        "required": false,
+                        "validation": {
+                            "min": 0,
+                            "max": 60000
+                        }
+                    }
+                },
+                "returns": {
+                    "type": "object",
+                    "properties": {
+                        "success": {"type": "boolean"}
+                    }
+                }
+            }
+        ]
+    },
+    
+    "ui": {
+        "static": {
+            "menu": {
+                "label": "System",
+                "icon": "heart",
+                "order": 100
+            },
+            "pages": [
+                {
+                    "id": "system_status",
+                    "label": "System Status",
+                    "layout": "grid",
+                    "access_level": "user",
+                    "widgets": [
+                        {
+                            "type": "text",
+                            "id": "uptime_display",
+                            "label": "Uptime",
+                            "value_source": "state.system.uptime_formatted"
+                        },
+                        {
+                            "type": "number",
+                            "id": "free_heap_display",
+                            "label": "Free Heap (KB)",
+                            "value_source": "state.system.free_heap_kb"
+                        },
+                        {
+                            "type": "toggle",
+                            "id": "heartbeat_enabled",
+                            "label": "Heartbeat Enabled",
+                            "value_source": "state.system.heartbeat_enabled"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    
+    "shared_state": {
+        "publishes": {
+            "state.system.uptime": {
+                "type": "uint64_t",
+                "description": "System uptime in seconds"
+            },
+            "state.system.uptime_formatted": {
+                "type": "string",
+                "description": "Formatted uptime string (e.g., '1d 2h 3m')"
+            },
+            "state.system.free_heap": {
+                "type": "number",
+                "description": "Free heap memory in bytes"
+            },
+            "state.system.free_heap_kb": {
+                "type": "number",
+                "description": "Free heap memory in kilobytes"
+            },
+            "state.system.heartbeat_enabled": {
+                "type": "boolean",
+                "description": "Whether heartbeat is enabled"
+            },
+            "state.system.cpu_usage": {
+                "type": "number",
+                "description": "CPU usage percentage"
+            }
+        },
+        "subscribes": {}
+    },
+    
+    "event_bus": {
+        "publishes": {
+            "system.heartbeat": {
+                "description": "Periodic heartbeat event",
+                "payload": {
+                    "timestamp": {"type": "uint64_t"},
+                    "uptime": {"type": "uint64_t"},
+                    "free_heap": {"type": "number"}
+                }
+            },
+            "system.health_warning": {
+                "description": "Health warning event",
+                "payload": {
+                    "type": {"type": "string"},
+                    "message": {"type": "string"},
+                    "severity": {"type": "string"}
+                }
+            }
+        },
+        "subscribes": {
+            "system.restart_requested": {
+                "description": "System restart request",
+                "handler": "on_restart_requested"
+            }
+        }
+    }
+}

@@ -1,0 +1,24 @@
+# ninja log v6
+5	85	7727727296974882	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-mkdir	c10c5b64e64bf72
+5	85	7727727296974882	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-mkdir	c10c5b64e64bf72
+86	308	7727727299144901	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-download	87a7c9ba06956720
+86	308	7727727299144901	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-download	87a7c9ba06956720
+308	404	7727727300144911	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-update	107d2bcd1be555e9
+308	404	7727727300144911	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-update	107d2bcd1be555e9
+405	478	7727727300887710	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-patch	cd0edd127ac52bcf
+405	478	7727727300887710	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-patch	cd0edd127ac52bcf
+479	566	7727727301806800	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-copyfile	c30aeb9e72160171
+479	566	7727727301806800	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-src/json_impl.hpp	c30aeb9e72160171
+479	566	7727727301806800	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-copyfile	c30aeb9e72160171
+566	628	7727727302419744	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-configure	31d07db7f41cdf2a
+566	628	7727727302419744	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-configure	31d07db7f41cdf2a
+628	697	7727727303106374	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-build	db51fcc17f5c5bc5
+628	697	7727727303106374	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-build	db51fcc17f5c5bc5
+697	781	7727727303936287	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-install	f276768cb04e6d75
+697	781	7727727303936287	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-install	f276768cb04e6d75
+781	912	7727727305216346	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-test	77a062dccd2fdc9f
+781	912	7727727305216346	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-test	77a062dccd2fdc9f
+912	1573	7727727310610044	CMakeFiles/nlohmann-json-populate-complete	cf5c4d042b6e0cbb
+912	1573	7727727310610044	nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-done	cf5c4d042b6e0cbb
+912	1573	7727727310610044	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/CMakeFiles/nlohmann-json-populate-complete	cf5c4d042b6e0cbb
+912	1573	7727727310610044	C:/ModESP_dev/test/logger_only_test/build/_deps/nlohmann-json-subbuild/nlohmann-json-populate-prefix/src/nlohmann-json-populate-stamp/nlohmann-json-populate-done	cf5c4d042b6e0cbb

@@ -1,0 +1,12 @@
+{
+    "heartbeat": {
+        "enabled": true,
+        "check_interval_ms": 5000,
+        "auto_restart_enabled": true,
+        "timeouts": {
+            "critical_ms": 5000,
+            "standard_ms": 30000,
+            "background_ms": 300000
+        }
+    }
+}

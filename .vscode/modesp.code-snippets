@@ -1,0 +1,36 @@
+{
+    "Subscribe to Sensor Reading": {
+        "prefix": "sub_sensor",
+        "body": [
+            "EventBus::subscribe(Events::SENSOR_READING_UPDATED, [this](const EventBus::Event& event) {",
+            "    auto sensor_role = event.data[\"sensor_role\"].get<std::string>();",
+            "    float value = event.data[\"value\"];",
+            "    ",
+            "    if (sensor_role == \"${1|temperature_evaporator,temperature_ambient,humidity_chamber|}\") {",
+            "        ${2:// Handle sensor update}",
+            "    }",
+            "});"
+        ],
+        "description": "Subscribe to sensor reading updates"
+    },
+    
+    "Get Temperature from SharedState": {
+        "prefix": "get_temp",
+        "body": [
+            "float ${1:temp} = SharedState::get<float>(States::${2|TEMP_EVAPORATOR,TEMP_AMBIENT,TEMP_CONDENSER|});"
+        ],
+        "description": "Get temperature value from SharedState"
+    },
+    
+    "Publish Module Error": {
+        "prefix": "pub_error",
+        "body": [
+            "EventBus::publish(Events::${1:MODULE}_ERROR, {",
+            "    {\"module\", \"${2:module_name}\"},",
+            "    {\"error_code\", ${3:ESP_ERR_TIMEOUT}},",
+            "    {\"message\", \"${4:Error description}\"}",
+            "});"
+        ],
+        "description": "Publish module error event"
+    }
+}

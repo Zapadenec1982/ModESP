@@ -1,0 +1,5 @@
+{
+  "update_interval_ms": 2000,
+  "enabled": true,
+  "custom_setting": "example_value"
+}
